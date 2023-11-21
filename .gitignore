@@ -66,3 +66,5 @@ node_modules/
 .env
 
 VinylApp/VinylApp.xcworkspace/xcuserdata/brooklyngibbs.xcuserdatad/UserInterfaceState.xcuserstate
+
+functions/.env
