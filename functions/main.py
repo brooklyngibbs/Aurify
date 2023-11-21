@@ -2,12 +2,13 @@ import http.client
 import json
 import ssl
 import time
+import os
 from firebase_functions import https_fn
 import requests
 from google.auth.transport import requests as grequests
 from google.oauth2.id_token import verify_oauth2_token
 
-OPENAI_API_KEY =""
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 def make_playlist_name_api_request(playlist_description):
     prompt = f"Give me a playlist name that fits this description: {playlist_description}"
