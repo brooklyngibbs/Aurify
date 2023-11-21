@@ -113,16 +113,26 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                 self.songList = songMessage.components(separatedBy: "\n").compactMap { line in
                                     let cleanedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
                                     
-                                    // Regex pattern to match "Song" by "Artist" format
-                                    let pattern = #""(.*)" by (.*[^"])$"#  // Matches "Song" by "Artist"
+                                    // Updated regex pattern to match "Song" by "Artist" format
+                                    let pattern = #"^\d+\. \"([^"]*)\" by (.*)$"#
                                     
-                                    if let range = cleanedLine.range(of: pattern, options: .regularExpression) {
-                                        let matchedString = cleanedLine[range]
-                                        let extractedSong = String(matchedString.dropFirst().dropLast())
-                                        return extractedSong
-                                    } else {
-                                        return nil // Discard lines that don't match the expected format
+                                    do {
+                                        let regex = try NSRegularExpression(pattern: pattern, options: [])
+                                        let range = NSRange(cleanedLine.startIndex..<cleanedLine.endIndex, in: cleanedLine)
+                                        if let match = regex.firstMatch(in: cleanedLine, options: [], range: range) {
+                                            let songRange = Range(match.range(at: 1), in: cleanedLine)!
+                                            let artistRange = Range(match.range(at: 2), in: cleanedLine)!
+
+                                            let song = cleanedLine[songRange]
+                                            let artist = cleanedLine[artistRange]
+                                            let fullSongName = "\(song) by \(artist)"
+
+                                            return fullSongName
+                                        }
+                                    } catch {
+                                        return nil
                                     }
+                                    return nil
                                 }
 
                                 APICaller.shared.createPlaylist(with: self.playlistNameText, description: self.descriptionText) { [self] result in
