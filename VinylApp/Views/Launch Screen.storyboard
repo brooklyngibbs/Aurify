@@ -16,19 +16,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="Rq1-aL-Exm">
-                                <rect key="frame" x="96.666666666666686" y="326" width="200" height="200"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="200" id="OtM-RU-UCE"/>
-                                    <constraint firstAttribute="height" constant="200" id="hkd-ys-EgL"/>
-                                </constraints>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="background_gradient" translatesAutoresizingMaskIntoConstraints="NO" id="fNw-51-3XF">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
                         </subviews>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" red="0.90641957520000005" green="0.94046360250000005" blue="0.97647601370000003" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Rq1-aL-Exm" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="FC1-Og-Hey"/>
-                            <constraint firstItem="Rq1-aL-Exm" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="f7e-EI-WNd"/>
+                            <constraint firstAttribute="trailing" secondItem="fNw-51-3XF" secondAttribute="trailing" id="CGf-qw-I1H"/>
+                            <constraint firstItem="fNw-51-3XF" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="XOD-6d-zLW"/>
+                            <constraint firstItem="fNw-51-3XF" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="g7e-op-eE4"/>
+                            <constraint firstAttribute="bottom" secondItem="fNw-51-3XF" secondAttribute="bottom" id="wyF-1D-T5U"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -38,6 +36,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="logo" width="1024" height="1024"/>
+        <image name="background_gradient" width="1080" height="1920"/>
     </resources>
 </document>

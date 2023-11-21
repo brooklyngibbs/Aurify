@@ -1,10 +1,3 @@
-//
-//  ActionLabelView.swift
-//  VinylApp
-//
-//  Created by Brooklyn Gibbs on 10/23/23.
-//
-
 import UIKit
 
 struct ActionLabelViewViewModel {
@@ -38,8 +31,11 @@ class ActionLabelView: UIView {
         label.frame = CGRect(x: 0, y: 0, width: width, height: height-45)
     }
     
-    func configure(with viewModel: ActionLabelViewViewModel){
+    func configure(with viewModel: ActionLabelViewViewModel, font: UIFont? = nil){
         label.text = viewModel.text
+        if let customFont = font {
+            label.font = customFont
+        }
     }
 
 }
