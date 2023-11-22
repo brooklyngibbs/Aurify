@@ -16,8 +16,10 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     var descriptionText: String = ""
     var playlistNameText: String = ""
     var genreText: String = ""
+    var musicOptional: String = ""
     var songText: String = ""
     var songList: [String] = []
+    var subgenreText: String = ""
     
     // MARK: - View Lifecycle
 
@@ -99,16 +101,27 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                         //print("Data = \(String(decoding: data, as: UTF8.self))")
                         if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                             print("Received JSON data:", json)
-                            if let description = json["Description"] as? String {
+                            if let description = json["description"] as? String {
                                 self.descriptionText = description
+                                print(self.descriptionText)
                             }
-                            if let openaiMessage = json["OpenAI Message"] as? String {
-                                self.playlistNameText = openaiMessage
+                            if let playlistTitle = json["playlistTitle"] as? String {
+                                self.playlistNameText = playlistTitle
+                                print(self.playlistNameText)
                             }
-                            if let genreMessage = json["Genre Message"] as? String {
+                            if let genreMessage = json["genre"] as? String {
                                 self.genreText = genreMessage
+                                print(self.genreText)
                             }
-                            if let songMessage = json["Song Message"] as? String {
+                            if let subgenreMessage = json["subgenre"] as? String {
+                                self.subgenreText = subgenreMessage
+                                print(self.subgenreText)
+                            }
+                            if let musicOptional = json["music"] as? String {
+                                self.musicOptional = musicOptional
+                                print(self.musicOptional)
+                            }
+                            if let songMessage = json["song_message"] as? String {
                                 self.songText = songMessage
                                 self.songList = songMessage.components(separatedBy: "\n").compactMap { line in
                                     let cleanedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -134,6 +147,8 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                     }
                                     return nil
                                 }
+                                
+                                print(self.songList)
 
                                 APICaller.shared.createPlaylist(with: self.playlistNameText, description: self.descriptionText) { [self] result in
                                     switch result {

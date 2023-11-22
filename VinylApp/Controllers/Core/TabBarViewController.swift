@@ -2,13 +2,12 @@ class TabBarViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tabBar.tintColor = UIColor(red: 0, green: 84/255, blue: 195/255, alpha: 1)
+        tabBar.tintColor = UIColor(red: 67/255, green: 128/255, blue: 159/255, alpha: 1.0)
 
         let vc1 = HomeViewController()
         let vc2 = UploadViewController()
         let vc3 = LibraryViewController()
 
-        //vc1.title = "Home"
         vc3.title = "Library"
 
         vc1.navigationItem.largeTitleDisplayMode = .always
@@ -22,7 +21,6 @@ class TabBarViewController: UITabBarController {
         nav1.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 1)
         nav3.tabBarItem = UITabBarItem(title: "Library", image: UIImage(systemName: "music.note.list"), tag: 2)
         
-
         self.viewControllers = [nav1, nav2, nav3]
         
         tabBar.layer.shadowColor = UIColor(red: 11/255, green: 0, blue: 20/255, alpha: 1).cgColor
@@ -44,7 +42,7 @@ class TabBarViewController: UITabBarController {
         let uploadButton = UIButton(type: .custom)
         uploadButton.setImage(UIImage(systemName: "plus"), for: .normal)
         uploadButton.backgroundColor = UIColor(red: 11/255, green: 0, blue: 20/255, alpha: 1) // button color #0B0014
-        uploadButton.tintColor = .white // Set plus symbol color to white
+        uploadButton.tintColor = .white // plus symbol color
         uploadButton.layer.cornerRadius = 30
         uploadButton.layer.shadowColor = UIColor.black.cgColor
         uploadButton.layer.shadowOffset = CGSize(width: 0, height: 4)

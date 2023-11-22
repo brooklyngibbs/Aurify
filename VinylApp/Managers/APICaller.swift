@@ -32,7 +32,6 @@ final class APICaller {
                 
                 do {
                     let result = try JSONDecoder().decode(UserProfile.self, from: data)
-                    //print(result)
                     completion(.success(result))
                 } catch {
                     completion(.failure(error))
@@ -123,7 +122,6 @@ final class APICaller {
                 
                 do {
                     let result = try JSONDecoder().decode(LibraryPlaylistsResponse.self, from: data)
-                    //print(json)
                     completion(.success(result.items))
                 }
                 catch {
@@ -257,13 +255,13 @@ final class APICaller {
 
     public func searchSong(q: String, playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
         let artistName = q.components(separatedBy: "by").last?.trimmingCharacters(in: .whitespaces) ?? ""
-        print("Artist Name:", artistName)
+        //print("Artist Name:", artistName)
         
         let formattedQuery = q.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        print("Formatted Query:", formattedQuery)
+        //print("Formatted Query:", formattedQuery)
         
         let urlString = Constants.baseAPIURL + "/search?q=\(formattedQuery)&type=track&limit=50"
-        print("URL:", urlString)
+        //print("URL:", urlString)
         
         createRequest(with: URL(string: urlString), type: .GET) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
@@ -281,14 +279,14 @@ final class APICaller {
                         self.getArtistURI(artist: artistName) { result in
                             switch result {
                             case .success(let artistURI):
-                                print("Artist URI:", artistURI)
+                                //print("Artist URI:", artistURI)
                                 
                                 // Iterate through the track items and find the matching track URI for the artist
                                 if let matchingTrack = items.first(where: { track in
                                     if let artists = track["artists"] as? [[String: Any]] {
                                         for artist in artists {
                                             if let artistURIFromTrack = artist["uri"] as? String {
-                                                print("Comparing Artist URIs:", artistURIFromTrack)
+                                                //print("Comparing Artist URIs:", artistURIFromTrack)
                                                 if artistURIFromTrack == artistURI {
                                                     return true
                                                 }
