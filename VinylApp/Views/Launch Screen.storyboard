@@ -16,17 +16,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="background_gradient" translatesAutoresizingMaskIntoConstraints="NO" id="fNw-51-3XF">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="clean-background" translatesAutoresizingMaskIntoConstraints="NO" id="QZt-tX-bYy">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
                         </subviews>
-                        <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
+                        <viewLayoutGuide key="safeArea" id="Aph-33-cd0"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="fNw-51-3XF" secondAttribute="trailing" id="CGf-qw-I1H"/>
-                            <constraint firstItem="fNw-51-3XF" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="XOD-6d-zLW"/>
-                            <constraint firstItem="fNw-51-3XF" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="g7e-op-eE4"/>
-                            <constraint firstAttribute="bottom" secondItem="fNw-51-3XF" secondAttribute="bottom" id="wyF-1D-T5U"/>
+                            <constraint firstAttribute="bottom" secondItem="QZt-tX-bYy" secondAttribute="bottom" id="47C-HY-zEz"/>
+                            <constraint firstItem="QZt-tX-bYy" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="6hM-t7-jb5"/>
+                            <constraint firstItem="Aph-33-cd0" firstAttribute="trailing" secondItem="QZt-tX-bYy" secondAttribute="trailing" id="BJW-sC-64J"/>
+                            <constraint firstItem="QZt-tX-bYy" firstAttribute="leading" secondItem="Aph-33-cd0" secondAttribute="leading" id="FBg-nG-TdJ"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -36,6 +36,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="background_gradient" width="1080" height="1920"/>
+        <image name="clean-background" width="1284" height="2778"/>
     </resources>
 </document>

@@ -25,11 +25,12 @@
 		66547A2F2AE75ACA009CD777 /* PlaylistCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66547A2E2AE75ACA009CD777 /* PlaylistCollectionViewCell.swift */; };
 		6655DB212AE1FD8F00BC619F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6655DB202AE1FD8F00BC619F /* GoogleService-Info.plist */; };
 		6655DB242AE4557400BC619F /* SpotifyiOS in Frameworks */ = {isa = PBXBuildFile; productRef = 6655DB232AE4557400BC619F /* SpotifyiOS */; };
+		6668831B2B0E6E86005864D0 /* clean-background.png in Resources */ = {isa = PBXBuildFile; fileRef = 6668831A2B0E6E86005864D0 /* clean-background.png */; };
+		6668831D2B0E6E8B005864D0 /* clean-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6668831C2B0E6E8B005864D0 /* clean-logo.png */; };
 		6681E5AF2AE1FC4700A81DB5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6681E5AE2AE1FC4700A81DB5 /* AppDelegate.swift */; };
 		6681E5B12AE1FC4700A81DB5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6681E5B02AE1FC4700A81DB5 /* SceneDelegate.swift */; };
 		6681E5B32AE1FC4700A81DB5 /* UploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6681E5B22AE1FC4700A81DB5 /* UploadViewController.swift */; };
 		6681E5B82AE1FC4800A81DB5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6681E5B72AE1FC4800A81DB5 /* Assets.xcassets */; };
-		6681E5BB2AE1FC4800A81DB5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6681E5B92AE1FC4800A81DB5 /* LaunchScreen.storyboard */; };
 		66A0A0DA2AE63223002EE3B6 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A0A0D92AE63223002EE3B6 /* TabBarViewController.swift */; };
 		66A0A0DC2AE64AA1002EE3B6 /* APICaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A0A0DB2AE64AA1002EE3B6 /* APICaller.swift */; };
 		66A0A0DE2AE64B21002EE3B6 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A0A0DD2AE64B21002EE3B6 /* UserProfile.swift */; };
@@ -38,12 +39,18 @@
 		66A0A0E42AE65D4C002EE3B6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A0A0E32AE65D4C002EE3B6 /* SettingsViewController.swift */; };
 		66A0A0E62AE65EF4002EE3B6 /* SettingsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A0A0E52AE65EF4002EE3B6 /* SettingsModels.swift */; };
 		66B3B9682AE77F0D00129B1F /* PlayerControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B3B9672AE77F0D00129B1F /* PlayerControlsView.swift */; };
+		66B7A48F2B0DCD04004C81D5 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B7A48E2B0DCD04004C81D5 /* logo.png */; };
+		66B7A4932B0DCE2B004C81D5 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B7A4922B0DCE2B004C81D5 /* background.png */; };
+		66B7A4952B0DEE5A004C81D5 /* spotify_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B7A4942B0DEE5A004C81D5 /* spotify_image.png */; };
 		66DF3CCE2AE60D76003CB1E2 /* SpotifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CCD2AE60D76003CB1E2 /* SpotifyViewController.swift */; };
 		66DF3CD62AE61733003CB1E2 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CD52AE61733003CB1E2 /* AuthManager.swift */; };
 		66DF3CD82AE61B08003CB1E2 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */; };
 		66DF3CDA2AE61D7C003CB1E2 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CD92AE61D7C003CB1E2 /* Extensions.swift */; };
 		66DF3CDE2AE62C06003CB1E2 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CDD2AE62C06003CB1E2 /* AuthResponse.swift */; };
 		66DF3CE42AE630D7003CB1E2 /* LibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CE32AE630D7003CB1E2 /* LibraryViewController.swift */; };
+		66F70F972B0C9A42005062AD /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66F70F962B0C9A42005062AD /* Launch Screen.storyboard */; };
+		66F70FA62B0D1722005062AD /* Outfit-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66F70FA52B0D1722005062AD /* Outfit-Bold.ttf */; };
+		66F70FA82B0D1765005062AD /* ZillaSlab-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66F70FA72B0D1765005062AD /* ZillaSlab-Light.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,12 +73,13 @@
 		66547A2A2AE731A9009CD777 /* ActionLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionLabelView.swift; sourceTree = "<group>"; };
 		66547A2E2AE75ACA009CD777 /* PlaylistCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistCollectionViewCell.swift; sourceTree = "<group>"; };
 		6655DB202AE1FD8F00BC619F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		6668831A2B0E6E86005864D0 /* clean-background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clean-background.png"; path = "../../../../Documents/vinyl_images/clean-background.png"; sourceTree = "<group>"; };
+		6668831C2B0E6E8B005864D0 /* clean-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clean-logo.png"; path = "../../../../Documents/vinyl_images/clean-logo.png"; sourceTree = "<group>"; };
 		6681E5AB2AE1FC4700A81DB5 /* VinylApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VinylApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6681E5AE2AE1FC4700A81DB5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6681E5B02AE1FC4700A81DB5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		6681E5B22AE1FC4700A81DB5 /* UploadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadViewController.swift; sourceTree = "<group>"; };
 		6681E5B72AE1FC4800A81DB5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		6681E5BA2AE1FC4800A81DB5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6681E5BC2AE1FC4800A81DB5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		66A0A0D92AE63223002EE3B6 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
 		66A0A0DB2AE64AA1002EE3B6 /* APICaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICaller.swift; sourceTree = "<group>"; };
@@ -81,12 +89,18 @@
 		66A0A0E32AE65D4C002EE3B6 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		66A0A0E52AE65EF4002EE3B6 /* SettingsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModels.swift; sourceTree = "<group>"; };
 		66B3B9672AE77F0D00129B1F /* PlayerControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControlsView.swift; sourceTree = "<group>"; };
+		66B7A48E2B0DCD04004C81D5 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo.png; path = ../../../../Documents/vinyl_images/logo.png; sourceTree = "<group>"; };
+		66B7A4922B0DCE2B004C81D5 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = background.png; path = ../../../../Documents/vinyl_images/background.png; sourceTree = "<group>"; };
+		66B7A4942B0DEE5A004C81D5 /* spotify_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = spotify_image.png; path = ../../../../Documents/vinyl_images/spotify_image.png; sourceTree = "<group>"; };
 		66DF3CCD2AE60D76003CB1E2 /* SpotifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyViewController.swift; sourceTree = "<group>"; };
 		66DF3CD52AE61733003CB1E2 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		66DF3CD92AE61D7C003CB1E2 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		66DF3CDD2AE62C06003CB1E2 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
 		66DF3CE32AE630D7003CB1E2 /* LibraryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewController.swift; sourceTree = "<group>"; };
+		66F70F962B0C9A42005062AD /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		66F70FA52B0D1722005062AD /* Outfit-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Outfit-Bold.ttf"; path = "../../../../Documents/vinyl_images/Outfit/static/Outfit-Bold.ttf"; sourceTree = "<group>"; };
+		66F70FA72B0D1765005062AD /* ZillaSlab-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ZillaSlab-Light.ttf"; path = "../../../../Documents/vinyl_images/Zilla_Slab/ZillaSlab-Light.ttf"; sourceTree = "<group>"; };
 		EBF9BEE0C09F903E47E7DEF9 /* Pods_VinylApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VinylApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -196,6 +210,8 @@
 		66DF3CDC2AE62BD9003CB1E2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				66F70FA02B0D152D005062AD /* Fonts */,
+				66F70F982B0D103C005062AD /* Images */,
 				6655DB202AE1FD8F00BC619F /* GoogleService-Info.plist */,
 				6681E5AE2AE1FC4700A81DB5 /* AppDelegate.swift */,
 				6681E5B02AE1FC4700A81DB5 /* SceneDelegate.swift */,
@@ -219,14 +235,35 @@
 		66E444922AE675BE004D54EC /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				6681E5B92AE1FC4800A81DB5 /* LaunchScreen.storyboard */,
 				66547A1F2AE6FA88009CD777 /* TrackCollectionViewCell.swift */,
 				66547A242AE716F8009CD777 /* PlaylistHeaderCollectionReusableView.swift */,
 				66547A2A2AE731A9009CD777 /* ActionLabelView.swift */,
 				66547A2E2AE75ACA009CD777 /* PlaylistCollectionViewCell.swift */,
 				66B3B9672AE77F0D00129B1F /* PlayerControlsView.swift */,
+				66F70F962B0C9A42005062AD /* Launch Screen.storyboard */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		66F70F982B0D103C005062AD /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				66B7A4922B0DCE2B004C81D5 /* background.png */,
+				6668831A2B0E6E86005864D0 /* clean-background.png */,
+				66B7A48E2B0DCD04004C81D5 /* logo.png */,
+				6668831C2B0E6E8B005864D0 /* clean-logo.png */,
+				66B7A4942B0DEE5A004C81D5 /* spotify_image.png */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
+		66F70FA02B0D152D005062AD /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				66F70FA52B0D1722005062AD /* Outfit-Bold.ttf */,
+				66F70FA72B0D1765005062AD /* ZillaSlab-Light.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		868AF16C97027B470AB69AA3 /* Frameworks */ = {
@@ -313,7 +350,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6681E5BB2AE1FC4800A81DB5 /* LaunchScreen.storyboard in Resources */,
+				66F70FA82B0D1765005062AD /* ZillaSlab-Light.ttf in Resources */,
+				66F70F972B0C9A42005062AD /* Launch Screen.storyboard in Resources */,
+				66B7A4932B0DCE2B004C81D5 /* background.png in Resources */,
+				66B7A48F2B0DCD04004C81D5 /* logo.png in Resources */,
+				66B7A4952B0DEE5A004C81D5 /* spotify_image.png in Resources */,
+				66F70FA62B0D1722005062AD /* Outfit-Bold.ttf in Resources */,
+				6668831D2B0E6E8B005864D0 /* clean-logo.png in Resources */,
+				6668831B2B0E6E86005864D0 /* clean-background.png in Resources */,
 				6655DB212AE1FD8F00BC619F /* GoogleService-Info.plist in Resources */,
 				6681E5B82AE1FC4800A81DB5 /* Assets.xcassets in Resources */,
 			);
@@ -404,17 +448,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		6681E5B92AE1FC4800A81DB5 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				6681E5BA2AE1FC4800A81DB5 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		6681E5BD2AE1FC4800A81DB5 /* Debug */ = {
@@ -543,9 +576,10 @@
 				DEVELOPMENT_TEAM = 5SZLNT5DHA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VinylApp/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "$(PRODUCT_NAME) camera description.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please Allow Access to Upload Photos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -575,9 +609,10 @@
 				DEVELOPMENT_TEAM = 5SZLNT5DHA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VinylApp/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "$(PRODUCT_NAME) camera description.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please Allow Access to Upload Photos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
