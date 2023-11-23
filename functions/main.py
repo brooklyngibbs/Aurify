@@ -168,7 +168,7 @@ def generate_songs_by_genre(genre, subgenre, music):
     return songs_message
     
 def get_image_info(image_url):
-    json_prompt = "Analyze the image and output information as a json object with the following fields: 1. description - required. containins a description of what is in the image 2. playlistTitle - required. a playlist title that goes with the image description.  Example: \"Floating on air: A night with The Boss\" or \"Chilled vibes with a tech savy tabby\" 3. music - optional.  If the image contains information on a band, music artist, or song, output the band name, artist name, or song name in this field.   If there isn't anything, don't include this field. 4. genre - required. Output a music genre that best encapsulates the vibe of the image.  Choose one of Country, Electronic, Funk, Hip Hop, Jazz, Latin, Pop, Punk, Reggae, Rock, Metal, Soul, Classical. 5. subgenre - required.  Choose a more specific subgenre of the genre above that best represents the image. \n```json"
+    json_prompt = "Analyze the image and output information as a json object with the following fields: 1. description - required. containins a description of what is in the image 2. playlistTitle - required. a playlist title that goes with the image description.  Example: \"Floating on air: A night with The Boss\" or \"Chilled vibes with a tech savy tabby\" 3. music - optional.  If the image contains information on a band, music artist, or song, output the band name, artist name, or song name in this field. If there isn't anything, don't include this field. 4. genre - required. Output a music genre that best encapsulates the vibe of the image.  Choose one of Country, Electronic, Funk, Hip Hop, Jazz, Latin, Pop, Punk, Reggae, Rock, Metal, Soul, Classical. 5. subgenre - required.  Choose a more specific subgenre of the genre above that best represents the image. 6. songlist - required.  Select 20 songs that fit the genre and subgenre mentioned above.  The songs should not mention the name of the genre or subgenre.  These should be real songs from real artists that I can find on Spotify. If there was a band, music artist, or song in the image, include one to three songs from that  Format as JSON with two fields: title, artist."
     
     json_data = {
         "model": "gpt-4-vision-preview",
@@ -238,7 +238,6 @@ def make_scene_api_request(req: https_fn.Request) -> https_fn.Response:
             genre = json_data.get("genre")
             subgenre = json_data.get("subgenre")
             music = json_data.get("music")
-            song_message = generate_songs_by_genre(genre, subgenre, music)
             
             response_dict = {
                 "description": json_data.get("description"),
@@ -246,7 +245,7 @@ def make_scene_api_request(req: https_fn.Request) -> https_fn.Response:
                 "music": music,
                 "genre": genre,
                 "subgenre": subgenre,
-                "song_message": song_message
+                "songlist": json_data.get("songlist")
             }
             
             print("response_dict")
@@ -255,24 +254,6 @@ def make_scene_api_request(req: https_fn.Request) -> https_fn.Response:
             return https_fn.Response(json.dumps(response_dict))
         else:
             return https_fn.Response("Error: No image information obtained.")
-        
-        '''print("start")
-        description = generate_desc_from_img(image_url)
-        print(description)
-        print("description finished")
-        openai_message = make_playlist_name_api_request(description)
-        print("openai_message finished")
-        genre_message = generate_genre_by_mood(description)
-        print("genre_message finished")
-        song_message = generate_songs_by_genre(genre_message)
-        print("song_message finished")
-        response_json = {
-            "Description": description,
-            "OpenAI Message": openai_message,
-            "Genre Message": genre_message,
-            "Song Message": song_message
-        }
-        return https_fn.Response(json.dumps(response_json)) '''
         
     except KeyError as key_error:
         return https_fn.Response(f"KeyError occurred: {str(key_error)}")

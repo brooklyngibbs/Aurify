@@ -253,15 +253,12 @@ final class APICaller {
     }
 
 
-    public func searchSong(q: String, playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let artistName = q.components(separatedBy: "by").last?.trimmingCharacters(in: .whitespaces) ?? ""
-        //print("Artist Name:", artistName)
+    public func searchSong(q: SongInfo, playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let artistName = q.artist
         
-        let formattedQuery = q.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        //print("Formatted Query:", formattedQuery)
+        let formattedQuery = q.title.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         
         let urlString = Constants.baseAPIURL + "/search?q=\(formattedQuery)&type=track&limit=50"
-        //print("URL:", urlString)
         
         createRequest(with: URL(string: urlString), type: .GET) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
@@ -279,14 +276,11 @@ final class APICaller {
                         self.getArtistURI(artist: artistName) { result in
                             switch result {
                             case .success(let artistURI):
-                                //print("Artist URI:", artistURI)
-                                
                                 // Iterate through the track items and find the matching track URI for the artist
                                 if let matchingTrack = items.first(where: { track in
                                     if let artists = track["artists"] as? [[String: Any]] {
                                         for artist in artists {
                                             if let artistURIFromTrack = artist["uri"] as? String {
-                                                //print("Comparing Artist URIs:", artistURIFromTrack)
                                                 if artistURIFromTrack == artistURI {
                                                     return true
                                                 }

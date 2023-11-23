@@ -2,36 +2,41 @@ import UIKit
 import FirebaseStorage
 import Firebase
 
+struct SongInfo: Codable {
+    var title: String
+    var artist: String
+}
 
+struct ImageInfo: Codable {
+    var description: String
+    var playlistTitle: String
+    var music: String?
+    var genre: String
+    var subgenre: String
+    var songlist: [SongInfo]
+}
 
 class UploadViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-
+    
     //MARK: - Properties
     
     var imageView: UIImageView!
     var uploadButton: UIButton!
     var stackView: UIStackView!
-
+    
     private let storage = Storage.storage().reference()
-    var descriptionText: String = ""
-    var playlistNameText: String = ""
-    var genreText: String = ""
-    var musicOptional: String = ""
-    var songText: String = ""
-    var songList: [String] = []
-    var subgenreText: String = ""
     
     // MARK: - View Lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         view.backgroundColor = .white
         
-
+        
         let configuration = UIImage.SymbolConfiguration(pointSize: 80, weight: .medium)
         let plusImage = UIImage(systemName: "plus", withConfiguration: configuration)
-
+        
         imageView = UIImageView(image: plusImage)
         // Change the color of the plus sign
         imageView.tintColor = UIColor(red: 0xB8/255.0, green: 0xD0/255.0, blue: 0xEB/255.0, alpha: 1.0)
@@ -40,25 +45,25 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         imageView.layer.borderColor = UIColor(red: 0xB8/255.0, green: 0xD0/255.0, blue: 0xEB/255.0, alpha: 1.0).cgColor
         imageView.layer.cornerRadius = 10.0
         imageView.backgroundColor = .clear
-
+        
         uploadButton = UIButton()
         uploadButton.setTitle("Upload", for: .normal)
         uploadButton.backgroundColor = UIColor(red: 0xB8/255.0, green: 0xD0/255.0, blue: 0xEB/255.0, alpha: 1.0)
         uploadButton.layer.cornerRadius = 10.0
         uploadButton.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         uploadButton.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
-
+        
         let verticalStackView = UIStackView()
         verticalStackView.axis = .vertical
         verticalStackView.alignment = .center
         verticalStackView.spacing = 50
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         verticalStackView.addArrangedSubview(imageView)
         verticalStackView.addArrangedSubview(uploadButton)
-
+        
         view.addSubview(verticalStackView)
-
+        
         NSLayoutConstraint.activate([
             verticalStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -67,9 +72,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             imageView.heightAnchor.constraint(equalToConstant: 300)
         ])
     }
-
+    
     // MARK: - Button Action
-
+    
     @IBAction func didTapButton() {
         let picker = UIImagePickerController()
         picker.sourceType = .photoLibrary
@@ -79,17 +84,17 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     // MARK: - Firebase Function
-
+    
     func sendImageUrlToFirebaseFunction(url: String) {
         guard let functionURL = URL(string: "https://make-scene-api-request-36d3pxwmrq-uc.a.run.app") else {
             print("Invalid Firebase Function URL")
             return
         }
-
+        
         var request = URLRequest(url: functionURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         let requestData = ["image_url": url]
         if let jsonData = try? JSONSerialization.data(withJSONObject: requestData) {
             request.httpBody = jsonData
@@ -97,86 +102,38 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 if let error = error {
                     print("Error sending data to Firebase Function: \(error.localizedDescription)")
                 } else if let data = data {
+                    print(String(bytes: data, encoding: .utf8)!)
                     do {
-                        //print("Data = \(String(decoding: data, as: UTF8.self))")
-                        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                        if let json = try? JSONDecoder().decode(ImageInfo.self, from: data) {
                             print("Received JSON data:", json)
-                            if let description = json["description"] as? String {
-                                self.descriptionText = description
-                                print(self.descriptionText)
-                            }
-                            if let playlistTitle = json["playlistTitle"] as? String {
-                                self.playlistNameText = playlistTitle
-                                print(self.playlistNameText)
-                            }
-                            if let genreMessage = json["genre"] as? String {
-                                self.genreText = genreMessage
-                                print(self.genreText)
-                            }
-                            if let subgenreMessage = json["subgenre"] as? String {
-                                self.subgenreText = subgenreMessage
-                                print(self.subgenreText)
-                            }
-                            if let musicOptional = json["music"] as? String {
-                                self.musicOptional = musicOptional
-                                print(self.musicOptional)
-                            }
-                            if let songMessage = json["song_message"] as? String {
-                                self.songText = songMessage
-                                self.songList = songMessage.components(separatedBy: "\n").compactMap { line in
-                                    let cleanedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                            
+                            APICaller.shared.createPlaylist(with: json.playlistTitle, description: json.description) { [self] result in
+                                switch result {
+                                case .success(let playlist):
+                                    // Successfully created playlist
+                                    let playlistID = playlist.id
+                                    print("playlistID: \(playlistID)")
                                     
-                                    // Updated regex pattern to match "Song" by "Artist" format
-                                    let pattern = #"^\d+\. \"([^"]*)\" by (.*)$"#
-                                    
-                                    do {
-                                        let regex = try NSRegularExpression(pattern: pattern, options: [])
-                                        let range = NSRange(cleanedLine.startIndex..<cleanedLine.endIndex, in: cleanedLine)
-                                        if let match = regex.firstMatch(in: cleanedLine, options: [], range: range) {
-                                            let songRange = Range(match.range(at: 1), in: cleanedLine)!
-                                            let artistRange = Range(match.range(at: 2), in: cleanedLine)!
-
-                                            let song = cleanedLine[songRange]
-                                            let artist = cleanedLine[artistRange]
-                                            let fullSongName = "\(song) by \(artist)"
-
-                                            return fullSongName
+                                    convertImageURLToBase64(imageURLString: url) { base64String in
+                                        if let base64String = base64String {
+                                            APICaller.shared.updatePlaylistImage(imageBase64: base64String, playlistID: playlistID) { updateResult in
+                                                switch updateResult {
+                                                case .success:
+                                                    self.addTracksSequentially(to: playlistID, songlist: json.songlist)
+                                                    print("Successfully updated playlist image")
+                                                case .failure(let error):
+                                                    print("Failed to update playlist image:", error)
+                                                }
+                                            }
+                                        } else {
+                                            print("Failed to convert image URL to base64")
                                         }
-                                    } catch {
-                                        return nil
                                     }
-                                    return nil
+                                    //print("end")
+                                case .failure(let error):
+                                    print("Failed to create playlist:", error)
                                 }
                                 
-                                print(self.songList)
-
-                                APICaller.shared.createPlaylist(with: self.playlistNameText, description: self.descriptionText) { [self] result in
-                                    switch result {
-                                    case .success(let playlist):
-                                        // Successfully created playlist
-                                        let playlistID = playlist.id
-                                        print("playlistID: \(playlistID)")
-
-                                        convertImageURLToBase64(imageURLString: url) { base64String in
-                                            if let base64String = base64String {
-                                                APICaller.shared.updatePlaylistImage(imageBase64: base64String, playlistID: playlistID) { updateResult in
-                                                    switch updateResult {
-                                                    case .success:
-                                                        addTracksSequentially(to: playlistID, songs: songList)
-                                                        print("Successfully updated playlist image")
-                                                    case .failure(let error):
-                                                        print("Failed to update playlist image:", error)
-                                                    }
-                                                }
-                                            } else {
-                                                print("Failed to convert image URL to base64")
-                                            }
-                                        }
-                                        //print("end")
-                                    case .failure(let error):
-                                        print("Failed to create playlist:", error)
-                                    }
-                                }
                             }
                         } else {
                             print("Invalid JSON Format")
@@ -195,26 +152,24 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         }
     }
     
-    func addTracksSequentially(to playlistID: String, songs: [String], currentIndex: Int = 0) {
-        guard currentIndex < songs.count else {
+    func addTracksSequentially(to playlistID: String, songlist: [SongInfo], currentIndex: Int = 0) {
+        guard currentIndex < songlist.count else {
             // All songs added to the playlist
             print("All songs added to the playlist")
             return
         }
-
-        let currentSong = songs[currentIndex]
-        let formattedSong = currentSong.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        APICaller.shared.searchSong(q: formattedSong, playlist_id: playlistID) { result in
+        
+        let currentSong = songlist[currentIndex]
+        
+        APICaller.shared.searchSong(q: currentSong, playlist_id: playlistID) { result in
             switch result {
             case .success(let trackURI):
                 APICaller.shared.addTrackToPlaylist(trackURI: trackURI, playlist_id: playlistID) { addResult in
                     switch addResult {
                     case .success(let playlist):
                         print("Successfully added track \(currentIndex + 1) to playlist:", playlist)
-                        // Recursively call the function for the next song after a delay (or use a completion handler of addTrackToPlaylist)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            self.addTracksSequentially(to: playlistID, songs: songs, currentIndex: currentIndex + 1)
+                            self.addTracksSequentially(to: playlistID, songlist: songlist, currentIndex: currentIndex + 1)
                         }
                     case .failure(let error):
                         print("Failed to add track \(currentIndex + 1) to playlist:", error)
@@ -222,11 +177,11 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     }
                 }
             case .failure(let error):
-                print("Failed to get trackURI for song \(formattedSong):", error)
+                print("Failed to get trackURI for song", error)
                 // Handle the failure to get trackURI here
                 // Move to the next song after a delay
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    self.addTracksSequentially(to: playlistID, songs: songs, currentIndex: currentIndex + 1)
+                    self.addTracksSequentially(to: playlistID, songlist: songlist, currentIndex: currentIndex + 1)
                 }
             }
         }
@@ -258,23 +213,23 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             }
         }
     }
-
-
+    
+    
     func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
         let size = image.size
         let widthRatio = targetSize.width / size.width
         let heightRatio = targetSize.height / size.height
         let scale = min(widthRatio, heightRatio)
         let newSize = CGSize(width: size.width * scale, height: size.height * scale)
-
+        
         UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
         image.draw(in: CGRect(origin: .zero, size: newSize))
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-
+        
         return newImage
     }
-
+    
     func uploadImageToFirebase(imageData: Data, originalImage: UIImage, completion: @escaping (String?) -> Void) {
         let timestamp = Int(Date().timeIntervalSince1970)
         let uniqueFileName = "\(timestamp)_\(UUID().uuidString)"
@@ -290,7 +245,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 completion(nil)
                 return
             }
-
+            
             // Get the modified filename from the metadata
             storageRef.downloadURL { (url, error) in
                 guard let downloadURL = url?.absoluteString else {
@@ -309,9 +264,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             }
         }
     }
-
-
-
+    
+    
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
     }
@@ -334,7 +289,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         task.resume()
     }
-
-
-
+    
+    
+    
 }
