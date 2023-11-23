@@ -42,6 +42,9 @@
 		66B7A48F2B0DCD04004C81D5 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B7A48E2B0DCD04004C81D5 /* logo.png */; };
 		66B7A4932B0DCE2B004C81D5 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B7A4922B0DCE2B004C81D5 /* background.png */; };
 		66B7A4952B0DEE5A004C81D5 /* spotify_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B7A4942B0DEE5A004C81D5 /* spotify_image.png */; };
+		66DC737A2B0FE93A007ECCB5 /* LabelTexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */; };
+		66DC737C2B0FEC0A007ECCB5 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */; };
+		66DC737E2B100E0E007ECCB5 /* PlaylistHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DC737D2B100E0E007ECCB5 /* PlaylistHeaderView.swift */; };
 		66DF3CCE2AE60D76003CB1E2 /* SpotifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CCD2AE60D76003CB1E2 /* SpotifyViewController.swift */; };
 		66DF3CD62AE61733003CB1E2 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CD52AE61733003CB1E2 /* AuthManager.swift */; };
 		66DF3CD82AE61B08003CB1E2 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */; };
@@ -92,6 +95,9 @@
 		66B7A48E2B0DCD04004C81D5 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo.png; path = ../../../../Documents/vinyl_images/logo.png; sourceTree = "<group>"; };
 		66B7A4922B0DCE2B004C81D5 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = background.png; path = ../../../../Documents/vinyl_images/background.png; sourceTree = "<group>"; };
 		66B7A4942B0DEE5A004C81D5 /* spotify_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = spotify_image.png; path = ../../../../Documents/vinyl_images/spotify_image.png; sourceTree = "<group>"; };
+		66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelTexts.swift; sourceTree = "<group>"; };
+		66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
+		66DC737D2B100E0E007ECCB5 /* PlaylistHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistHeaderView.swift; sourceTree = "<group>"; };
 		66DF3CCD2AE60D76003CB1E2 /* SpotifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyViewController.swift; sourceTree = "<group>"; };
 		66DF3CD52AE61733003CB1E2 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
@@ -217,6 +223,8 @@
 				6681E5B02AE1FC4700A81DB5 /* SceneDelegate.swift */,
 				66DF3CD92AE61D7C003CB1E2 /* Extensions.swift */,
 				6681E5B72AE1FC4800A81DB5 /* Assets.xcassets */,
+				66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */,
+				66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -241,6 +249,7 @@
 				66547A2E2AE75ACA009CD777 /* PlaylistCollectionViewCell.swift */,
 				66B3B9672AE77F0D00129B1F /* PlayerControlsView.swift */,
 				66F70F962B0C9A42005062AD /* Launch Screen.storyboard */,
+				66DC737D2B100E0E007ECCB5 /* PlaylistHeaderView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -414,6 +423,7 @@
 			files = (
 				66B3B9682AE77F0D00129B1F /* PlayerControlsView.swift in Sources */,
 				66DF3CD62AE61733003CB1E2 /* AuthManager.swift in Sources */,
+				66DC737A2B0FE93A007ECCB5 /* LabelTexts.swift in Sources */,
 				66547A292AE72ED1009CD777 /* LibraryPlaylistsResponse.swift in Sources */,
 				66DF3CE42AE630D7003CB1E2 /* LibraryViewController.swift in Sources */,
 				6681E5B32AE1FC4700A81DB5 /* UploadViewController.swift in Sources */,
@@ -424,6 +434,7 @@
 				66547A122AE6DF74009CD777 /* Album.swift in Sources */,
 				66547A2B2AE731A9009CD777 /* ActionLabelView.swift in Sources */,
 				66547A1E2AE6F2C7009CD777 /* PlaylistDetailsResponse.swift in Sources */,
+				66DC737C2B0FEC0A007ECCB5 /* AppColors.swift in Sources */,
 				66547A252AE716F8009CD777 /* PlaylistHeaderCollectionReusableView.swift in Sources */,
 				66547A272AE71C63009CD777 /* PlaylistHeaderViewViewModel.swift in Sources */,
 				66A0A0E22AE65483002EE3B6 /* HomeViewController.swift in Sources */,
@@ -443,6 +454,7 @@
 				66547A1A2AE6EB43009CD777 /* PlaylistViewController.swift in Sources */,
 				66A0A0E62AE65EF4002EE3B6 /* SettingsModels.swift in Sources */,
 				66547A162AE6E271009CD777 /* Artist.swift in Sources */,
+				66DC737E2B100E0E007ECCB5 /* PlaylistHeaderView.swift in Sources */,
 				66A0A0DE2AE64B21002EE3B6 /* UserProfile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

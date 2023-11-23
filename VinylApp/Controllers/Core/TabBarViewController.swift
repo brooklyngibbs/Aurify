@@ -24,7 +24,7 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
         
         self.viewControllers = [nav1, nav2, nav3]
         
-        tabBar.layer.shadowColor = UIColor(red: 11/255, green: 0, blue: 20/255, alpha: 1).cgColor
+        tabBar.layer.shadowColor = AppColors.vampireBlack.cgColor
         tabBar.layer.shadowOpacity = 0.5
         tabBar.layer.shadowOffset = CGSize.zero
         tabBar.layer.shadowRadius = 5
@@ -42,7 +42,7 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
 
         let uploadButton = UIButton(type: .custom)
         uploadButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        uploadButton.backgroundColor = UIColor(red: 11/255, green: 0, blue: 20/255, alpha: 1) // button color #0B0014
+        uploadButton.backgroundColor = AppColors.vampireBlack
         uploadButton.tintColor = .white // plus symbol color
         uploadButton.layer.cornerRadius = 30
         uploadButton.layer.shadowColor = UIColor.black.cgColor
@@ -78,7 +78,7 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
             uploadVC.selectedImage = selectedImage
             
             if let navController = selectedViewController as? UINavigationController {
-                navController.pushViewController(uploadVC, animated: true)
+                navController.pushViewController(uploadVC, animated: false)
             }
         }
     }

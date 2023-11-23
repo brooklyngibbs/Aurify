@@ -19,12 +19,17 @@ struct ImageInfo: Codable {
 class UploadViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     //MARK: - Properties
-
+    
     var stackView: UIStackView!
     
     var selectedImage: UIImage?
-    var imageView: UIImageView!
     var loadingView: UIActivityIndicatorView!
+    var generatingLabel: UILabel!
+    
+    var labelTexts: [String] = LabelTexts.labelTexts
+    
+    private var labelTimer: Timer?
+    private var labelIndex = 0
     
     private let storage = Storage.storage().reference()
     
@@ -37,31 +42,16 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         self.navigationItem.hidesBackButton = true
         
-        imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(imageView)
-        
-        // Set constraints for the image view
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100) // Adjust as needed
-        ])
-        
         loadingView = UIActivityIndicatorView(style: .large)
-                loadingView.color = .gray
-                loadingView.translatesAutoresizingMaskIntoConstraints = false
-                view.addSubview(loadingView)
-                
-                NSLayoutConstraint.activate([
-                    // Constraints for the loading indicator (centered in the view)
-                    loadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                    loadingView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-                ])
+        loadingView.color = AppColors.vampireBlack
+        loadingView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loadingView)
         
-        let configuration = UIImage.SymbolConfiguration(pointSize: 80, weight: .medium)
+        NSLayoutConstraint.activate([
+            // Constraints for the loading indicator (centered in the view)
+            loadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
         
         if let image = selectedImage {
             // Display the selected image
@@ -70,8 +60,28 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             // Upload the selected image to Firebase
             uploadSelectedImageToFirebase(image: image)
         }
+        
+        generatingLabel = UILabel()
+        generatingLabel.text = "Generating your picture playlist..."
+        generatingLabel.textAlignment = .center
+        generatingLabel.numberOfLines = 0
+        generatingLabel.translatesAutoresizingMaskIntoConstraints = false
+        generatingLabel.font = UIFont(name: "ZillaSlab-Light", size: 17)
+        generatingLabel.textColor = AppColors.vampireBlack
+        
+        generatingLabel.preferredMaxLayoutWidth = 400
+        
+        view.addSubview(generatingLabel)
+        
+        NSLayoutConstraint.activate([
+            generatingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            generatingLabel.topAnchor.constraint(equalTo: loadingView.bottomAnchor, constant: 20)
+        ])
+        
+        // Start the timer to update the label text periodically
+        startLabelTimer()
     }
-
+    
     // MARK: - Firebase Function
     
     func sendImageUrlToFirebaseFunction(url: String) {
@@ -177,15 +187,16 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         }
     }
     
+    //resize image, call func to put in storage, call func to get playlist
     func uploadSelectedImageToFirebase(image: UIImage) {
         if let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 300, height: 300)),
            let imageData = resizedImage.jpegData(compressionQuality: 1) {
-            uploadImageToFirebase(imageData: imageData, originalImage: image) { imageUrl in
+            uploadImageToStorage(imageData: imageData, originalImage: image) { imageUrl in
                 guard let imageUrl = imageUrl else {
                     print("Error: Unable to get image URL")
                     return
                 }
-
+                
                 self.sendImageUrlToFirebaseFunction(url: imageUrl)
             }
         }
@@ -206,7 +217,8 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         return newImage
     }
     
-    func uploadImageToFirebase(imageData: Data, originalImage: UIImage, completion: @escaping (String?) -> Void) {
+    //puts image in storage
+    func uploadImageToStorage(imageData: Data, originalImage: UIImage, completion: @escaping (String?) -> Void) {
         let timestamp = Int(Date().timeIntervalSince1970)
         let uniqueFileName = "\(timestamp)_\(UUID().uuidString)"
         
@@ -221,7 +233,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 completion(nil)
                 return
             }
-
+            
             storageRef.downloadURL { (url, error) in
                 guard let downloadURL = url?.absoluteString else {
                     print("Error getting download URL:", error?.localizedDescription ?? "")
@@ -258,7 +270,8 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         // Hide loading indicator
         loadingView.stopAnimating()
         loadingView.isHidden = true
-    
+        stopLabelTimer()
+        
         APICaller.shared.getPlaylist(with: playlist_id) { [weak self] result in
             guard let self = self else { return }
             
@@ -266,7 +279,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             case .success(let playlist):
                 DispatchQueue.main.async {
                     let playlistVC = PlaylistViewController(playlist: playlist)
-                    self.navigationController?.pushViewController(playlistVC, animated: true)
+                    self.navigationController?.pushViewController(playlistVC, animated: false)
                     self.uploadComplete()
                 }
                 
@@ -280,6 +293,22 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         selectedImage = nil
         self.dismiss(animated: true, completion: nil)
     }
-
+    
+    @objc func updateGeneratingLabelText() {
+        let randomIndex = Int(arc4random_uniform(UInt32(labelTexts.count)))
+        generatingLabel.text = labelTexts[randomIndex]
+    }
+    
+    // Function to start the timer
+    func startLabelTimer() {
+        labelTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(updateGeneratingLabelText), userInfo: nil, repeats: true)
+    }
+    
+    // Function to stop the timer
+    func stopLabelTimer() {
+        labelTimer?.invalidate()
+        labelTimer = nil
+    }
+    
     
 }

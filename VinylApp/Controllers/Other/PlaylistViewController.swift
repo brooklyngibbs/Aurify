@@ -89,7 +89,6 @@ class PlaylistViewController: UIViewController {
     }
 
     private func configureUI() {
-        title = playlist.name
         view.backgroundColor = .systemBackground
         navigationItem.largeTitleDisplayMode = .never
         
@@ -98,6 +97,8 @@ class PlaylistViewController: UIViewController {
             target: self,
             action: #selector(didTapShare)
         )
+        
+        navigationItem.rightBarButtonItem?.tintColor = AppColors.vampireBlack
     }
 
     private func fetchPlaylistDetails() {

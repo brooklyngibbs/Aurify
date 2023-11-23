@@ -13,7 +13,7 @@ class HomeViewController: UIViewController {
         // Create a custom label for "Soundtrak"
         let titleLabel = UILabel()
         titleLabel.text = "Soundtrak"
-        titleLabel.textColor = UIColor(red: 11/255, green: 0, blue: 20/255, alpha: 1)
+        titleLabel.textColor = AppColors.vampireBlack
         if let customFont = UIFont(name: "Outfit-Bold", size: 24) {
             titleLabel.font = customFont
         } else {
@@ -29,7 +29,7 @@ class HomeViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         // Change the color of the gear image
-        let gearImage = UIImage(systemName: "gear")?.withTintColor(UIColor(red: 11/255, green: 0, blue: 20/255, alpha: 1), renderingMode: .alwaysOriginal)
+        let gearImage = UIImage(systemName: "gear")?.withTintColor(AppColors.vampireBlack, renderingMode: .alwaysOriginal)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: gearImage,
                                                            style: .done,
