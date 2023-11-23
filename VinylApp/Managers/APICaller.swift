@@ -312,6 +312,31 @@ final class APICaller {
             task.resume()
         }
     }
+    
+    public func getPlaylist(with playlist_id: String, completion: @escaping (Result<Playlist, Error>) -> Void) {
+        let urlString = Constants.baseAPIURL + "/playlists/\(playlist_id)"
+        guard let url = URL(string: urlString) else {
+            completion(.failure(APIError.failedToGetData))
+            return
+        }
+
+        createRequest(with: url, type: .GET) { request in
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(.failure(error ?? APIError.failedToGetData))
+                    return
+                }
+                do {
+                    let result = try JSONDecoder().decode(Playlist.self, from: data)
+                    completion(.success(result))
+                } catch {
+                    print("Error decoding Playlist:", error)
+                    completion(.failure(error))
+                }
+            }
+            task.resume()
+        }
+    }
 
 
     public func createPlaylist(with name: String, description: String, completion: @escaping (Result<Playlist, Error>) -> Void) {

@@ -19,10 +19,12 @@ struct ImageInfo: Codable {
 class UploadViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     //MARK: - Properties
-    
-    var imageView: UIImageView!
-    var uploadButton: UIButton!
+
     var stackView: UIStackView!
+    
+    var selectedImage: UIImage?
+    var imageView: UIImageView!
+    var loadingView: UIActivityIndicatorView!
     
     private let storage = Storage.storage().reference()
     
@@ -33,56 +35,43 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         view.backgroundColor = .white
         
+        self.navigationItem.hidesBackButton = true
+        
+        imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageView)
+        
+        // Set constraints for the image view
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100) // Adjust as needed
+        ])
+        
+        loadingView = UIActivityIndicatorView(style: .large)
+                loadingView.color = .gray
+                loadingView.translatesAutoresizingMaskIntoConstraints = false
+                view.addSubview(loadingView)
+                
+                NSLayoutConstraint.activate([
+                    // Constraints for the loading indicator (centered in the view)
+                    loadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                    loadingView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+                ])
         
         let configuration = UIImage.SymbolConfiguration(pointSize: 80, weight: .medium)
-        let plusImage = UIImage(systemName: "plus", withConfiguration: configuration)
         
-        imageView = UIImageView(image: plusImage)
-        // Change the color of the plus sign
-        imageView.tintColor = UIColor(red: 0xB8/255.0, green: 0xD0/255.0, blue: 0xEB/255.0, alpha: 1.0)
-        imageView.contentMode = .center
-        imageView.layer.borderWidth = 2.0
-        imageView.layer.borderColor = UIColor(red: 0xB8/255.0, green: 0xD0/255.0, blue: 0xEB/255.0, alpha: 1.0).cgColor
-        imageView.layer.cornerRadius = 10.0
-        imageView.backgroundColor = .clear
-        
-        uploadButton = UIButton()
-        uploadButton.setTitle("Upload", for: .normal)
-        uploadButton.backgroundColor = UIColor(red: 0xB8/255.0, green: 0xD0/255.0, blue: 0xEB/255.0, alpha: 1.0)
-        uploadButton.layer.cornerRadius = 10.0
-        uploadButton.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
-        uploadButton.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
-        
-        let verticalStackView = UIStackView()
-        verticalStackView.axis = .vertical
-        verticalStackView.alignment = .center
-        verticalStackView.spacing = 50
-        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        verticalStackView.addArrangedSubview(imageView)
-        verticalStackView.addArrangedSubview(uploadButton)
-        
-        view.addSubview(verticalStackView)
-        
-        NSLayoutConstraint.activate([
-            verticalStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            uploadButton.widthAnchor.constraint(equalToConstant: 100),
-            imageView.widthAnchor.constraint(equalToConstant: 300),
-            imageView.heightAnchor.constraint(equalToConstant: 300)
-        ])
+        if let image = selectedImage {
+            // Display the selected image
+            loadingView.startAnimating()
+            
+            // Upload the selected image to Firebase
+            uploadSelectedImageToFirebase(image: image)
+        }
     }
-    
-    // MARK: - Button Action
-    
-    @IBAction func didTapButton() {
-        let picker = UIImagePickerController()
-        picker.sourceType = .photoLibrary
-        picker.delegate = self
-        picker.allowsEditing = true
-        present(picker, animated: true)
-    }
-    
+
     // MARK: - Firebase Function
     
     func sendImageUrlToFirebaseFunction(url: String) {
@@ -156,6 +145,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         guard currentIndex < songlist.count else {
             // All songs added to the playlist
             print("All songs added to the playlist")
+            updateUI(playlist_id: playlistID)
             return
         }
         
@@ -187,33 +177,19 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         }
     }
     
-    // MARK: - Image Picker Delegate
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        picker.dismiss(animated: true, completion: nil)
-        if let image = info[.editedImage] as? UIImage {
-            if let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 300, height: 300)),
-               let imageData = resizedImage.jpegData(compressionQuality: 1) {
-                uploadImageToFirebase(imageData: imageData, originalImage: image) { imageUrl in
-                    guard let imageUrl = imageUrl else {
-                        print("Error: Unable to get image URL")
-                        return
-                    }
-                    
-                    // URL is available, proceed with further steps
-                    self.sendImageUrlToFirebaseFunction(url: imageUrl)
-                    DispatchQueue.main.async {
-                        self.imageView.image = resizedImage
-                        self.imageView.contentMode = .scaleAspectFill
-                        self.imageView.clipsToBounds = true
-                        self.imageView.layer.cornerRadius = 10.0
-                        self.uploadButton.backgroundColor = .gray
-                        
-                    }
+    func uploadSelectedImageToFirebase(image: UIImage) {
+        if let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 300, height: 300)),
+           let imageData = resizedImage.jpegData(compressionQuality: 1) {
+            uploadImageToFirebase(imageData: imageData, originalImage: image) { imageUrl in
+                guard let imageUrl = imageUrl else {
+                    print("Error: Unable to get image URL")
+                    return
                 }
+
+                self.sendImageUrlToFirebaseFunction(url: imageUrl)
             }
         }
     }
-    
     
     func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
         let size = image.size
@@ -245,8 +221,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 completion(nil)
                 return
             }
-            
-            // Get the modified filename from the metadata
+
             storageRef.downloadURL { (url, error) in
                 guard let downloadURL = url?.absoluteString else {
                     print("Error getting download URL:", error?.localizedDescription ?? "")
@@ -255,20 +230,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 }
                 
                 print("Download URL:", downloadURL)
-                DispatchQueue.main.async {
-                    self.imageView.image = originalImage
-                }
-                
-                // Pass the URL to the completion handler
                 completion(downloadURL)
             }
         }
-    }
-    
-    
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true, completion: nil)
     }
     
     func convertImageURLToBase64(imageURLString: String, completion: @escaping (String?) -> Void) {
@@ -290,6 +254,32 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         task.resume()
     }
     
+    func updateUI(playlist_id: String) {
+        // Hide loading indicator
+        loadingView.stopAnimating()
+        loadingView.isHidden = true
     
+        APICaller.shared.getPlaylist(with: playlist_id) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let playlist):
+                DispatchQueue.main.async {
+                    let playlistVC = PlaylistViewController(playlist: playlist)
+                    self.navigationController?.pushViewController(playlistVC, animated: true)
+                    self.uploadComplete()
+                }
+                
+            case .failure(let error):
+                print("Failed to fetch playlist:", error)
+            }
+        }
+    }
+    
+    func uploadComplete() {
+        selectedImage = nil
+        self.dismiss(animated: true, completion: nil)
+    }
+
     
 }

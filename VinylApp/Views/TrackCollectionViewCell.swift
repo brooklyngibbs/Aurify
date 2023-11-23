@@ -43,6 +43,7 @@ class TrackCollectionViewCell: UICollectionViewCell {
         
         trackNameLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(trackNameLabel)
+        setupConstraints()
         
         NSLayoutConstraint.activate([
             trackNameLabel.leadingAnchor.constraint(equalTo: albumCoverImageView.trailingAnchor, constant: 10),
@@ -66,6 +67,42 @@ class TrackCollectionViewCell: UICollectionViewCell {
 
         artistNameLabel.lineBreakMode = .byTruncatingTail
     }
+    
+    private func setupConstraints() {
+        contentView.addSubview(albumCoverImageView)
+        contentView.addSubview(trackNameLabel)
+        contentView.addSubview(artistNameLabel)
+
+        // Set up constraints for albumCoverImageView
+        albumCoverImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            albumCoverImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
+            albumCoverImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 2),
+            albumCoverImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2),
+            albumCoverImageView.widthAnchor.constraint(equalTo: albumCoverImageView.heightAnchor)
+        ])
+
+        // Set up constraints for trackNameLabel
+        trackNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            trackNameLabel.leadingAnchor.constraint(equalTo: albumCoverImageView.trailingAnchor, constant: 10),
+            trackNameLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
+            trackNameLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -10),
+            trackNameLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.5)
+        ])
+        trackNameLabel.lineBreakMode = .byTruncatingTail
+
+        // Set up constraints for artistNameLabel
+        artistNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            artistNameLabel.leadingAnchor.constraint(equalTo: albumCoverImageView.trailingAnchor, constant: 10),
+            artistNameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            artistNameLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -10),
+            artistNameLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.5)
+        ])
+        artistNameLabel.lineBreakMode = .byTruncatingTail
+    }
+
     
     required init?(coder: NSCoder) {
         fatalError()

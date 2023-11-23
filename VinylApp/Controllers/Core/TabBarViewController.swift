@@ -1,4 +1,5 @@
-class TabBarViewController: UITabBarController {
+
+class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -62,7 +63,29 @@ class TabBarViewController: UITabBarController {
     }
 
     @objc func uploadButtonTapped() {
-        selectedIndex = 1
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = .photoLibrary
+        imagePickerController.allowsEditing = true // Enable image editing
+        present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        
+        if let selectedImage = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
+            let uploadVC = UploadViewController()
+            uploadVC.selectedImage = selectedImage
+            
+            if let navController = selectedViewController as? UINavigationController {
+                navController.pushViewController(uploadVC, animated: true)
+            }
+        }
+    }
+
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
     }
 }
 
