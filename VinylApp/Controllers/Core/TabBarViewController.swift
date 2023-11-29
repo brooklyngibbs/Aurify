@@ -1,19 +1,17 @@
+import SwiftUI
 
 class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tabBar.tintColor = UIColor(red: 67/255, green: 128/255, blue: 159/255, alpha: 1.0)
+        tabBar.tintColor = AppColors.jellybeanBlue
 
-        let vc1 = HomeViewController()
+        let vc1 = UIHostingController(rootView: HomeView())
         let vc2 = UploadViewController()
-        let vc3 = LibraryViewController()
+        let vc3 = UIHostingController(rootView: LibraryView())
 
-        vc3.title = "Library"
-
-        vc1.navigationItem.largeTitleDisplayMode = .always
-        vc2.navigationItem.largeTitleDisplayMode = .always
-        vc3.navigationItem.largeTitleDisplayMode = .always
+        vc1.navigationItem.titleView = UIView()
+        vc3.navigationItem.titleView = UIView()
 
         let nav1 = UINavigationController(rootViewController: vc1)
         let nav2 = UINavigationController(rootViewController: vc2)
@@ -88,4 +86,18 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
         picker.dismiss(animated: true, completion: nil)
     }
 }
+
+struct CustomTitleView: View {
+    var body: some View {
+        HStack {
+            Text("Soundtrak")
+                .font(.custom("Outfit-Bold", size: 24))
+                .foregroundColor(Color(AppColors.vampireBlack))
+                .padding(.leading, 16)
+                .padding(.top, -35)
+            Spacer()
+        }
+    }
+}
+
 

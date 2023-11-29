@@ -37,7 +37,6 @@ class TrackCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         contentView.backgroundColor = .secondarySystemBackground
         contentView.addSubview(albumCoverImageView)
-        //contentView.addSubview(trackNameLabel)
         //contentView.addSubview(artistNameLabel)
         contentView.clipsToBounds = true
         

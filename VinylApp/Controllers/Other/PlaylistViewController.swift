@@ -10,8 +10,17 @@ import UIKit
 class PlaylistViewController: UIViewController {
     
     private let playlist: Playlist
-    
     private var collectionView: UICollectionView?
+    private var backgroundImageView: UIImageView?
+    private let containerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.borderWidth = 1.0
+        view.layer.borderColor = UIColor.lightGray.cgColor
+        view.layer.cornerRadius = 10
+        view.clipsToBounds = true
+        return view
+    }()
     
     init(playlist: Playlist) {
         self.playlist = playlist
@@ -32,42 +41,42 @@ class PlaylistViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.hidesBackButton = true
-        
         configureUI()
         fetchPlaylistDetails()
-        
-        DispatchQueue.main.async {
-            self.setupCollectionView()
-        }
     }
     
+    private func setupContainerView() {
+        let widthMargin: CGFloat = 20
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(containerView)
+
+        NSLayoutConstraint.activate([
+            containerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: widthMargin),
+            containerView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -widthMargin),
+            containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
+            containerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50)
+        ])
+
+        setupCollectionView()
+    }
+
+
     private func setupCollectionView() {
-        let layout = UICollectionViewCompositionalLayout { (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
-            // Your existing sectionProvider logic...
-            let item = NSCollectionLayoutItem(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .fractionalHeight(1.0)
-                )
-            )
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                  heightDimension: .fractionalHeight(1.0))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
             item.contentInsets = NSDirectionalEdgeInsets(top: 1, leading: 2, bottom: 1, trailing: 2)
 
-            let group = NSCollectionLayoutGroup.vertical(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(60)
-                ),
-                subitem: item,
-                count: 1
-            )
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
+                                                   heightDimension: .absolute(60))
+            let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitem: item, count: 1)
 
             let section = NSCollectionLayoutSection(group: group)
             section.boundarySupplementaryItems = [
                 NSCollectionLayoutBoundarySupplementaryItem(
-                    layoutSize: NSCollectionLayoutSize(
-                        widthDimension: .fractionalWidth(1),
-                        heightDimension: .fractionalWidth(1)
-                    ),
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
+                                                      heightDimension: .fractionalWidth(1)),
                     elementKind: UICollectionView.elementKindSectionHeader,
                     alignment: .top
                 )
@@ -75,18 +84,28 @@ class PlaylistViewController: UIViewController {
             return section
         }
 
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
-        guard let collectionView = collectionView else { return }
-
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(TrackCollectionViewCell.self, forCellWithReuseIdentifier: "TrackCollectionViewCell")
-        collectionView.register(PlaylistHeaderCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: PlaylistHeaderCollectionReusableView.identifier)
+        collectionView.register(PlaylistHeaderCollectionReusableView.self,
+                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                                withReuseIdentifier: PlaylistHeaderCollectionReusableView.identifier)
+        containerView.addSubview(collectionView)
 
         collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
         collectionView.dataSource = self
 
-        view.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor) // Adjust this constraint
+        ])
+
+        self.collectionView = collectionView
     }
+
 
     private func configureUI() {
         view.backgroundColor = .systemBackground
@@ -118,6 +137,10 @@ class PlaylistViewController: UIViewController {
                     if let collectionView = self?.collectionView {
                         collectionView.reloadData()
                     }
+
+                    // Call setupContainerView after setting the playlist image
+                    self?.setupContainerView()
+
                 case .failure(let error):
                     print(error.localizedDescription)
                 }

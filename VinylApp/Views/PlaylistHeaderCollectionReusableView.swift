@@ -17,26 +17,9 @@ final class PlaylistHeaderCollectionReusableView: UICollectionReusableView {
         return label
     }()
     
-    private let descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .regular)
-        label.numberOfLines = 0
-        label.lineBreakMode = .byTruncatingTail 
-        label.textColor = .secondaryLabel
-        return label
-    }()
-    
-    private let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.image = UIImage(systemName: "photo")
-        return imageView
-    }()
-    
     private let playAllButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .systemGreen
+        button.backgroundColor = AppColors.moonstoneBlue
         let image = UIImage(systemName: "play.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30, weight: .regular))
         button.setImage(image, for: .normal)
         button.tintColor = .white
@@ -45,24 +28,17 @@ final class PlaylistHeaderCollectionReusableView: UICollectionReusableView {
         return button
     }()
     
-    private var descriptionWidthConstraint: NSLayoutConstraint? // Declare a variable to hold the width constraint
-    
     //MARK: - INIT
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .systemBackground
-        addSubview(imageView)
         addSubview(nameLabel)
-        addSubview(descriptionLabel)
         addSubview(playAllButton)
+        
+        nameLabel.numberOfLines = 0
+        nameLabel.lineBreakMode = .byWordWrapping
+        
         playAllButton.addTarget(self, action: #selector(didTapPlayAll), for: .touchUpInside)
-        
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.rightAnchor.constraint(equalTo: playAllButton.leftAnchor, constant: -20).isActive = true
-        
-        // Set up the width constraint for the description label
-        descriptionWidthConstraint = descriptionLabel.widthAnchor.constraint(equalToConstant: 0)
-        descriptionWidthConstraint?.isActive = true
     }
     
     required init?(coder: NSCoder) {
@@ -75,23 +51,21 @@ final class PlaylistHeaderCollectionReusableView: UICollectionReusableView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
-        let imageSize: CGFloat = height / 1.8
-        imageView.frame = CGRect(x: (width - imageSize) / 2, y: 20, width: imageSize, height: imageSize)
 
-        nameLabel.frame = CGRect(x: 10, y: imageView.bottom + 10, width: width - 20, height: 44)
+        nameLabel.frame = CGRect(x: 10, y: 20, width: width - 20, height: 44)
+        nameLabel.numberOfLines = 0
+        nameLabel.lineBreakMode = .byWordWrapping
+        nameLabel.sizeToFit()
         
-        // Adjust the width constraint for the description label based on the available width
-        descriptionWidthConstraint?.constant = width - 20 - (playAllButton.frame.width + 10)
-        descriptionLabel.frame = CGRect(x: 10, y: nameLabel.bottom + 5, width: descriptionWidthConstraint?.constant ?? 0, height: 44)
-
-        playAllButton.frame = CGRect(x: width - 80, y: height - 80, width: 60, height: 60)
+        let nameLabelHeight = nameLabel.systemLayoutSizeFitting(CGSize(width: width - 20, height: .greatestFiniteMagnitude)).height
+        nameLabel.frame = CGRect(x: 10, y: 20, width: width - 20, height: nameLabelHeight)
+        
+        playAllButton.frame = CGRect(x: width - 70, y: 30, width: 60, height: 60)
     }
     
     func configure(with viewModel: PlaylistHeaderViewViewModel) {
         nameLabel.text = viewModel.name
-        descriptionLabel.text = viewModel.description
-        imageView.sd_setImage(with: viewModel.artworkURL, completed: nil)
+        //imageView.sd_setImage(with: viewModel.artworkURL, completed: nil)
     }
         
 }

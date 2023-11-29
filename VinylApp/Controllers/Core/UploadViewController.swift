@@ -1,4 +1,5 @@
 import UIKit
+import SwiftUI
 import FirebaseStorage
 import Firebase
 
@@ -189,7 +190,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     //resize image, call func to put in storage, call func to get playlist
     func uploadSelectedImageToFirebase(image: UIImage) {
-        if let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 300, height: 300)),
+        if let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 310, height: 310)),
            let imageData = resizedImage.jpegData(compressionQuality: 1) {
             uploadImageToStorage(imageData: imageData, originalImage: image) { imageUrl in
                 guard let imageUrl = imageUrl else {
@@ -277,9 +278,10 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             
             switch result {
             case .success(let playlist):
+                let playlistVC = Playlist2VC(playlist: playlist)
                 DispatchQueue.main.async {
-                    let playlistVC = PlaylistViewController(playlist: playlist)
-                    self.navigationController?.pushViewController(playlistVC, animated: false)
+                    let hostingController = UIHostingController(rootView: playlistVC)
+                    self.navigationController?.pushViewController(hostingController, animated: false)
                     self.uploadComplete()
                 }
                 

@@ -8,6 +8,7 @@
 import Foundation
 
 struct RecommendedTrackCellViewModel {
+    let id = UUID()
     let name: String
     let artistName: String
     let artworkURL: URL?

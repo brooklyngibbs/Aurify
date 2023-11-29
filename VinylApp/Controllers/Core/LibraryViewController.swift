@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class LibraryViewController: UIViewController {
     
@@ -25,6 +26,8 @@ class LibraryViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
+        navigationItem.title = ""
+        navigationController?.navigationBar.tintColor = AppColors.vampireBlack
         
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -102,14 +105,12 @@ extension LibraryViewController: UICollectionViewDataSource {
 extension LibraryViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
-        
-        // Get the selected playlist
+    
         let selectedPlaylist = playlists[indexPath.row]
         
-        // Create a PlaylistViewController instance with the selected playlist
-        let playlistVC = PlaylistViewController(playlist: selectedPlaylist)
+        let playlistVC = Playlist2VC(playlist: selectedPlaylist)
         
-        // Push the PlaylistViewController onto the navigation stack
-        navigationController?.pushViewController(playlistVC, animated: true)
+        let hostingController = UIHostingController(rootView: playlistVC)
+        navigationController?.pushViewController(hostingController, animated: true)
     }
 }
