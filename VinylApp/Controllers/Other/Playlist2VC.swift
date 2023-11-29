@@ -50,9 +50,9 @@ struct Playlist2VC: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(0)
         }
-        .navigationBarTitle("", displayMode: .inline)
-        .toolbarRole(.editor)
         .padding(0)
+        .navigationBarHidden(false)
+        .toolbarRole(.editor)
         .onAppear {
             fetchPlaylistDetails()
         }

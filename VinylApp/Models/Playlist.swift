@@ -15,6 +15,12 @@ struct Playlist: Codable, Identifiable {
     let name: String
     let owner: User
     let uri: String
+    var isAppGenerated: Bool?
+    
+    enum CodingKeys: String, CodingKey {
+        case description, external_urls, id, images, name, owner, uri
+        case isAppGenerated = "isAppGenerated" 
+    }
 }
 
 struct PlaylistResponse: Codable {

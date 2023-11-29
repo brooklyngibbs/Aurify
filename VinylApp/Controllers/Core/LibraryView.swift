@@ -1,11 +1,16 @@
 import SwiftUI
 import Combine
+import Firebase
 
 struct LibraryView: View {
     @StateObject var viewModel = PlaylistListViewModel()
     @State private var isLoading = true // Track loading state
-    @State private var userProfileImage: UIImage?
+    
     @State private var displayName: String = ""
+    @State private var userID: String = ""
+    
+    @State private var showingSettings = false
+    @State private var userProfileImage: UIImage?
     
     var body: some View {
         ZStack {
@@ -14,7 +19,7 @@ struct LibraryView: View {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
                     .scaleEffect(2)
-                    .foregroundColor(Color(AppColors.vampireBlack))
+                    .tint(Color(AppColors.vampireBlack))
             } else {
                 NavigationView {
                     if viewModel.playlists.isEmpty {
@@ -23,6 +28,7 @@ struct LibraryView: View {
                     } else {
                         VStack(alignment: .leading, spacing: 10) {
                             CustomTitleView()
+                                .padding(.top, 28.5)
                             
                             ScrollView {
                                 ZStack {
@@ -30,10 +36,11 @@ struct LibraryView: View {
                                         .foregroundColor(Color(AppColors.moonstoneBlue))
                                         .cornerRadius(20)
                                         .padding(.bottom, 25)
+                                        .padding(.horizontal, 5)
                                     
                                     if let userProfileImage = userProfileImage {
                                         GeometryReader { geometry in
-                                            VStack(spacing: 10) {
+                                            VStack(alignment: .center, spacing: 10) {
                                                 ZStack {
                                                     Circle()
                                                         .fill(Color.white)
@@ -48,23 +55,48 @@ struct LibraryView: View {
                                                 }
                                                 Text(displayName)
                                                     .foregroundColor(.white)
-                                                    .font(.custom("Outfit-Bold", size: 14))
-                                                
+                                                    .font(.custom("Outfit-Bold", size: 16))
+                                                HStack {
+                                                    Text("0 Followers")
+                                                    Text("0 Following")
+                                                    Text("\(viewModel.playlists.count) Playlists")
+                                                }
+                                                .foregroundColor(.white)
+                                                .font(.custom("Inter-Medium", size: 12))
                                                 Spacer()
+                                                
                                             }
                                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                            .padding(.top, (geometry.size.height - 140) / 2)
-                                            .padding(.horizontal, 20) // Add horizontal padding
+                                            .padding(.top, (geometry.size.height - 150) / 2)
+                                            .padding(.horizontal, 20)
+                                            .overlay(
+                                                Button(action: {
+                                                    showingSettings = true
+                                                }) {
+                                                    Image(systemName: "ellipsis")
+                                                        .foregroundColor(.white)
+                                                        .font(.system(size: 15))
+                                                        .padding(10)
+                                                }
+                                                    .offset(x: geometry.size.width / 2 - 30, y: -geometry.size.height / 2 + 20)
+                                                    .sheet(isPresented: $showingSettings) {
+                                                        NavigationView {
+                                                            SettingsViewController(userProfileImage: $userProfileImage, userID: self.userID)
+                                                                .navigationBarTitle("Settings")
+                                                        }
+                                                    }
+                                            )
                                         }
                                     }
                                 }
                                 .frame(height: 200)
                                 .padding()
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                                    ForEach(viewModel.playlists) { playlist in
-                                        NavigationLink(destination: Playlist2VC(playlist: playlist)) {
-                                            PlaylistCellView(playlist: playlist)
+                                    ForEach(viewModel.playlists.indices, id: \.self) { index in
+                                        NavigationLink(destination: Playlist2VC(playlist: viewModel.playlists[index])) {
+                                            PlaylistCellView(playlist: viewModel.playlists[index])
                                                 .padding(.bottom, 20)
+                                                .id(UUID()) // Ensure each view has a unique ID
                                         }
                                     }
                                 }
@@ -74,40 +106,41 @@ struct LibraryView: View {
                         .padding(.top, 10)
                     }
                 }
-                .navigationBarBackButtonHidden(true)
-                .navigationBarTitle("", displayMode: .inline)
-                .accentColor(Color(AppColors.vampireBlack))
             }
         }
+        .navigationBarTitle("", displayMode: .inline)
+        .navigationBarHidden(true) // Hide the navigation bar
+        .accentColor(Color(AppColors.vampireBlack))
         .onAppear {
-            viewModel.fetchData {
-                isLoading = false
-                fetchProfile()
-            }
+            fetchProfile()
         }
     }
     
     private func fetchProfile() {
-        APICaller.shared.getCurrentUserProfile { result in
+        // Always make the API call to get the display name and user ID
+        APICaller.shared.getCurrentUserProfile { [self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let userProfile):
-                    if let imageURL = userProfile.images.first?.url,
-                       let firstImageURL = URL(string: imageURL) {
-                        if userProfile.images.count > 1 {
-                            // If there are more than one image, try to use the second image URL
-                            if let secondImageURL = URL(string: userProfile.images[1].url) {
-                                self.loadImage(from: secondImageURL)
-                            } else {
-                                self.loadImage(from: firstImageURL)
-                            }
-                        } else {
-                            self.loadImage(from: firstImageURL)
-                        }
-                    } else {
-                        print("No image URL available")
-                    }
+                    self.userID = userProfile.id
                     self.displayName = userProfile.display_name
+                    
+                    checkProfileImageInStorage(userID: self.userID) { profileImageExists in
+                        if profileImageExists {
+                            loadProfileImageFromStorage(userID: self.userID)
+                        } else {
+                            if let lastImageURLString = userProfile.images.last?.url,
+                               let lastImageURL = URL(string: lastImageURLString) {
+                                loadImage(from: lastImageURL)
+                            } else {
+                                print("No valid image URL available")
+                            }
+                        }
+                    }
+                    
+                    viewModel.fetchDataFromFirestore(userID: self.userID) {
+                        isLoading = false
+                    }
                 case .failure(let error):
                     print(error.localizedDescription)
                 }
@@ -116,12 +149,52 @@ struct LibraryView: View {
     }
     
     
+    private func loadProfileImageFromStorage(userID: String) {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let profilePicsRef = storageRef.child("profilePics/\(userID)/profileImage.jpg") // Adjust path accordingly
+        
+        profilePicsRef.getData(maxSize: 10 * 1024 * 1024) { [self] data, error in
+            if let error = error {
+                print("Error downloading profile image: \(error.localizedDescription)")
+                // Handle error (for example, show a placeholder image)
+            } else {
+                if let imageData = data, let loadedImage = UIImage(data: imageData) {
+                    DispatchQueue.main.async {
+                        self.userProfileImage = loadedImage
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    private func checkProfileImageInStorage(userID: String, completion: @escaping (Bool) -> Void) {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let profileImageRef = storageRef.child("profilePics/\(userID)")
+        
+        profileImageRef.listAll { result, error in
+            if let error = error {
+                print("Error listing files in Firebase Storage: \(error.localizedDescription)")
+                completion(false)
+            } else if let result = result {
+                let profileImageExists = result.items.contains { $0.name == "profileImage.jpg" }
+                completion(profileImageExists)
+            } else {
+                completion(false)
+            }
+        }
+    }
+    
+    
+    
     private func loadImage(from url: URL) {
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let data = data, let loadedImage = UIImage(data: data) {
                 DispatchQueue.main.async {
-                    // Set the loaded image to your UIImage property
                     self.userProfileImage = loadedImage
+                    saveProfileImageToStorage(image: loadedImage, userID: self.userID)
                 }
             } else {
                 print("Failed to load image from URL:", error?.localizedDescription ?? "Unknown error")
@@ -129,12 +202,36 @@ struct LibraryView: View {
         }.resume()
     }
     
+    private func saveProfileImageToStorage(image: UIImage, userID: String) {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            return
+        }
+        
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let profilePicsRef = storageRef.child("profilePics/\(userID)/profileImage.jpg")
+        
+        // Upload image data to Firebase Storage
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        
+        profilePicsRef.putData(imageData, metadata: metadata) { metadata, error in
+            if let error = error {
+                print("Error uploading profile image to Firebase Storage: \(error.localizedDescription)")
+                // Handle error
+            } else {
+                print("Profile image uploaded to Firebase Storage")
+                // Handle success if needed
+            }
+        }
+    }
+    
 }
 
 struct PlaylistCellView: View {
     @StateObject private var imageLoader = ImageLoader()
     let playlist: Playlist
-    let imageHeight: CGFloat = 100 // Set the desired image height
+    let imageSize: CGFloat = 100
     
     var body: some View {
         Group {
@@ -142,13 +239,12 @@ struct PlaylistCellView: View {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: imageHeight)
-                    .background(Color.gray.opacity(0.2))
+                    .frame(width: imageSize, height: imageSize) // Set width and height to create a square
                     .cornerRadius(20)
                     .shadow(color: Color.gray.opacity(0.3), radius: 4, x: 0, y: 5)
             } else {
                 Color.gray.opacity(0.2)
-                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: imageHeight)
+                    .frame(width: imageSize, height: imageSize) // Set width and height to create a square
                     .cornerRadius(20)
                     .onAppear {
                         imageLoader.loadImage(from: playlist.images.first?.url)
@@ -171,6 +267,39 @@ class PlaylistListViewModel: ObservableObject {
                     print(error.localizedDescription)
                 }
                 completion()
+            }
+        }
+    }
+    
+    func fetchDataFromFirestore(userID: String, completion: @escaping () -> Void) {
+        // Fetch playlist URIs from FirestoreManager for the specific user ID
+        FirestoreManager().fetchPlaylistIDs(forUserID: userID) { playlistIDs in
+            // Introduce a delay to ensure the playlist URIs are received
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                print("Playlist ID found in Firestore:", playlistIDs) // Print the playlist URIs
+                
+                let dispatchGroup = DispatchGroup()
+                for playlistID in playlistIDs {
+                    dispatchGroup.enter()
+                    APICaller.shared.getPlaylist(with: playlistID) { result in
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success(let playlist):
+                                // Check if the fetched playlist already exists in the array
+                                if !self.playlists.contains(where: { $0.id == playlist.id }) {
+                                    // Insert the playlist at index 0 to add it at the beginning
+                                    self.playlists.insert(playlist, at: 0)
+                                }
+                            case .failure(let error):
+                                print("Failed to fetch playlist: \(error.localizedDescription)")
+                            }
+                            dispatchGroup.leave()
+                        }
+                    }
+                }
+                dispatchGroup.notify(queue: .main) {
+                    completion()
+                }
             }
         }
     }

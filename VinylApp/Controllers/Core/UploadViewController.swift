@@ -113,7 +113,16 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                     // Successfully created playlist
                                     let playlistID = playlist.id
                                     print("playlistID: \(playlistID)")
-                                    
+                                    savePlaylistToFirestore(playlist: playlist) { result in
+                                        switch result {
+                                        case .success:
+                                            // Handle success scenario after saving playlist to Firestore
+                                            print("Playlist saved to Firestore successfully")
+                                        case .failure(let error):
+                                            // Handle failure scenario after saving playlist to Firestore
+                                            print("Failed to save playlist to Firestore:", error)
+                                        }
+                                    }
                                     convertImageURLToBase64(imageURLString: url) { base64String in
                                         if let base64String = base64String {
                                             APICaller.shared.updatePlaylistImage(imageBase64: base64String, playlistID: playlistID) { updateResult in
@@ -279,17 +288,59 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             switch result {
             case .success(let playlist):
                 let playlistVC = Playlist2VC(playlist: playlist)
-                DispatchQueue.main.async {
-                    let hostingController = UIHostingController(rootView: playlistVC)
-                    self.navigationController?.pushViewController(hostingController, animated: false)
-                    self.uploadComplete()
-                }
+                    DispatchQueue.main.async {
+                        let hostingController = UIHostingController(rootView: playlistVC)
+                        self.navigationController?.navigationBar.tintColor = UIColor.black 
+                        self.navigationController?.pushViewController(hostingController, animated: false)
+                        self.navigationController?.isNavigationBarHidden = false
+                        self.uploadComplete()
+                    }
                 
             case .failure(let error):
                 print("Failed to fetch playlist:", error)
             }
         }
     }
+    
+    func savePlaylistToFirestore(playlist: Playlist, completion: @escaping (Result<Void, Error>) -> Void) {
+        APICaller.shared.getCurrentUserProfile { result in
+            switch result {
+            case .success(let userProfile):
+                let userID = userProfile.id
+                
+                // Access Firestore and create a reference to the users collection
+                let db = Firestore.firestore()
+                let usersCollection = db.collection("users")
+                let userDocument = usersCollection.document(userID)
+                
+                // Prepare the playlist data to be saved in Firestore
+                let playlistData: [String: Any] = [
+                    "description": playlist.description ?? "",
+                    "external_urls": playlist.external_urls ?? [:],
+                    "id": playlist.id,
+                    "images": playlist.images.map { $0.toDictionary() }, // Convert images array to dictionaries
+                    "name": playlist.name,
+                    "owner": playlist.owner.toDictionary(), // Convert owner object to dictionary
+                    "uri": playlist.uri,
+                    "isAppGenerated": true
+                ]
+                
+                // Add a new document to the "playlists" subcollection in the user's document
+                userDocument.collection("playlists").addDocument(data: playlistData) { error in
+                    if let error = error {
+                        completion(.failure(error))
+                    } else {
+                        completion(.success(()))
+                    }
+                }
+            case .failure(let error):
+                // Handle the error if failed to retrieve the user profile
+                print("Failed to get user profile: \(error)")
+            }
+        }
+    }
+
+
     
     func uploadComplete() {
         selectedImage = nil
@@ -313,4 +364,21 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     
+}
+
+extension APIImage {
+    func toDictionary() -> [String: Any] {
+        var imageDictionary: [String: Any] = [:]
+        imageDictionary["url"] = self.url
+        
+        return imageDictionary
+    }
+}
+
+extension User {
+    func toDictionary() -> [String: Any] {
+        var userDictionary: [String: Any] = [:]
+        userDictionary["id"] = self.id
+        return userDictionary
+    }
 }

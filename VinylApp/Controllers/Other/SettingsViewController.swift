@@ -1,89 +1,143 @@
-//
-//  SettingsViewController.swift
-//  VinylApp
-//
-//  Created by Brooklyn Gibbs on 10/23/23.
-//
+import SwiftUI
+import Firebase
 
-import UIKit
-
-class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+struct SettingsViewController: View {
+    @State private var notificationsEnabled = false
+    @State private var darkModeEnabled = false
+    @Binding var userProfileImage: UIImage?
+    @State private var showImagePicker = false
     
-    private let tableView: UITableView = {
-        let tableView = UITableView(frame: .zero, style: .grouped)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        
-        return tableView
-    }()
+    var userID: String
     
-    private var sections = [Section]()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureModels()
-        title = "Settings"
-        view.backgroundColor = .systemBackground
-        view.addSubview(tableView)
-        tableView.dataSource = self
-        tableView.delegate = self
-    }
-    
-    private func configureModels() {
-        sections.append(Section(title: "Profile", options: [Option(title: "View Your Profile", handler: { [weak self] in
-            DispatchQueue.main.async {
-                self?.viewProfile()
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Profile")) {
+                    ProfileSectionView(profileImage: $userProfileImage, showImagePicker: $showImagePicker)
+                }
+                Section(header: Text("Payment")) {
+                    // Payment related settings
+                }
+                Section(header: Text("Notifications")) {
+                    Toggle("Enable Notifications", isOn: $notificationsEnabled)
+                        .tint(Color.blue)
+                }
+                Section(header: Text("Appearance")) {
+                    Toggle("Dark Mode", isOn: $darkModeEnabled)
+                        .tint(Color.blue)
+                }
             }
-        })]))
-        
-        sections.append(Section(title: "Account", options: [Option(title: "Sign Out", handler: { [weak self] in
-            DispatchQueue.main.async {
-                self?.signOutTapped()
+            .sheet(isPresented: $showImagePicker) {
+                ImagePicker(image: $userProfileImage, onSave: saveProfileImage)
             }
-        })]))
+        }
     }
     
-    //implement later
-    private func signOutTapped() {}
-    
-    private func viewProfile() {
-        let vc = ProfileViewController()
-        vc.title = "Profile"
-        vc.navigationItem.largeTitleDisplayMode = .never
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        tableView.frame = view.bounds
-    }
-    
-    //MARK: - Table View
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sections[section].options.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let model = sections[indexPath.section].options[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = model.title
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        //call handler for cell
-        let model = sections[indexPath.section].options[indexPath.row]
-        model.handler()
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let model = sections[section]
-        return model.title
+    func saveProfileImage(_ image: UIImage) {
+        guard let imageData = image.jpegData(compressionQuality: 0.5) else {
+            print("Failed to convert image to data.")
+            return
+        }
+        
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let profilePicsRef = storageRef.child("profilePics/\(userID)/profileImage.jpg")
+        
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        
+        let _ = profilePicsRef.putData(imageData, metadata: metadata) { metadata, error in
+            guard let _ = metadata else {
+                print("Error uploading profile image: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            print("Profile image uploaded successfully.")
+        }
     }
 
+}
+
+struct ProfileSectionView: View {
+    @Binding var profileImage: UIImage?
+    @Binding var showImagePicker: Bool
+    
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            if let profileImage = profileImage {
+                Image(uiImage: profileImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 90, height: 90)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                
+                Button(action: {
+                    showImagePicker = true
+                }) {
+                    Image(systemName: "pencil.circle.fill")
+                        .resizable()
+                        .foregroundColor(Color.black)
+                        .frame(width: 27, height: 27)
+                        .padding(5)
+                        .background(
+                            Circle()
+                                .fill(Color.white)
+                                .frame(width: 32, height: 32)
+                        )
+                }
+                .clipShape(Circle())
+                .offset(x: 4, y: 4) //adjust position in profile circle
+            } else {
+                Circle()
+                    .foregroundColor(.gray)
+                    .frame(width: 80, height: 80)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding()
+        .cornerRadius(10)
+    }
+}
+
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var image: UIImage?
+    var onSave: (UIImage) -> Void
+
+    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+        var parent: ImagePicker
+        var onSave: (UIImage) -> Void 
+
+        init(parent: ImagePicker, onSave: @escaping (UIImage) -> Void) {
+            self.parent = parent
+            self.onSave = onSave
+        }
+
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            if let uiImage = info[.originalImage] as? UIImage {
+                onSave(uiImage)
+                parent.image = uiImage
+            }
+            picker.dismiss(animated: true, completion: nil)
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            picker.dismiss(animated: true, completion: nil)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(parent: self, onSave: onSave) // Pass onSave closure
+    }
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.allowsEditing = false
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
+        // Update
+    }
 }

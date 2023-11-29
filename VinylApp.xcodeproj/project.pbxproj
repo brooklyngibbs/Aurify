@@ -34,7 +34,6 @@
 		66A0A0DE2AE64B21002EE3B6 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A0A0DD2AE64B21002EE3B6 /* UserProfile.swift */; };
 		66A0A0E02AE651C9002EE3B6 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A0A0DF2AE651C9002EE3B6 /* ProfileViewController.swift */; };
 		66A0A0E42AE65D4C002EE3B6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A0A0E32AE65D4C002EE3B6 /* SettingsViewController.swift */; };
-		66A0A0E62AE65EF4002EE3B6 /* SettingsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A0A0E52AE65EF4002EE3B6 /* SettingsModels.swift */; };
 		66B3B9682AE77F0D00129B1F /* PlayerControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B3B9672AE77F0D00129B1F /* PlayerControlsView.swift */; };
 		66B7A48F2B0DCD04004C81D5 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B7A48E2B0DCD04004C81D5 /* logo.png */; };
 		66B7A4932B0DCE2B004C81D5 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B7A4922B0DCE2B004C81D5 /* background.png */; };
@@ -46,6 +45,7 @@
 		66DF3CD82AE61B08003CB1E2 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */; };
 		66DF3CDA2AE61D7C003CB1E2 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CD92AE61D7C003CB1E2 /* Extensions.swift */; };
 		66DF3CDE2AE62C06003CB1E2 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CDD2AE62C06003CB1E2 /* AuthResponse.swift */; };
+		66E2DB5C2B16CCC100F44F93 /* FirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E2DB5B2B16CCC100F44F93 /* FirestoreManager.swift */; };
 		66F70F972B0C9A42005062AD /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66F70F962B0C9A42005062AD /* Launch Screen.storyboard */; };
 		66F70FA62B0D1722005062AD /* Outfit-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66F70FA52B0D1722005062AD /* Outfit-Bold.ttf */; };
 		66F70FA82B0D1765005062AD /* ZillaSlab-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66F70FA72B0D1765005062AD /* ZillaSlab-Light.ttf */; };
@@ -87,7 +87,6 @@
 		66A0A0DD2AE64B21002EE3B6 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		66A0A0DF2AE651C9002EE3B6 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		66A0A0E32AE65D4C002EE3B6 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		66A0A0E52AE65EF4002EE3B6 /* SettingsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModels.swift; sourceTree = "<group>"; };
 		66B3B9672AE77F0D00129B1F /* PlayerControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControlsView.swift; sourceTree = "<group>"; };
 		66B7A48E2B0DCD04004C81D5 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo.png; path = ../../../../Documents/vinyl_images/logo.png; sourceTree = "<group>"; };
 		66B7A4922B0DCE2B004C81D5 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = background.png; path = ../../../../Documents/vinyl_images/background.png; sourceTree = "<group>"; };
@@ -99,6 +98,7 @@
 		66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		66DF3CD92AE61D7C003CB1E2 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		66DF3CDD2AE62C06003CB1E2 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
+		66E2DB5B2B16CCC100F44F93 /* FirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreManager.swift; sourceTree = "<group>"; };
 		66F70F962B0C9A42005062AD /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		66F70FA52B0D1722005062AD /* Outfit-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Outfit-Bold.ttf"; path = "../../../../Documents/vinyl_images/Outfit/static/Outfit-Bold.ttf"; sourceTree = "<group>"; };
 		66F70FA72B0D1765005062AD /* ZillaSlab-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ZillaSlab-Light.ttf"; path = "../../../../Documents/vinyl_images/Zilla_Slab/ZillaSlab-Light.ttf"; sourceTree = "<group>"; };
@@ -199,7 +199,6 @@
 			children = (
 				66DF3CDD2AE62C06003CB1E2 /* AuthResponse.swift */,
 				66A0A0DD2AE64B21002EE3B6 /* UserProfile.swift */,
-				66A0A0E52AE65EF4002EE3B6 /* SettingsModels.swift */,
 				66547A0F2AE6DE3F009CD777 /* AudioTrack.swift */,
 				66547A112AE6DF74009CD777 /* Album.swift */,
 				66547A132AE6E0D5009CD777 /* APIImage.swift */,
@@ -224,6 +223,7 @@
 				6681E5B72AE1FC4800A81DB5 /* Assets.xcassets */,
 				66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */,
 				66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */,
+				66E2DB5B2B16CCC100F44F93 /* FirestoreManager.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -433,6 +433,7 @@
 				66A0A0E02AE651C9002EE3B6 /* ProfileViewController.swift in Sources */,
 				66547A202AE6FA88009CD777 /* TrackCollectionViewCell.swift in Sources */,
 				66547A142AE6E0D5009CD777 /* APIImage.swift in Sources */,
+				66E2DB5C2B16CCC100F44F93 /* FirestoreManager.swift in Sources */,
 				66547A122AE6DF74009CD777 /* Album.swift in Sources */,
 				66547A2B2AE731A9009CD777 /* ActionLabelView.swift in Sources */,
 				66547A1E2AE6F2C7009CD777 /* PlaylistDetailsResponse.swift in Sources */,
@@ -452,7 +453,6 @@
 				661BF4EE2B1696E300BBAA16 /* HomeView.swift in Sources */,
 				66547A182AE6E538009CD777 /* Playlist.swift in Sources */,
 				66FCA1A12B16617D00741A1A /* Playlist2VC.swift in Sources */,
-				66A0A0E62AE65EF4002EE3B6 /* SettingsModels.swift in Sources */,
 				66547A162AE6E271009CD777 /* Artist.swift in Sources */,
 				66A0A0DE2AE64B21002EE3B6 /* UserProfile.swift in Sources */,
 			);

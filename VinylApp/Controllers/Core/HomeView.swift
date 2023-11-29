@@ -14,9 +14,3 @@ struct HomeView: View {
     }
 }
 
-struct SettingsView: View {
-    var body: some View {
-        Text("Settings View")
-            .navigationBarTitle("Settings")
-    }
-}
