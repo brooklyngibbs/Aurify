@@ -17,7 +17,6 @@ struct LabelTexts {
         "Immersing in the magic of jazz melodies...",
         "Dancing through electronic soundscapes...",
         "Navigating through the roots of rap music...",
-        "Discovering the brilliance of classical maestros...",
         "Moseying through the heart of country ballads...",
         "Reviving rock and roll legends...",
         "Discovering the soul of blues...",
@@ -37,18 +36,15 @@ struct LabelTexts {
         "Feeling Snoop Dogg's West Coast vibes...",
         "Getting One Direction back together...",
         "Channeling Beyoncé's fierce energy...",
-        "Adding a dash of Olivia Rodrigo's teenage angst...",
+        "Adding Olivia Rodrigo's teenage angst...",
         "Transporting to Lana Del Rey's dreamy universe...",
         "Adding the nostalgia of \"Ribs\" by Lorde...",
-        "Getting lost in Hozier's soul-stirring storytelling...",
+        "Getting lost in Hozier's storytelling...",
         "Reviving the electrifying energy of AC/DC...",
         "Infusing the sincerity of Mac Miller's verses...",
-        "Sinking into Zach Bryan's raw country melodies...",
         "Dancing to Dua Lipa's infectious pop anthems...",
         "Immersing in Gracie Abrams' melodic therapy...",
         "Swaying to SZA's honeyed melodies...",
-        "Mending hearts with Morgan Wallen's tunes...",
-        "Drinking a beer to Luke Combs' porch-side melodies...",
         "Diving into Zach Bryan's cowboy ballads..."
     ]
 }

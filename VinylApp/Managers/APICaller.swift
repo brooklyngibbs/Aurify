@@ -43,46 +43,89 @@ final class APICaller {
     
     //MARK: - Playback
     func startPlaybackRequest(with contextURI: String) {
-        // Create the URL for starting playback.
         let url = URL(string: "https://api.spotify.com/v1/me/player/play")!
 
-        // Create the request body as a dictionary.
         let requestBody: [String: String] = ["context_uri": contextURI]
 
-        // Serialize the request body to JSON data.
         do {
             let requestData = try JSONSerialization.data(withJSONObject: requestBody)
-            
-            // Use the createRequest function to create a URLRequest.
+
             createRequest(with: url, type: .PUT) { request in
-                var requestCopy = request // Create a mutable copy of the request
+                var requestCopy = request
                 requestCopy.httpBody = requestData
 
-                // Create a URLSession data task for the request.
                 let task = URLSession.shared.dataTask(with: requestCopy) { data, response, error in
-                    if let error = error {
-                        print("Error: \(error)")
-                        return
-                    }
 
                     if let httpResponse = response as? HTTPURLResponse {
-                        if httpResponse.statusCode == 204 {
-                            // Status code 204 indicates a successful request.
-                            print("Playback started successfully.")
-                        } else {
+                        if httpResponse.statusCode != 204 {
                             print("Error: Unexpected status code - \(httpResponse.statusCode)")
                         }
                     }
                 }
-
-                // Start the data task to send the request.
                 task.resume()
             }
         } catch {
             print("Error: JSON serialization failed - \(error)")
         }
     }
+    
+    func startPlaybackRequestByTrack(with contextURI: String, offset: Int) {
+        let url = URL(string: "https://api.spotify.com/v1/me/player/play")!
 
+        let requestBody: [String: Any] = [
+                "context_uri": contextURI,
+                "offset": [
+                    "position": offset
+                ]
+            ]
+
+        do {
+            let requestData = try JSONSerialization.data(withJSONObject: requestBody)
+
+            createRequest(with: url, type: .PUT) { request in
+                var requestCopy = request
+                requestCopy.httpBody = requestData
+
+                let task = URLSession.shared.dataTask(with: requestCopy) { data, response, error in
+
+                    if let httpResponse = response as? HTTPURLResponse {
+                        if httpResponse.statusCode != 204 {
+                            print("Error: Unexpected status code - \(httpResponse.statusCode)")
+                        }
+                    }
+                }
+                task.resume()
+            }
+        } catch {
+            print("Error: JSON serialization failed - \(error)")
+        }
+    }
+    
+    func shuffleSpotifyPlayer(state: Bool) {
+        guard let url = URL(string: "https://api.spotify.com/v1/me/player/shuffle?state=\(state)") else {
+            return
+        }
+
+        createRequest(with: url, type: .PUT) { request in
+            var requestCopy = request
+            requestCopy.httpMethod = "PUT"
+
+            let task = URLSession.shared.dataTask(with: requestCopy) { data, response, error in
+                if let error = error {
+                    print("Error shuffling Spotify player: \(error.localizedDescription)")
+                    return
+                }
+
+                if let httpResponse = response as? HTTPURLResponse {
+                    if httpResponse.statusCode != 204 {
+                        print("Error: Unexpected status code - \(httpResponse.statusCode)")
+                    }
+                }
+            }
+            task.resume()
+        }
+    }
+    
     //MARK: - Playlists
     
     public func getPlaylistDetails(for playlist: Playlist, completion: @escaping (Result<PlaylistDetailsResponse, Error>) -> Void) {
@@ -312,7 +355,7 @@ final class APICaller {
             task.resume()
         }
     }
-    
+
     public func getPlaylist(with playlist_id: String, completion: @escaping (Result<Playlist, Error>) -> Void) {
         let urlString = Constants.baseAPIURL + "/playlists/\(playlist_id)"
         guard let url = URL(string: urlString) else {

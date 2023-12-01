@@ -27,6 +27,8 @@
 		<string>Outfit-Bold.ttf</string>
 		<string>ZillaSlab-Light.ttf</string>
 		<string>Inter-Medium.ttf</string>
+		<string>Inter-Bold.ttf</string>
+		<string>Inter-SemiBold.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

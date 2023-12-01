@@ -22,75 +22,97 @@ struct LibraryView: View {
                     .tint(Color(AppColors.vampireBlack))
             } else {
                 NavigationView {
-                    if viewModel.playlists.isEmpty {
-                        Text("You Don't Have Any Playlists Yet")
-                            .padding()
-                    } else {
-                        VStack(alignment: .leading, spacing: 10) {
-                            CustomTitleView()
-                                .padding(.top, 28.5)
-                            
-                            ScrollView {
-                                ZStack {
-                                    Rectangle()
-                                        .foregroundColor(Color(AppColors.moonstoneBlue))
-                                        .cornerRadius(20)
-                                        .padding(.bottom, 25)
-                                        .padding(.horizontal, 5)
-                                    
-                                    if let userProfileImage = userProfileImage {
-                                        GeometryReader { geometry in
-                                            VStack(alignment: .center, spacing: 10) {
-                                                ZStack {
-                                                    Circle()
-                                                        .fill(Color.white)
-                                                        .frame(width: 80, height: 80)
-                                                        .shadow(color: .white.opacity(1.0), radius: 7, x: 0, y: 0)
-                                                    
-                                                    Image(uiImage: userProfileImage)
-                                                        .resizable()
-                                                        .aspectRatio(contentMode: .fill)
-                                                        .frame(width: 80, height: 80)
-                                                        .clipShape(Circle())
-                                                }
-                                                Text(displayName)
-                                                    .foregroundColor(.white)
-                                                    .font(.custom("Outfit-Bold", size: 16))
-                                                HStack {
-                                                    Text("0 Followers")
-                                                    Text("0 Following")
-                                                    Text("\(viewModel.playlists.count) Playlists")
-                                                }
-                                                .foregroundColor(.white)
-                                                .font(.custom("Inter-Medium", size: 12))
-                                                Spacer()
+                    VStack(alignment: .leading, spacing: 10) {
+                        CustomTitleView()
+                            .padding(.top, 28.5)
+                        
+                        ScrollView {
+                            ZStack {
+                                Rectangle()
+                                    .foregroundColor(Color(AppColors.moonstoneBlue))
+                                    .cornerRadius(20)
+                                    .padding(.bottom, 25)
+                                    .padding(.horizontal, 5)
+                                
+                                if let userProfileImage = userProfileImage {
+//MARK: PROFILE VIEW
+                                    GeometryReader { geometry in
+                                        VStack(alignment: .center, spacing: 10) {
+                                            ZStack {
+                                                Circle()
+                                                    .fill(Color.white)
+                                                    .frame(width: 80, height: 80)
+                                                    .shadow(color: .white.opacity(1.0), radius: 7, x: 0, y: 0)
                                                 
+                                                Image(uiImage: userProfileImage)
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fill)
+                                                    .frame(width: 80, height: 80)
+                                                    .clipShape(Circle())
                                             }
-                                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                            .padding(.top, (geometry.size.height - 150) / 2)
-                                            .padding(.horizontal, 20)
-                                            .overlay(
-                                                Button(action: {
-                                                    showingSettings = true
-                                                }) {
-                                                    Image(systemName: "ellipsis")
+                                            Text(displayName)
+                                                .foregroundColor(.white)
+                                                .font(.custom("Outfit-Bold", size: 16))
+                                                .padding(.top, 5)
+                                            HStack(spacing: 20) {
+                                                VStack(spacing: 2) {
+                                                    Text("0")
                                                         .foregroundColor(.white)
-                                                        .font(.system(size: 15))
-                                                        .padding(10)
+                                                        .font(.custom("Inter-Bold", size: 15))
+                                                    Text("Followers")
+                                                        .foregroundColor(.white)
+                                                        .font(.custom("Inter-Medium", size: 12))
                                                 }
-                                                    .offset(x: geometry.size.width / 2 - 30, y: -geometry.size.height / 2 + 20)
-                                                    .sheet(isPresented: $showingSettings) {
-                                                        NavigationView {
-                                                            SettingsViewController(userProfileImage: $userProfileImage, userID: self.userID)
-                                                                .navigationBarTitle("Settings")
-                                                        }
-                                                    }
-                                            )
+                                                VStack(spacing: 2) {
+                                                    Text("0")
+                                                        .foregroundColor(.white)
+                                                        .font(.custom("Inter-Bold", size: 15))
+                                                    Text("Following")
+                                                        .foregroundColor(.white)
+                                                        .font(.custom("Inter-Medium", size: 12))
+                                                }
+                                                VStack(spacing: 2) {
+                                                    Text("\(viewModel.playlists.count)")
+                                                        .foregroundColor(.white)
+                                                        .font(.custom("Inter-Bold", size: 15))
+                                                    Text("Playlists")
+                                                        .foregroundColor(.white)
+                                                        .font(.custom("Inter-Medium", size: 12))
+                                                }
+                                            }
+                                            .padding(.bottom, 20)
+                                            
                                         }
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .padding(.horizontal)
+                                        .overlay(
+                                            Button(action: {
+                                                showingSettings = true
+                                            }) {
+                                                Image(systemName: "ellipsis")
+                                                    .foregroundColor(.white)
+                                                    .font(.system(size: 15))
+                                                    .padding(10)
+                                            }
+                                                .offset(x: geometry.size.width / 2 - 30, y: -geometry.size.height / 2 + 20)
+                                            
+                                                .sheet(isPresented: $showingSettings) {
+                                                    NavigationView {
+                                                        SettingsViewController(userProfileImage: $userProfileImage, userID: self.userID)
+                                                            .navigationBarTitle("Settings")
+                                                    }
+                                                }
+                                        )
                                     }
                                 }
-                                .frame(height: 200)
-                                .padding()
+                            }
+                            .frame(height: 220)
+                            .padding()
+//MARK: PLAYLIST VIEW
+                            if viewModel.playlists.isEmpty {
+                                Text("Uh oh! Looks like you haven't created any playlists yet.")
+                                    .padding()
+                            } else {
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                                     ForEach(viewModel.playlists.indices, id: \.self) { index in
                                         NavigationLink(destination: Playlist2VC(playlist: viewModel.playlists[index])) {
@@ -103,8 +125,8 @@ struct LibraryView: View {
                                 .padding(.horizontal)
                             }
                         }
-                        .padding(.top, 10)
                     }
+                    .padding(.top, 10)
                 }
             }
         }
@@ -116,6 +138,9 @@ struct LibraryView: View {
         }
     }
     
+    
+
+    //MARK: PROFILE FUNCTIONS
     private func fetchProfile() {
         // Always make the API call to get the display name and user ID
         APICaller.shared.getCurrentUserProfile { [self] result in
@@ -228,6 +253,7 @@ struct LibraryView: View {
     
 }
 
+//MARK: Playlist Cell Structs
 struct PlaylistCellView: View {
     @StateObject private var imageLoader = ImageLoader()
     let playlist: Playlist

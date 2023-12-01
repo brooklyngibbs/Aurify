@@ -6,6 +6,7 @@ struct Playlist2VC: View {
     @State private var viewModels = [RecommendedTrackCellViewModel]()
     private var cancellables = Set<AnyCancellable>()
     @State private var imageHeight: CGFloat = UIScreen.main.bounds.width
+    @State private var isShuffled = false
     
     internal init(playlist: Playlist) {
         self.playlist = playlist
@@ -63,37 +64,70 @@ struct Playlist2VC: View {
             Text(playlist.name)
                 .padding(.top, 20)
                 .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .lineLimit(3)
+                .frame(maxWidth: UIScreen.main.bounds.width * 0.6, alignment: .leading)
+                .lineLimit(4)
                 .font(.custom("Outfit-Bold", size: 25))
                 .foregroundColor(.black)
                 .padding()
                 .background(Color.white)
             Spacer()
+            shuffleButton
             playButton
             Spacer()
         }
     }
     
+    private var shuffleButton: some View {
+        Button(action: {
+            isShuffled.toggle()
+            shuffleClick()
+        }) {
+            Image(systemName: "shuffle")
+                .resizable()
+                .foregroundColor(isShuffled ? Color(AppColors.jellybeanBlue) : Color.gray)
+                .frame(width: 25, height: 20)
+        }
+        .padding(.top, 20)
+        .padding(.leading, -20)
+    }
+    
     private var playButton: some View {
         Button(action: {
-            // Handle playlist button action here
+            startPlayback()
         }) {
             Image(systemName: "play.circle.fill")
                 .resizable()
                 .foregroundColor(Color(AppColors.jellybeanBlue))
                 .frame(width: 45, height: 45)
         }
-        .padding(.trailing, 30)
+        .padding(.trailing, 10)
         .padding(.top, 20)
+    }
+    
+    private func shuffleClick() {
+        APICaller.shared.shuffleSpotifyPlayer(state: isShuffled)
+    }
+    
+    private func startPlayback() {
+        let contextURI = "spotify:playlist:\(playlist.id)"
+        APICaller.shared.startPlaybackRequest(with: contextURI)
     }
     
     private var trackList: some View {
         ForEach(viewModels.indices, id: \.self) { index in
             let isLastCell = index == viewModels.indices.last
             TrackCell(viewModel: viewModels[index], isLastCell: isLastCell)
+                .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .foregroundColor(viewModels[index].isTrackTapped ? Color.gray.opacity(0.3) : Color.white)
+                        )
                 .onTapGesture {
-                    // Handle cell tap action here if needed
+                    viewModels.indices.forEach { viewModels[$0].isTrackTapped = false }
+                    viewModels[index].isTrackTapped.toggle()
+                    APICaller.shared.startPlaybackRequestByTrack(with: "spotify:playlist:\(playlist.id)", offset: index)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.13) {
+                        viewModels[index].isTrackTapped = false
+                    }
                 }
                 .padding(.bottom, isLastCell ? 20 : 0)
         }
@@ -167,7 +201,6 @@ struct TrackCell: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.leading, 20)
-        .background(Color.white)
         .cornerRadius(12)
     }
 }
