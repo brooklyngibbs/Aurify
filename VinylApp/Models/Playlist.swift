@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseFirestoreInternal
 
 struct Playlist: Codable, Identifiable {
     let description: String?
@@ -16,6 +17,7 @@ struct Playlist: Codable, Identifiable {
     let owner: User
     let uri: String
     var isAppGenerated: Bool?
+    var timestamp: Timestamp?
     
     enum CodingKeys: String, CodingKey {
         case description, external_urls, id, images, name, owner, uri

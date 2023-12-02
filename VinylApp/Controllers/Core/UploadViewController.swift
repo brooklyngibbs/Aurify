@@ -29,6 +29,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     var selectedImage: UIImage?
     var generatingLabel: UILabel!
+    var errorLabel: UILabel!
     
     var labelTexts: [String] = LabelTexts.labelTexts
     
@@ -45,6 +46,24 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         view.backgroundColor = .white
         
         self.navigationItem.hidesBackButton = true
+        
+        errorLabel = UILabel()
+        errorLabel.text = "Uh Oh! Something went wrong."
+        errorLabel.textAlignment = .center
+        errorLabel.numberOfLines = 2
+        errorLabel.translatesAutoresizingMaskIntoConstraints = false
+        errorLabel.font = UIFont(name: "Inter-SemiBold", size: 17)
+        errorLabel.textColor = AppColors.vampireBlack
+        
+        errorLabel.preferredMaxLayoutWidth = 250
+        errorLabel.isHidden = true
+        
+        view.addSubview(errorLabel)
+        
+        NSLayoutConstraint.activate([
+            errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            errorLabel.topAnchor.constraint(equalTo: view.topAnchor)
+        ])
         
         vinylImage = UIImageView()
         vinylImage.image = UIImage(named: "vinyl3")
@@ -156,12 +175,14 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             request.httpBody = jsonData
             let task = URLSession.shared.dataTask(with: request) { data, response, error in
                 if let error = error {
+                    vinylImage.isHidden = true
+                    self.generatingLabel.isHidden = true
+                    self.errorLabel.isHidden = false
                     print("Error sending data to Firebase Function: \(error.localizedDescription)")
                 } else if let data = data {
                     do {
                         if let json = try? JSONDecoder().decode(ImageInfo.self, from: data) {
                             print("Received JSON data:", json)
-                            
                             APICaller.shared.createPlaylist(with: json.playlistTitle, description: json.description) { [self] result in
                                 switch result {
                                 case .success(let playlist):
@@ -170,10 +191,11 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                     savePlaylistToFirestore(playlist: playlist) { result in
                                         switch result {
                                         case .success:
-                                            // Handle success scenario after saving playlist to Firestore
                                             print("Playlist saved to Firestore successfully")
                                         case .failure(let error):
-                                            // Handle failure scenario after saving playlist to Firestore
+                                            vinylImage.isHidden = true
+                                            self.generatingLabel.isHidden = true
+                                            self.errorLabel.isHidden = false
                                             print("Failed to save playlist to Firestore:", error)
                                         }
                                     }
@@ -182,33 +204,44 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                             APICaller.shared.updatePlaylistImage(imageBase64: base64String, playlistID: playlistID) { updateResult in
                                                 switch updateResult {
                                                 case .success:
+                                                    //self.searchAndAddTracks(to: playlistID, songlist: json.songlist)
                                                     self.addTracksSequentially(to: playlistID, songlist: json.songlist)
                                                     print("Successfully updated playlist image")
                                                 case .failure(let error):
+                                                    vinylImage.isHidden = true
+                                                    self.generatingLabel.isHidden = true
+                                                    self.errorLabel.isHidden = false
                                                     print("Failed to update playlist image:", error)
                                                 }
                                             }
                                         } else {
+                                            vinylImage.isHidden = true
+                                            self.generatingLabel.isHidden = true
+                                            self.errorLabel.isHidden = false
                                             print("Failed to convert image URL to base64")
                                         }
                                     }
                                     //print("end")
                                 case .failure(let error):
+                                    vinylImage.isHidden = true
+                                    self.generatingLabel.isHidden = true
+                                    self.errorLabel.isHidden = false
                                     print("Failed to create playlist:", error)
                                 }
                                 
                             }
                         } else {
                             print("Invalid JSON Format")
-                            // Handle the case where the response is not valid JSON
+                            vinylImage.isHidden = true
+                            self.generatingLabel.isHidden = true
+                            self.errorLabel.isHidden = false
                         }
-                    } catch {
-                        print("Error parsing JSON: \(error.localizedDescription). Data = \(String(decoding: data, as: UTF8.self))")
-                        // Handle the case where an error occurred during JSON parsing
-                    }
+                    } 
                 } else {
                     print("No Data Received")
-                    // Handle the case where no data was received in the response
+                    vinylImage.isHidden = true
+                    self.generatingLabel.isHidden = true
+                    self.errorLabel.isHidden = false
                 }
             }
             task.resume()
@@ -390,7 +423,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 let userDocument = usersCollection.document(userID)
                 
                 // Prepare the playlist data to be saved in Firestore
-                let playlistData: [String: Any] = [
+                var playlistData: [String: Any] = [
                     "description": playlist.description ?? "",
                     "external_urls": playlist.external_urls ?? [:],
                     "id": playlist.id,
@@ -400,6 +433,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     "uri": playlist.uri,
                     "isAppGenerated": true
                 ]
+                
+                // Add a timestamp to the playlist data
+                playlistData["timestamp"] = FieldValue.serverTimestamp()
                 
                 // Add a new document to the "playlists" subcollection in the user's document
                 userDocument.collection("playlists").addDocument(data: playlistData) { error in
@@ -412,9 +448,11 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             case .failure(let error):
                 // Handle the error if failed to retrieve the user profile
                 print("Failed to get user profile: \(error)")
+                completion(.failure(error))
             }
         }
     }
+
 
 
     

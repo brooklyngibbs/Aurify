@@ -142,7 +142,6 @@ struct LibraryView: View {
 
     //MARK: PROFILE FUNCTIONS
     private func fetchProfile() {
-        // Always make the API call to get the display name and user ID
         APICaller.shared.getCurrentUserProfile { [self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -177,12 +176,12 @@ struct LibraryView: View {
     private func loadProfileImageFromStorage(userID: String) {
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let profilePicsRef = storageRef.child("profilePics/\(userID)/profileImage.jpg") // Adjust path accordingly
+        let profilePicsRef = storageRef.child("profilePics/\(userID)/profileImage.jpg")
         
         profilePicsRef.getData(maxSize: 10 * 1024 * 1024) { [self] data, error in
             if let error = error {
                 print("Error downloading profile image: \(error.localizedDescription)")
-                // Handle error (for example, show a placeholder image)
+
             } else {
                 if let imageData = data, let loadedImage = UIImage(data: imageData) {
                     DispatchQueue.main.async {
@@ -211,8 +210,6 @@ struct LibraryView: View {
             }
         }
     }
-    
-    
     
     private func loadImage(from url: URL) {
         URLSession.shared.dataTask(with: url) { data, _, error in

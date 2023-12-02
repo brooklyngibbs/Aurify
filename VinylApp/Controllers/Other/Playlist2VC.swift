@@ -7,6 +7,12 @@ struct Playlist2VC: View {
     private var cancellables = Set<AnyCancellable>()
     @State private var imageHeight: CGFloat = UIScreen.main.bounds.width
     @State private var isShuffled = false
+    @State private var isPlaybackErrorVisible = false
+    @State private var playbackErrorMessage = "Play music from Spotify to start Soundtrak playback!"
+    @State private var isFirstPlaybackStateTrue = true
+    @State private var isPlayButtonClicked = false
+    @State private var isShuffleButtonClicked = false
+    
     
     internal init(playlist: Playlist) {
         self.playlist = playlist
@@ -38,6 +44,28 @@ struct Playlist2VC: View {
             ScrollView {
                 VStack(spacing: 0) {
                     playlistHeader
+                    if isPlaybackErrorVisible  {
+                        HStack{
+                            Image(systemName: "exclamationmark.triangle")
+                                .foregroundColor(Color.white)
+                            Text(playbackErrorMessage)
+                                .font(.custom("Inter-SemiBold", size: 13))
+                                .foregroundColor(Color.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.leading, -10)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .transition(.slide)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color(AppColors.venetian_red), lineWidth: 3)
+                        )
+                        .background(Color(AppColors.venetian_red))
+                        .frame(maxWidth: UIScreen.main.bounds.width * 0.8)
+                        .cornerRadius(8)
+                    }
+                    
                     Spacer()
                     trackList
                 }
@@ -56,6 +84,7 @@ struct Playlist2VC: View {
         .toolbarRole(.editor)
         .onAppear {
             fetchPlaylistDetails()
+            getPlaybackState()
         }
     }
     
@@ -79,7 +108,6 @@ struct Playlist2VC: View {
     
     private var shuffleButton: some View {
         Button(action: {
-            isShuffled.toggle()
             shuffleClick()
         }) {
             Image(systemName: "shuffle")
@@ -104,13 +132,44 @@ struct Playlist2VC: View {
         .padding(.top, 20)
     }
     
+    private func getPlaybackState() {
+        APICaller.shared.getPlaybackState { playbackState in
+            DispatchQueue.main.async {
+                let isPlaybackTrue = playbackState ?? false
+                isPlaybackErrorVisible = !isPlaybackTrue && (isPlayButtonClicked || isShuffleButtonClicked)
+                
+                if isPlaybackTrue && isFirstPlaybackStateTrue {
+                    isFirstPlaybackStateTrue = false
+                    turnOffShuffle()
+                }
+            }
+        }
+    }
+    
     private func shuffleClick() {
-        APICaller.shared.shuffleSpotifyPlayer(state: isShuffled)
+        getPlaybackState()
+        isShuffleButtonClicked = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if !isPlaybackErrorVisible {
+                isShuffled.toggle()
+                APICaller.shared.shuffleSpotifyPlayer(state: isShuffled)
+            }
+        }
+    }
+    
+    private func turnOffShuffle() {
+        APICaller.shared.shuffleSpotifyPlayer(state: false)
     }
     
     private func startPlayback() {
-        let contextURI = "spotify:playlist:\(playlist.id)"
-        APICaller.shared.startPlaybackRequest(with: contextURI)
+        getPlaybackState()
+        isPlayButtonClicked = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if !isPlaybackErrorVisible {
+                let contextURI = "spotify:playlist:\(playlist.id)"
+                APICaller.shared.startPlaybackRequest(with: contextURI)
+            }
+        }
     }
     
     private var trackList: some View {
@@ -118,9 +177,9 @@ struct Playlist2VC: View {
             let isLastCell = index == viewModels.indices.last
             TrackCell(viewModel: viewModels[index], isLastCell: isLastCell)
                 .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .foregroundColor(viewModels[index].isTrackTapped ? Color.gray.opacity(0.3) : Color.white)
-                        )
+                    RoundedRectangle(cornerRadius: 8)
+                        .foregroundColor(viewModels[index].isTrackTapped ? Color.gray.opacity(0.3) : Color.white)
+                )
                 .onTapGesture {
                     viewModels.indices.forEach { viewModels[$0].isTrackTapped = false }
                     viewModels[index].isTrackTapped.toggle()

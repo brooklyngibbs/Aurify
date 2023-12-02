@@ -42,6 +42,40 @@ final class APICaller {
     }
     
     //MARK: - Playback
+    
+    func getPlaybackState(completion: @escaping (Bool?) -> Void) {
+        guard let url = URL(string: "https://api.spotify.com/v1/me/player") else {
+            completion(nil)
+            return
+        }
+
+        createRequest(with: url, type: .GET) { request in
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    print("Error fetching playback state: \(error.localizedDescription)")
+                    completion(nil)
+                    return
+                }
+
+                guard let data = data, !data.isEmpty else {
+                    completion(false) // Return false when the data is empty
+                    return
+                }
+
+                do {
+                    // Parse the JSON response to retrieve the 'is_playing' state
+                    let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                    let isPlaying = json?["is_playing"] as? Bool
+                    completion(isPlaying)
+                } catch {
+                    print("Error parsing JSON: \(error)")
+                    completion(nil)
+                }
+            }
+            task.resume()
+        }
+    }
+    
     func startPlaybackRequest(with contextURI: String) {
         let url = URL(string: "https://api.spotify.com/v1/me/player/play")!
 
@@ -295,11 +329,10 @@ final class APICaller {
         }
     }
 
-
     public func searchSong(q: SongInfo, playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
         let artistName = q.artist
         
-        let formattedQuery = q.title.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let formattedQuery = ("title:\(q.title)artist:\(q.artist)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         
         let urlString = Constants.baseAPIURL + "/search?q=\(formattedQuery)&type=track&limit=50"
         
