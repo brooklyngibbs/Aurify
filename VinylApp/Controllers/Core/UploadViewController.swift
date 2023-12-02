@@ -20,6 +20,7 @@ struct ImageInfo: Codable {
 var completedImage: UIImageView!
 var completedLabel: UILabel!
 var vinylImage: UIImageView!
+var errorImage: UIImageView!
 
 class UploadViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -62,7 +63,21 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         NSLayoutConstraint.activate([
             errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            errorLabel.topAnchor.constraint(equalTo: view.topAnchor)
+            errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -100),
+        ])
+        
+        errorImage = UIImageView()
+        errorImage.image = UIImage(named: "error")
+        errorImage.contentMode = .scaleAspectFit
+        errorImage.translatesAutoresizingMaskIntoConstraints = false
+        errorImage.isHidden = true
+        view.addSubview(errorImage)
+        
+        NSLayoutConstraint.activate([
+            errorImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            errorImage.topAnchor.constraint(equalTo: errorLabel.bottomAnchor),
+            errorImage.widthAnchor.constraint(equalToConstant: 200),
+            errorImage.heightAnchor.constraint(equalToConstant: 200)
         ])
         
         vinylImage = UIImageView()
@@ -175,9 +190,12 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             request.httpBody = jsonData
             let task = URLSession.shared.dataTask(with: request) { data, response, error in
                 if let error = error {
-                    vinylImage.isHidden = true
-                    self.generatingLabel.isHidden = true
-                    self.errorLabel.isHidden = false
+                    DispatchQueue.main.async {
+                        vinylImage.isHidden = true
+                        self.generatingLabel.isHidden = true
+                        self.errorLabel.isHidden = false
+                        errorImage.isHidden = false
+                    }
                     print("Error sending data to Firebase Function: \(error.localizedDescription)")
                 } else if let data = data {
                     do {
@@ -193,9 +211,12 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                         case .success:
                                             print("Playlist saved to Firestore successfully")
                                         case .failure(let error):
-                                            vinylImage.isHidden = true
-                                            self.generatingLabel.isHidden = true
-                                            self.errorLabel.isHidden = false
+                                            DispatchQueue.main.async {
+                                                vinylImage.isHidden = true
+                                                self.generatingLabel.isHidden = true
+                                                self.errorLabel.isHidden = false
+                                                errorImage.isHidden = false
+                                            }
                                             print("Failed to save playlist to Firestore:", error)
                                         }
                                     }
@@ -208,40 +229,55 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                                     self.addTracksSequentially(to: playlistID, songlist: json.songlist)
                                                     print("Successfully updated playlist image")
                                                 case .failure(let error):
-                                                    vinylImage.isHidden = true
-                                                    self.generatingLabel.isHidden = true
-                                                    self.errorLabel.isHidden = false
+                                                    DispatchQueue.main.async {
+                                                        vinylImage.isHidden = true
+                                                        self.generatingLabel.isHidden = true
+                                                        self.errorLabel.isHidden = false
+                                                        errorImage.isHidden = false
+                                                    }
                                                     print("Failed to update playlist image:", error)
                                                 }
                                             }
                                         } else {
-                                            vinylImage.isHidden = true
-                                            self.generatingLabel.isHidden = true
-                                            self.errorLabel.isHidden = false
+                                            DispatchQueue.main.async {
+                                                vinylImage.isHidden = true
+                                                self.generatingLabel.isHidden = true
+                                                self.errorLabel.isHidden = false
+                                                errorImage.isHidden = false
+                                            }
                                             print("Failed to convert image URL to base64")
                                         }
                                     }
                                     //print("end")
                                 case .failure(let error):
-                                    vinylImage.isHidden = true
-                                    self.generatingLabel.isHidden = true
-                                    self.errorLabel.isHidden = false
+                                    DispatchQueue.main.async {
+                                        vinylImage.isHidden = true
+                                        self.generatingLabel.isHidden = true
+                                        self.errorLabel.isHidden = false
+                                        errorImage.isHidden = false
+                                    }
                                     print("Failed to create playlist:", error)
                                 }
                                 
                             }
                         } else {
                             print("Invalid JSON Format")
-                            vinylImage.isHidden = true
-                            self.generatingLabel.isHidden = true
-                            self.errorLabel.isHidden = false
+                            DispatchQueue.main.async {
+                                vinylImage.isHidden = true
+                                self.generatingLabel.isHidden = true
+                                self.errorLabel.isHidden = false
+                                errorImage.isHidden = false
+                            }
                         }
                     } 
                 } else {
                     print("No Data Received")
-                    vinylImage.isHidden = true
-                    self.generatingLabel.isHidden = true
-                    self.errorLabel.isHidden = false
+                    DispatchQueue.main.async {
+                        vinylImage.isHidden = true
+                        self.generatingLabel.isHidden = true
+                        self.errorLabel.isHidden = false
+                        errorImage.isHidden = false
+                    }
                 }
             }
             task.resume()
@@ -276,8 +312,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 }
             case .failure(let error):
                 print("Failed to get trackURI for song", error)
-                // Handle the failure to get trackURI here
-                // Move to the next song after a delay
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.addTracksSequentially(to: playlistID, songlist: songlist, currentIndex: currentIndex + 1)
                 }
@@ -401,11 +435,23 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                         dashBorder.path = UIBezierPath(roundedRect: completedImage.bounds, cornerRadius: 20).cgPath 
                         completedImage.layer.addSublayer(dashBorder)
                     } else {
+                        DispatchQueue.main.async {
+                            vinylImage.isHidden = true
+                            self.generatingLabel.isHidden = true
+                            self.errorLabel.isHidden = false
+                            errorImage.isHidden = false
+                        }
                         print("Failed to load image.")
                     }
                 }
                 
             case .failure(let error):
+                DispatchQueue.main.async {
+                    vinylImage.isHidden = true
+                    self.generatingLabel.isHidden = true
+                    self.errorLabel.isHidden = false
+                    errorImage.isHidden = false
+                }
                 print("Failed to fetch playlist:", error)
             }
         }
@@ -446,7 +492,12 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     }
                 }
             case .failure(let error):
-                // Handle the error if failed to retrieve the user profile
+                DispatchQueue.main.async {
+                    vinylImage.isHidden = true
+                    self.generatingLabel.isHidden = true
+                    self.errorLabel.isHidden = false
+                    errorImage.isHidden = false
+                }
                 print("Failed to get user profile: \(error)")
                 completion(.failure(error))
             }
