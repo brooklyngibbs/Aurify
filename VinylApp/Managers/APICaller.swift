@@ -328,6 +328,42 @@ final class APICaller {
             task.resume()
         }
     }
+    
+    public func addTrackArrayToPlaylist(trackURI: [String], playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let urlString = Constants.baseAPIURL + "/playlists/\(playlist_id)/tracks"
+        
+        createRequest(with: URL(string: urlString), type: .POST) { baseRequest in
+            var request = baseRequest
+            let json = [
+                "uris": trackURI
+            ]
+            request.httpBody = try? JSONSerialization.data(withJSONObject: json, options: .fragmentsAllowed)
+            
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                guard let data = data, error == nil else {
+                    completion(.failure(error ?? APIError.failedToGetData))
+                    return
+                }
+                
+                if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201 {
+                    // If the status code is 201 (Created), extract playlist ID from the response
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                        if let snapshotID = json?["snapshot_id"] as? String {
+                            completion(.success(snapshotID))
+                        } else {
+                            completion(.failure(APIError.failedToGetData))
+                        }
+                    } catch {
+                        completion(.failure(error))
+                    }
+                } else {
+                    completion(.failure(APIError.failedToGetData))
+                }
+            }
+            task.resume()
+        }
+    }
 
     public func searchSong(q: SongInfo, playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
         let formattedQ = ("artist:\(q.artist)&title:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
