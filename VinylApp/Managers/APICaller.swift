@@ -330,12 +330,9 @@ final class APICaller {
     }
 
     public func searchSong(q: SongInfo, playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let artistName = q.artist
-        
-        let formattedQuery = ("title:\(q.title)artist:\(q.artist)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        
-        let urlString = Constants.baseAPIURL + "/search?q=\(formattedQuery)&type=track&limit=50"
-        
+        let formattedQ = ("artist:\(q.artist)&title:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let urlString = Constants.baseAPIURL + "/search?q=\(formattedQ)&type=track&limit=1"
+
         createRequest(with: URL(string: urlString), type: .GET) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
                 guard let data = data, error == nil else {
@@ -346,38 +343,11 @@ final class APICaller {
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                        let tracks = json["tracks"] as? [String: Any],
-                       let items = tracks["items"] as? [[String: Any]] {
+                       let items = tracks["items"] as? [[String: Any]],
+                       let firstItem = items.first,
+                       let uri = firstItem["uri"] as? String {
                         
-                        // Fetch the URI of the artist
-                        self.getArtistURI(artist: artistName) { result in
-                            switch result {
-                            case .success(let artistURI):
-                                // Iterate through the track items and find the matching track URI for the artist
-                                if let matchingTrack = items.first(where: { track in
-                                    if let artists = track["artists"] as? [[String: Any]] {
-                                        for artist in artists {
-                                            if let artistURIFromTrack = artist["uri"] as? String {
-                                                if artistURIFromTrack == artistURI {
-                                                    return true
-                                                }
-                                            }
-                                        }
-                                    }
-                                    return false
-                                }) {
-                                    if let trackURI = matchingTrack["uri"] as? String {
-                                        completion(.success(trackURI))
-                                    } else {
-                                        completion(.failure(APIError.failedToGetData))
-                                    }
-                                } else {
-                                    completion(.failure(APIError.failedToGetData))
-                                }
-                                
-                            case .failure(let error):
-                                completion(.failure(error))
-                            }
-                        }
+                        completion(.success(uri))
                     } else {
                         completion(.failure(APIError.failedToGetData))
                     }
@@ -388,6 +358,7 @@ final class APICaller {
             task.resume()
         }
     }
+
 
     public func getPlaylist(with playlist_id: String, completion: @escaping (Result<Playlist, Error>) -> Void) {
         let urlString = Constants.baseAPIURL + "/playlists/\(playlist_id)"
