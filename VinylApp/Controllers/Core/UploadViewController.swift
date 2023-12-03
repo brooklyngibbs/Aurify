@@ -37,6 +37,8 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     private var labelTimer: Timer?
     private var labelIndex = 0
     
+    var songURIs: [String] = []
+    
     private let storage = Storage.storage().reference()
     
     // MARK: - View Lifecycle
@@ -225,7 +227,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                             APICaller.shared.updatePlaylistImage(imageBase64: base64String, playlistID: playlistID) { updateResult in
                                                 switch updateResult {
                                                 case .success:
-                                                    //self.searchAndAddTracks(to: playlistID, songlist: json.songlist)
+                                                    //self.searchAndAppendTrackURIs(songs: json.songlist, playlistID: playlistID)
                                                     self.addTracksSequentially(to: playlistID, songlist: json.songlist)
                                                     print("Successfully updated playlist image")
                                                 case .failure(let error):
@@ -285,6 +287,44 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     //MARK: ADD TRACKS
+    
+    func searchAndAppendTrackURIs(songs: [SongInfo], playlistID: String) {
+        var processedCount = 0
+        
+        for song in songs {
+            APICaller.shared.searchSong(q: song, playlist_id: playlistID) { result in
+                switch result {
+                case .success(let trackURI):
+                    self.songURIs.append(trackURI)
+                    processedCount += 1
+                    
+                    if processedCount == songs.count {
+                        // All songs have been processed, add the collected track URIs to the playlist
+                        self.addTracksToPlaylist(playlistID: playlistID)
+                    }
+                case .failure(let error):
+                    print("Failed to get trackURI for song", error)
+                    // Handle failure if necessary
+                }
+            }
+        }
+    }
+    
+    func addTracksToPlaylist(playlistID: String) {
+        // Here you have collected all song URIs in self.songURIs
+        // You can now add these tracks to the playlist using the obtained URIs
+        APICaller.shared.addTrackArrayToPlaylist(trackURI: self.songURIs, playlist_id: playlistID) { addResult in
+            switch addResult {
+            case .success(let playlist):
+                print("Successfully added tracks to playlist:", playlist)
+                // Handle success if needed
+            case .failure(let error):
+                print("Failed to add tracks to playlist:", error)
+                // Handle failure if needed
+            }
+        }
+    }
+    
     func addTracksSequentially(to playlistID: String, songlist: [SongInfo], currentIndex: Int = 0) {
         guard currentIndex < songlist.count else {
             // All songs added to the playlist
