@@ -85,13 +85,13 @@
 		6655DB202AE1FD8F00BC619F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6668831A2B0E6E86005864D0 /* clean-background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clean-background.png"; path = "../../../vinyl_images/clean-background.png"; sourceTree = "<group>"; };
 		6668831C2B0E6E8B005864D0 /* clean-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clean-logo.png"; path = "../../../vinyl_images/clean-logo.png"; sourceTree = "<group>"; };
-		6673F4062B17E55600A18E79 /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Bold.ttf"; path = "../../../Inter/static/Inter-Bold.ttf"; sourceTree = "<group>"; };
-		6673F4082B17E55C00A18E79 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-SemiBold.ttf"; path = "../../../Inter/static/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
+		6673F4062B17E55600A18E79 /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Bold.ttf"; path = "../../../vinyl_images/Inter/static/Inter-Bold.ttf"; sourceTree = "<group>"; };
+		6673F4082B17E55C00A18E79 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-SemiBold.ttf"; path = "../../../vinyl_images/Inter/static/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		6673F40A2B18527200A18E79 /* writing_man_trans.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = writing_man_trans.png; path = ../../../vinyl_images/writing_man_trans.png; sourceTree = "<group>"; };
 		6673F40C2B18634000A18E79 /* transparentmusicman.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = transparentmusicman.png; path = ../../../vinyl_images/transparentmusicman.png; sourceTree = "<group>"; };
 		6673F40E2B1901D900A18E79 /* headphones_man.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = headphones_man.jpeg; path = ../../../vinyl_images/headphones_man.jpeg; sourceTree = "<group>"; };
-		6673F4122B19033C00A18E79 /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Regular.ttf"; path = "../../../Inter/static/Inter-Regular.ttf"; sourceTree = "<group>"; };
-		6673F4142B19034700A18E79 /* Inter-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Light.ttf"; path = "../../../Inter/static/Inter-Light.ttf"; sourceTree = "<group>"; };
+		6673F4122B19033C00A18E79 /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Regular.ttf"; path = "../../../vinyl_images/Inter/static/Inter-Regular.ttf"; sourceTree = "<group>"; };
+		6673F4142B19034700A18E79 /* Inter-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Light.ttf"; path = "../../../vinyl_images/Inter/static/Inter-Light.ttf"; sourceTree = "<group>"; };
 		6673F4182B19077000A18E79 /* 70s_man.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 70s_man.png; path = ../../../vinyl_images/70s_man.png; sourceTree = "<group>"; };
 		66784C102B19959B00EDCB4B /* vinyl3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vinyl3.png; path = ../../../vinyl_images/vinyl3.png; sourceTree = "<group>"; };
 		6681E5AB2AE1FC4700A81DB5 /* VinylApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VinylApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -119,7 +119,7 @@
 		66F70FA52B0D1722005062AD /* Outfit-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Outfit-Bold.ttf"; path = "../../../vinyl_images/Outfit/static/Outfit-Bold.ttf"; sourceTree = "<group>"; };
 		66F70FA72B0D1765005062AD /* ZillaSlab-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ZillaSlab-Light.ttf"; path = "../../../vinyl_images/Zilla_Slab/ZillaSlab-Light.ttf"; sourceTree = "<group>"; };
 		66FCA1A02B16617D00741A1A /* Playlist2VC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist2VC.swift; sourceTree = "<group>"; };
-		66FCA1A22B16850100741A1A /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Medium.ttf"; path = "../../../Inter/static/Inter-Medium.ttf"; sourceTree = "<group>"; };
+		66FCA1A22B16850100741A1A /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Medium.ttf"; path = "../../../vinyl_images/Inter/static/Inter-Medium.ttf"; sourceTree = "<group>"; };
 		66FCA1A62B168B5800741A1A /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		EBF9BEE0C09F903E47E7DEF9 /* Pods_VinylApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VinylApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
