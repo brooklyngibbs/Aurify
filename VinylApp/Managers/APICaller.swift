@@ -366,7 +366,7 @@ final class APICaller {
     }
 
     public func searchSong(q: SongInfo, playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let formattedQ = ("artist:\(q.artist)&title:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let formattedQ = ("artist:\(q.artist)&track:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let urlString = Constants.baseAPIURL + "/search?q=\(formattedQ)&type=track&limit=1"
 
         createRequest(with: URL(string: urlString), type: .GET) { request in
