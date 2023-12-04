@@ -227,8 +227,8 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                             APICaller.shared.updatePlaylistImage(imageBase64: base64String, playlistID: playlistID) { updateResult in
                                                 switch updateResult {
                                                 case .success:
-                                                    //self.searchAndAppendTrackURIs(songs: json.songlist, playlistID: playlistID)
-                                                    self.addTracksSequentially(to: playlistID, songlist: json.songlist)
+                                                    self.searchAndAppendTrackURIs(songs: json.songlist, playlistID: playlistID)
+                                                    //self.addTracksSequentially(to: playlistID, songlist: json.songlist)
                                                     print("Successfully updated playlist image")
                                                 case .failure(let error):
                                                     DispatchQueue.main.async {
@@ -258,7 +258,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                         self.errorLabel.isHidden = false
                                         errorImage.isHidden = false
                                     }
-                                    print("Failed to create playlist:", error)
+                                    print("Failed to create playlist: \(error.localizedDescription)")
                                 }
                                 
                             }
@@ -289,34 +289,29 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     //MARK: ADD TRACKS
     
     func searchAndAppendTrackURIs(songs: [SongInfo], playlistID: String) {
-        var processedCount = 0
-        
-        for song in songs {
-            APICaller.shared.searchSong(q: song, playlist_id: playlistID) { result in
-                switch result {
+        APICaller.shared.searchManySongs(q: songs) {results in
+            let songURIs = results.compactMap {result in
+                switch(result) {
                 case .success(let trackURI):
-                    self.songURIs.append(trackURI)
-                    processedCount += 1
-                    
-                    if processedCount == songs.count {
-                        // All songs have been processed, add the collected track URIs to the playlist
-                        self.addTracksToPlaylist(playlistID: playlistID)
-                    }
-                case .failure(let error):
-                    print("Failed to get trackURI for song", error)
-                    // Handle failure if necessary
+                    return trackURI
+                case .failure(_):
+                    return nil
                 }
             }
+            self.addTracksToPlaylist(playlistID: playlistID, songURIs: songURIs)
         }
     }
     
-    func addTracksToPlaylist(playlistID: String) {
+    func addTracksToPlaylist(playlistID: String, songURIs: [String]) {
         // Here you have collected all song URIs in self.songURIs
         // You can now add these tracks to the playlist using the obtained URIs
-        APICaller.shared.addTrackArrayToPlaylist(trackURI: self.songURIs, playlist_id: playlistID) { addResult in
+        APICaller.shared.addTrackArrayToPlaylist(trackURI: songURIs, playlist_id: playlistID) { addResult in
             switch addResult {
             case .success(let playlist):
                 print("Successfully added tracks to playlist:", playlist)
+                DispatchQueue.main.async {
+                    self.updateUI(playlist_id: playlistID)
+                }
                 // Handle success if needed
             case .failure(let error):
                 print("Failed to add tracks to playlist:", error)
@@ -335,7 +330,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         let currentSong = songlist[currentIndex]
         
-        APICaller.shared.searchSong(q: currentSong, playlist_id: playlistID) { result in
+        APICaller.shared.searchSong(q: currentSong) { result in
             switch result {
             case .success(let trackURI):
                 APICaller.shared.addTrackToPlaylist(trackURI: trackURI, playlist_id: playlistID) { addResult in
