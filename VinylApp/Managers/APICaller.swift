@@ -32,7 +32,6 @@ final class APICaller {
                 }
                 
                 do {
-                    print("data = \(String(describing: String(bytes: data, encoding: .utf8)))")
                     let result = try JSONDecoder().decode(UserProfile.self, from: data)
                     completion(.success(result))
                 } catch {
@@ -379,11 +378,6 @@ final class APICaller {
         }
     }
 
-<<<<<<< HEAD
-    public func searchSong(q: SongInfo, playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let formattedQ = ("artist:\(q.artist)&track:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let urlString = Constants.baseAPIURL + "/search?q=\(formattedQ)&type=track&limit=1"
-=======
     public func searchManySongs(q: [SongInfo], completion: @escaping ([Result<String, Error>]) -> Void) {
         let group = DispatchGroup()
         var index = 0
@@ -401,7 +395,7 @@ final class APICaller {
             completion(output)
         }
     }
->>>>>>> 451bd6b928fcfa483abd262e6957d1a631a68e64
+
 
     public func searchSong(q: SongInfo, completion: @escaping (Result<String, Error>) -> Void) {
         //let formattedQ = ("artist:\(q.artist) track:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
@@ -458,6 +452,59 @@ final class APICaller {
             task.resume()
         }
     }
+    
+    public func getTopArtists(completion: @escaping (Result<[String], Error>) -> Void) {
+        let timeRanges = ["short_term", "medium_term", "long_term"]
+        var allTopArtists: [String] = []
+
+        let group = DispatchGroup()
+
+        for timeRange in timeRanges {
+            group.enter()
+            let urlString = Constants.baseAPIURL + "/me/top/artists?time_range=\(timeRange)&limit=5"
+            guard let url = URL(string: urlString) else {
+                completion(.failure(APIError.failedToGetData))
+                return
+            }
+            
+            createRequest(with: url, type: .GET) { request in
+                let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                    defer { group.leave() }
+
+                    guard let data = data, error == nil else {
+                        if let error = error {
+                            completion(.failure(error))
+                        } else {
+                            completion(.failure(APIError.failedToGetData))
+                        }
+                        return
+                    }
+                    
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                        
+                        if let items = json?["items"] as? [[String: Any]] {
+                            for item in items {
+                                if let artistName = item["name"] as? String {
+                                    allTopArtists.append(artistName)
+                                }
+                            }
+                        }
+                    } catch {
+                        completion(.failure(error))
+                    }
+                }
+                
+                task.resume()
+            }
+        }
+        
+        group.notify(queue: .main) {
+            let uniqueArtists = Array(Set(allTopArtists))
+            completion(.success(uniqueArtists))
+        }
+    }
+
 
 
     public func createPlaylist(with name: String, description: String, completion: @escaping (Result<Playlist, Error>) -> Void) {

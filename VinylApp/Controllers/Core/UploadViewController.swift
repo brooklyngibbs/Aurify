@@ -6,6 +6,7 @@ import Firebase
 struct SongInfo: Codable {
     var title: String
     var artist: String
+    var reason: String
 }
 
 struct ImageInfo: Codable {
@@ -38,6 +39,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     private var labelIndex = 0
     
     var songURIs: [String] = []
+    var topArtists: [String] = []
     
     private let storage = Storage.storage().reference()
     
@@ -49,6 +51,8 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         view.backgroundColor = .white
         
         self.navigationItem.hidesBackButton = true
+        
+        fetchTopArtists(limit: 7)
         
         errorLabel = UILabel()
         errorLabel.text = "Uh Oh! Something went wrong."
@@ -175,6 +179,21 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         vinylImage.layer.add(rotationAnimation, forKey: "rotationAnimation")
     }
     
+    
+    func fetchTopArtists(limit: Int) {
+        APICaller.shared.getTopArtists() { [weak self] result in
+            guard let self = self else { return }
+
+            switch result {
+            case .success(let artists):
+                self.topArtists = artists
+                print("Fetched Top Artists: \(self.topArtists)")
+                
+            case .failure(let error):
+                print("Error fetching top artists: \(error)")
+            }
+        }
+    }
     // MARK: - Firebase Function
     
     func sendImageUrlToFirebaseFunction(url: String) {
@@ -187,7 +206,11 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let requestData = ["image_url": url]
+        let requestData = [
+            "image_url": url,
+            "artists": topArtists
+        ] as [String : Any]
+        
         if let jsonData = try? JSONSerialization.data(withJSONObject: requestData) {
             request.httpBody = jsonData
             let task = URLSession.shared.dataTask(with: request) { data, response, error in
