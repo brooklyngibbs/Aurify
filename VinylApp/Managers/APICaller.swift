@@ -26,14 +26,17 @@ final class APICaller {
         createRequest(with: URL(string: Constants.baseAPIURL + "/me"), type: .GET) { baseRequest in
             let task = URLSession.shared.dataTask(with: baseRequest) { data, _, error in
                 guard let data = data, error == nil else {
+                    print("Current Error 1")
                     completion(.failure(APIError.failedToGetData))
                     return
                 }
                 
                 do {
+                    print("data = \(String(describing: String(bytes: data, encoding: .utf8)))")
                     let result = try JSONDecoder().decode(UserProfile.self, from: data)
                     completion(.success(result))
                 } catch {
+                    print("Catch current error")
                     completion(.failure(error))
                 }
             }
@@ -331,6 +334,10 @@ final class APICaller {
     
     public func addTrackArrayToPlaylist(trackURI: [String], playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
         let urlString = Constants.baseAPIURL + "/playlists/\(playlist_id)/tracks"
+        guard !trackURI.isEmpty else {
+            completion(.failure(NSError(domain: "No tracks given for playlist", code: 0)))
+            return
+        }
         
         createRequest(with: URL(string: urlString), type: .POST) { baseRequest in
             var request = baseRequest
@@ -341,6 +348,7 @@ final class APICaller {
             
             let task = URLSession.shared.dataTask(with: request) { data, response, error in
                 guard let data = data, error == nil else {
+                    print("Failure Atatp 1")
                     completion(.failure(error ?? APIError.failedToGetData))
                     return
                 }
@@ -352,12 +360,18 @@ final class APICaller {
                         if let snapshotID = json?["snapshot_id"] as? String {
                             completion(.success(snapshotID))
                         } else {
+                            print("Failure atatp 2")
                             completion(.failure(APIError.failedToGetData))
                         }
                     } catch {
+                        print("Failure atatp 3")
                         completion(.failure(error))
                     }
                 } else {
+                    if let httpResponse = response as? HTTPURLResponse {
+                        print("Status: \(httpResponse.statusCode)")
+                    }
+                    print("Failure atatp 4")
                     completion(.failure(APIError.failedToGetData))
                 }
             }
@@ -365,10 +379,28 @@ final class APICaller {
         }
     }
 
-    public func searchSong(q: SongInfo, playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let formattedQ = ("artist:\(q.artist)&title:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let urlString = Constants.baseAPIURL + "/search?q=\(formattedQ)&type=track&limit=1"
+    public func searchManySongs(q: [SongInfo], completion: @escaping ([Result<String, Error>]) -> Void) {
+        let group = DispatchGroup()
+        var index = 0
+        var output = [Result<String, Error>](repeating: .success(""), count: q.count)
+        for song in q {
+            group.enter()
+            let actualIndex = index
+            searchSong(q: song) { result in
+                output[actualIndex] = result
+                group.leave()
+            }
+            index += 1
+        }
+        group.notify(queue: .main) {
+            completion(output)
+        }
+    }
 
+    public func searchSong(q: SongInfo, completion: @escaping (Result<String, Error>) -> Void) {
+        //let formattedQ = ("artist:\(q.artist) track:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let formattedQ = ("\(q.title) artist:\(q.artist)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let urlString = Constants.baseAPIURL + "/search?q=\(formattedQ)&type=track&limit=1"
         createRequest(with: URL(string: urlString), type: .GET) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
                 guard let data = data, error == nil else {
@@ -437,6 +469,7 @@ final class APICaller {
                     
                     let task = URLSession.shared.dataTask(with: request) { data, _, error in
                         guard let data = data, error == nil else {
+                            print("Error location 1")
                             completion(.failure(error ?? APIError.failedToGetData))
                             return
                         }
@@ -445,12 +478,14 @@ final class APICaller {
                             let result = try JSONDecoder().decode(Playlist.self, from: data)
                             completion(.success(result))
                         } catch {
+                            print("Error location 2")
                             completion(.failure(error))
                         }
                     }
                     task.resume()
                 }
             case .failure(let error):
+                print("Error location 3")
                 completion(.failure(error))
             }
         }
