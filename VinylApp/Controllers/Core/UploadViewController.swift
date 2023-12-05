@@ -52,7 +52,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         self.navigationItem.hidesBackButton = true
         
-        fetchTopArtists(limit: 7)
+        fetchTopArtists(limit: 10)
         
         errorLabel = UILabel()
         errorLabel.text = "Uh Oh! Something went wrong."
@@ -92,7 +92,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         vinylImage.translatesAutoresizingMaskIntoConstraints = false
         vinylImage.isHidden = true
         view.addSubview(vinylImage)
-
+        
         // Constraints for the custom image view (centered in the view)
         NSLayoutConstraint.activate([
             vinylImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -126,7 +126,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             generatingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             generatingLabel.topAnchor.constraint(equalTo: vinylImage.bottomAnchor, constant: 20)
         ])
-
+        
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(containerView)
@@ -181,9 +181,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     
     func fetchTopArtists(limit: Int) {
-        APICaller.shared.getTopArtists() { [weak self] result in
+        APICaller.shared.getTopArtists(limit: limit) { [weak self] result in
             guard let self = self else { return }
-
+            
             switch result {
             case .success(let artists):
                 self.topArtists = artists
@@ -286,7 +286,11 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                 
                             }
                         } else {
-                            print("Invalid JSON Format")
+                            if let jsonString = String(data: data, encoding: .utf8) {
+                                print("Invalid JSON Format. Response:", jsonString)
+                            } else {
+                                print("Invalid JSON Format. Unable to parse response data.")
+                            }
                             DispatchQueue.main.async {
                                 vinylImage.isHidden = true
                                 self.generatingLabel.isHidden = true
@@ -294,7 +298,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                 errorImage.isHidden = false
                             }
                         }
-                    } 
+                    }
                 } else {
                     print("No Data Received")
                     DispatchQueue.main.async {
@@ -456,7 +460,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         task.resume()
     }
     
-//MARK: UPDATE UI
+    //MARK: UPDATE UI
     func updateUI(playlist_id: String) {
         // Hide loading indicator
         vinylImage.isHidden = true
@@ -479,10 +483,10 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     self.uploadComplete()
                     if let image = UIImage(named: "70s_man") {
                         completedImage.image = image
-
+                        
                         completedImage.layer.cornerRadius = 20
                         completedImage.clipsToBounds = true
-
+                        
                         // dashed border
                         let dashBorder = CAShapeLayer()
                         dashBorder.strokeColor = AppColors.gainsboro.cgColor
@@ -490,7 +494,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                         dashBorder.lineWidth = 5
                         dashBorder.frame = completedImage.bounds
                         dashBorder.fillColor = nil
-                        dashBorder.path = UIBezierPath(roundedRect: completedImage.bounds, cornerRadius: 20).cgPath 
+                        dashBorder.path = UIBezierPath(roundedRect: completedImage.bounds, cornerRadius: 20).cgPath
                         completedImage.layer.addSublayer(dashBorder)
                     } else {
                         DispatchQueue.main.async {
@@ -561,9 +565,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             }
         }
     }
-
-
-
+    
+    
+    
     
     func uploadComplete() {
         selectedImage = nil

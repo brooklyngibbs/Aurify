@@ -453,7 +453,7 @@ final class APICaller {
         }
     }
     
-    public func getTopArtists(completion: @escaping (Result<[String], Error>) -> Void) {
+    public func getTopArtists(limit: Int, completion: @escaping (Result<[String], Error>) -> Void) {
         let timeRanges = ["short_term", "medium_term", "long_term"]
         var allTopArtists: [String] = []
 
@@ -461,7 +461,7 @@ final class APICaller {
 
         for timeRange in timeRanges {
             group.enter()
-            let urlString = Constants.baseAPIURL + "/me/top/artists?time_range=\(timeRange)&limit=5"
+            let urlString = Constants.baseAPIURL + "/me/top/artists?time_range=\(timeRange)&limit=\(limit)"
             guard let url = URL(string: urlString) else {
                 completion(.failure(APIError.failedToGetData))
                 return
