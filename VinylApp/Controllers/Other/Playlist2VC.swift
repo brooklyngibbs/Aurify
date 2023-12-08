@@ -6,13 +6,6 @@ struct Playlist2VC: View {
     @State private var viewModels = [RecommendedTrackCellViewModel]()
     private var cancellables = Set<AnyCancellable>()
     @State private var imageHeight: CGFloat = UIScreen.main.bounds.width
-    @State private var isShuffled = false
-    @State private var isPlaybackErrorVisible = false
-    @State private var playbackErrorMessage = "Play music from Spotify to start Soundtrak playback!"
-    @State private var isFirstPlaybackStateTrue = true
-    @State private var isPlayButtonClicked = false
-    @State private var isShuffleButtonClicked = false
-    
     
     internal init(playlist: Playlist) {
         self.playlist = playlist
@@ -44,28 +37,6 @@ struct Playlist2VC: View {
             ScrollView {
                 VStack(spacing: 0) {
                     playlistHeader
-                    if isPlaybackErrorVisible  {
-                        HStack{
-                            Image(systemName: "exclamationmark.triangle")
-                                .foregroundColor(Color.white)
-                            Text(playbackErrorMessage)
-                                .font(.custom("Inter-SemiBold", size: 13))
-                                .foregroundColor(Color.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.leading, -10)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .transition(.slide)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color(AppColors.venetian_red), lineWidth: 3)
-                        )
-                        .background(Color(AppColors.venetian_red))
-                        .frame(maxWidth: UIScreen.main.bounds.width * 0.8)
-                        .cornerRadius(8)
-                    }
-                    
                     Spacer()
                     trackList
                 }
@@ -84,92 +55,64 @@ struct Playlist2VC: View {
         .toolbarRole(.editor)
         .onAppear {
             fetchPlaylistDetails()
-            getPlaybackState()
         }
     }
     
     private var playlistHeader: some View {
-        HStack {
-            Text(playlist.name)
-                .padding(.top, 20)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: UIScreen.main.bounds.width * 0.6, alignment: .leading)
-                .lineLimit(4)
-                .font(.custom("Outfit-Bold", size: 25))
-                .foregroundColor(.black)
-                .padding()
-                .background(Color.white)
-            Spacer()
-            shuffleButton
-            playButton
-            Spacer()
+        VStack {
+            HStack {
+                Text(playlist.name)
+                    .padding(.top, 20)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: UIScreen.main.bounds.width * 0.6, alignment: .leading)
+                    .lineLimit(4)
+                    .font(.custom("Outfit-Bold", size: 25))
+                    .foregroundColor(.black)
+                    .padding()
+                    .background(Color.white)
+            }
+            HStack {
+                postButton
+                openInSpotifyButton
+                Spacer()
+            }
         }
     }
+
     
-    private var shuffleButton: some View {
+    private var postButton: some View {
         Button(action: {
-            shuffleClick()
+            // Handle posting action
+            // Navigate to PostView or perform post-related actions here
         }) {
-            Image(systemName: "shuffle")
-                .resizable()
-                .foregroundColor(isShuffled ? Color(AppColors.jellybeanBlue) : Color.gray)
-                .frame(width: 25, height: 20)
+            Text("Post")
+                .foregroundColor(.white)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 20)
+                .background(Color(AppColors.americanViolet))
+                .cornerRadius(8)
         }
-        .padding(.top, 20)
-        .padding(.leading, -20)
+        .padding(.horizontal, 20)
     }
     
-    private var playButton: some View {
+    private var openInSpotifyButton: some View {
         Button(action: {
-            startPlayback()
+            openSpotify()
         }) {
-            Image(systemName: "play.circle.fill")
-                .resizable()
-                .foregroundColor(Color(AppColors.jellybeanBlue))
-                .frame(width: 45, height: 45)
+            Text("Open in Spotify")
+                .foregroundColor(.white)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 20)
+                .background(Color.green) // Customize button appearance
+                .cornerRadius(8)
         }
         .padding(.trailing, 10)
-        .padding(.top, 20)
     }
-    
-    private func getPlaybackState() {
-        APICaller.shared.getPlaybackState { playbackState in
-            DispatchQueue.main.async {
-                let isPlaybackTrue = playbackState ?? false
-                isPlaybackErrorVisible = !isPlaybackTrue && (isPlayButtonClicked || isShuffleButtonClicked)
-                
-                if isPlaybackTrue && isFirstPlaybackStateTrue {
-                    isFirstPlaybackStateTrue = false
-                    turnOffShuffle()
-                }
-            }
-        }
-    }
-    
-    private func shuffleClick() {
-        getPlaybackState()
-        isShuffleButtonClicked = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            if !isPlaybackErrorVisible {
-                isShuffled.toggle()
-                APICaller.shared.shuffleSpotifyPlayer(state: isShuffled)
-            }
-        }
-    }
-    
-    private func turnOffShuffle() {
-        APICaller.shared.shuffleSpotifyPlayer(state: false)
-    }
-    
-    private func startPlayback() {
-        getPlaybackState()
-        isPlayButtonClicked = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            if !isPlaybackErrorVisible {
-                let contextURI = "spotify:playlist:\(playlist.id)"
-                APICaller.shared.startPlaybackRequest(with: contextURI)
-            }
-        }
+
+    // Function to open Spotify with the playlist
+    private func openSpotify() {
+        let spotifyURL = URL(string: "spotify:playlist:\(playlist.id)")!
+        UIApplication.shared.open(spotifyURL, options: [:], completionHandler: nil)
     }
     
     private var trackList: some View {
