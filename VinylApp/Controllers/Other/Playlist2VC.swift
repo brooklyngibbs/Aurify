@@ -59,7 +59,6 @@ struct Playlist2VC: View {
     }
     
     private var playlistHeader: some View {
-        VStack {
             HStack {
                 Text(playlist.name)
                     .padding(.top, 20)
@@ -70,13 +69,11 @@ struct Playlist2VC: View {
                     .foregroundColor(.black)
                     .padding()
                     .background(Color.white)
+                VStack {
+                    postButton
+                    openInSpotifyButton
+                }
             }
-            HStack {
-                postButton
-                openInSpotifyButton
-                Spacer()
-            }
-        }
     }
 
     
@@ -89,8 +86,9 @@ struct Playlist2VC: View {
                 .foregroundColor(.white)
                 .padding(.vertical, 10)
                 .padding(.horizontal, 20)
-                .background(Color(AppColors.americanViolet))
+                .background(Color(AppColors.moonstoneBlue))
                 .cornerRadius(8)
+                .font(.custom("Inter-Medium", size: 16))
         }
         .padding(.horizontal, 20)
     }
@@ -99,11 +97,11 @@ struct Playlist2VC: View {
         Button(action: {
             openSpotify()
         }) {
-            Text("Open in Spotify")
-                .foregroundColor(.white)
-                .padding(.vertical, 10)
-                .padding(.horizontal, 20)
-                .background(Color.green) // Customize button appearance
+            Image("Spotify_Icon") // Replace "spotify_icon" with your image name
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 50, height: 50) // Adjust size as needed
+                .background(Color.white)
                 .cornerRadius(8)
         }
         .padding(.trailing, 10)

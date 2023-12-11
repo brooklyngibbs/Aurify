@@ -53,7 +53,7 @@ class SpotifyViewController: UIViewController {
         signInButton.layer.shadowRadius = 5
         signInButton.layer.shadowOpacity = 0.5
         signInButton.layer.shadowOffset = CGSize(width: 0, height: 3)
-        signInButton.layer.shadowColor =  UIColor.gray.cgColor // UIColor(red: 84.0/255.0, green: 28.0/255.0, blue: 158.0/255.0, alpha: 1.0).cgColor
+        signInButton.layer.shadowColor =  UIColor.gray.cgColor
         signInButton.layer.masksToBounds = false
     }
     

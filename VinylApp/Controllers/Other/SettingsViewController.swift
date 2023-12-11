@@ -26,6 +26,9 @@ struct SettingsViewController: View {
                     Toggle("Dark Mode", isOn: $darkModeEnabled)
                         .tint(Color.blue)
                 }
+                Section(header: Text("Account")) {
+                    AccountSectionView()
+                }
             }
             .sheet(isPresented: $showImagePicker) {
                 ImagePicker(image: $userProfileImage, onSave: saveProfileImage)
@@ -57,6 +60,28 @@ struct SettingsViewController: View {
     }
 
 }
+
+struct AccountSectionView: View {
+    var body: some View {
+        VStack(alignment: .leading) {
+            Button(action: {
+                // action for sign out
+            }) {
+                Text("Sign Out")
+                    .foregroundColor(Color(AppColors.vampireBlack))
+            }
+            .padding(.bottom, 15)
+            
+            Button(action: {
+                // action for delete account
+            }) {
+                Text("Delete Account")
+                    .foregroundColor(Color(AppColors.venetian_red))
+            }
+        }
+    }
+}
+
 
 struct ProfileSectionView: View {
     @Binding var profileImage: UIImage?
