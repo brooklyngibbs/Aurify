@@ -8,6 +8,7 @@
 import UIKit
 import Firebase
 import FirebaseFirestore
+import SwiftUI
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -22,11 +23,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             AuthManager.shared.refreshIfNeeded(completion: nil)
             window.rootViewController = TabBarViewController()
         } else {
-            let navVC = UINavigationController(rootViewController: SpotifyViewController())
+            let accountView = LogInView()
+            let hostingController = UIHostingController(rootView: accountView)
+            let navVC = UINavigationController(rootViewController: hostingController)
             navVC.navigationBar.prefersLargeTitles = true
             navVC.viewControllers.first?.navigationItem.largeTitleDisplayMode = .always
             window.rootViewController = navVC
-
         }
         window.makeKeyAndVisible()
         self.window = window
