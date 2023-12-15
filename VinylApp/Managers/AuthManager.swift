@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseAuth
 
 final class AuthManager {
     static let shared = AuthManager()
@@ -194,4 +195,19 @@ final class AuthManager {
         task.resume()
         
     }
+    
+    func signOut(completion: @escaping (Bool) -> Void) {
+        do {
+            try Auth.auth().signOut()
+            
+            // Update the isSignedIn status to false
+            UserDefaults.standard.setValue(nil, forKey: "access_token")
+            
+            completion(true) // Sign-out successful
+        } catch {
+            print("Error signing out:", error.localizedDescription)
+            completion(false) // Sign-out failed
+        }
+    }
+
 }

@@ -2,6 +2,7 @@ import UIKit
 import SwiftUI
 import FirebaseStorage
 import Firebase
+import FirebaseFirestore
 
 struct SongInfo: Codable {
     var title: String
@@ -15,6 +16,7 @@ struct ImageInfo: Codable {
     var music: String?
     var genre: String
     var subgenre: String
+    var mood: String
     var songlist: [SongInfo]
 }
 
@@ -22,6 +24,7 @@ var completedImage: UIImageView!
 var completedLabel: UILabel!
 var vinylImage: UIImageView!
 var errorImage: UIImageView!
+
 
 class UploadViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -40,6 +43,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     var songURIs: [String] = []
     var topArtists: [String] = []
+    
     
     private let storage = Storage.storage().reference()
     

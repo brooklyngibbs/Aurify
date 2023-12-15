@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import Firebase
+import FirebaseStorage
 
 struct LibraryView: View {
     @StateObject var viewModel = PlaylistListViewModel()
@@ -110,8 +111,15 @@ struct LibraryView: View {
                             .padding()
 //MARK: PLAYLIST VIEW
                             if viewModel.playlists.isEmpty {
-                                Text("Uh oh! Looks like you haven't created any playlists yet.")
-                                    .padding()
+                                VStack {
+                                    Spacer()
+                                    Text("Uh oh!")
+                                        .padding(.bottom, 10)
+                                        .font(.custom("Outfit-Bold", size: 30))
+                                    Text("No playlists yet.")
+                                        .font(.custom("Inter-Light", size: 18))
+                                    Spacer()
+                                }
                             } else {
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                                     ForEach(viewModel.playlists.indices, id: \.self) { index in

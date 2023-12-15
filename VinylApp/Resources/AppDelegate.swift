@@ -23,8 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             AuthManager.shared.refreshIfNeeded(completion: nil)
             window.rootViewController = TabBarViewController()
         } else {
-            let spotifyView = SpotifyView()
-            let hostingController = UIHostingController(rootView: spotifyView)
+            let accountView = LogInView()
+            let hostingController = UIHostingController(rootView: accountView)
             let navVC = UINavigationController(rootViewController: hostingController)
             navVC.navigationBar.prefersLargeTitles = true
             navVC.viewControllers.first?.navigationItem.largeTitleDisplayMode = .always

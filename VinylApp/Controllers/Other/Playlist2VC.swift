@@ -70,9 +70,9 @@ struct Playlist2VC: View {
                     .padding()
                     .background(Color.white)
                 VStack {
-                    postButton
                     openInSpotifyButton
                 }
+                postButton
             }
     }
 
@@ -172,13 +172,11 @@ struct TrackCell: View {
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: 45, height: 45)
-                            .cornerRadius(8)
                     default:
                         Image(systemName: "music.note")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 45, height: 45)
-                            .cornerRadius(8)
                     }
                 }
             } else {
@@ -186,7 +184,6 @@ struct TrackCell: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 45, height: 45)
-                    .cornerRadius(8)
             }
             
             VStack(alignment: .leading, spacing: 4) {

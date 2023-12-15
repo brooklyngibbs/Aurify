@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -21,9 +22,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if AuthManager.shared.isSignedIn {
             window.rootViewController = TabBarViewController()
         } else {
-            let navVC = UINavigationController(rootViewController: SpotifyViewController())
+            let accountView = LogInView()
+            let hostingController = UIHostingController(rootView: accountView)
+            let navVC = UINavigationController(rootViewController: hostingController)
             navVC.navigationBar.prefersLargeTitles = true
-            navVC.viewControllers.first?.navigationItem.largeTitleDisplayMode = .always
             window.rootViewController = navVC
         }
         window.makeKeyAndVisible()

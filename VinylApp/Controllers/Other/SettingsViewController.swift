@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseStorage
 import Firebase
 
 struct SettingsViewController: View {
@@ -58,14 +59,30 @@ struct SettingsViewController: View {
             print("Profile image uploaded successfully.")
         }
     }
-
+    
 }
 
 struct AccountSectionView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Button(action: {
-                // action for sign out
+                AuthManager.shared.signOut { success in
+                    if success {
+                        // Navigate to LogInView after sign-out succeeds
+                        // You can replace this with your own navigation logic
+                        if let window = UIApplication.shared.windows.first {
+                            let logInView = LogInView()
+                            let hostingController = UIHostingController(rootView: logInView)
+                            let navVC = UINavigationController(rootViewController: hostingController)
+                            navVC.navigationBar.prefersLargeTitles = true
+                            window.rootViewController = navVC
+                            window.makeKeyAndVisible()
+                        }
+                    } else {
+                        // Handle sign-out failure here
+                        // Display an alert or any other appropriate action
+                    }
+                }
             }) {
                 Text("Sign Out")
                     .foregroundColor(Color(AppColors.vampireBlack))
@@ -128,16 +145,16 @@ struct ProfileSectionView: View {
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
     var onSave: (UIImage) -> Void
-
+    
     class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         var parent: ImagePicker
-        var onSave: (UIImage) -> Void 
-
+        var onSave: (UIImage) -> Void
+        
         init(parent: ImagePicker, onSave: @escaping (UIImage) -> Void) {
             self.parent = parent
             self.onSave = onSave
         }
-
+        
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let uiImage = info[.originalImage] as? UIImage {
                 onSave(uiImage)
@@ -145,23 +162,23 @@ struct ImagePicker: UIViewControllerRepresentable {
             }
             picker.dismiss(animated: true, completion: nil)
         }
-
+        
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             picker.dismiss(animated: true, completion: nil)
         }
     }
-
+    
     func makeCoordinator() -> Coordinator {
         return Coordinator(parent: self, onSave: onSave) // Pass onSave closure
     }
-
+    
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
         picker.allowsEditing = true
         return picker
     }
-
+    
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
         // Update
     }
