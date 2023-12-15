@@ -23,10 +23,6 @@ struct SettingsViewController: View {
                     Toggle("Enable Notifications", isOn: $notificationsEnabled)
                         .tint(Color.blue)
                 }
-                Section(header: Text("Appearance")) {
-                    Toggle("Dark Mode", isOn: $darkModeEnabled)
-                        .tint(Color.blue)
-                }
                 Section(header: Text("Account")) {
                     AccountSectionView()
                 }
@@ -59,33 +55,29 @@ struct SettingsViewController: View {
             print("Profile image uploaded successfully.")
         }
     }
-    
 }
 
 struct AccountSectionView: View {
+    
+    @State private var showingSignOutAlert = false
+    
     var body: some View {
         VStack(alignment: .leading) {
             Button(action: {
-                AuthManager.shared.signOut { success in
-                    if success {
-                        // Navigate to LogInView after sign-out succeeds
-                        // You can replace this with your own navigation logic
-                        if let window = UIApplication.shared.windows.first {
-                            let logInView = LogInView()
-                            let hostingController = UIHostingController(rootView: logInView)
-                            let navVC = UINavigationController(rootViewController: hostingController)
-                            navVC.navigationBar.prefersLargeTitles = true
-                            window.rootViewController = navVC
-                            window.makeKeyAndVisible()
-                        }
-                    } else {
-                        // Handle sign-out failure here
-                        // Display an alert or any other appropriate action
-                    }
-                }
+                showingSignOutAlert = true
             }) {
                 Text("Sign Out")
                     .foregroundColor(Color(AppColors.vampireBlack))
+            }
+            .alert(isPresented: $showingSignOutAlert) {
+                Alert(
+                    title: Text("Sign Out"),
+                    message: Text("Are you sure you want to sign out?"),
+                    primaryButton: .default(Text("Yes")) {
+                        signOut()
+                    },
+                    secondaryButton: .cancel(Text("No"))
+                )
             }
             .padding(.bottom, 15)
             
@@ -94,6 +86,22 @@ struct AccountSectionView: View {
             }) {
                 Text("Delete Account")
                     .foregroundColor(Color(AppColors.venetian_red))
+            }
+        }
+    }
+    func signOut() {
+        AuthManager.shared.signOut { success in
+            if success {
+                if let window = UIApplication.shared.windows.first {
+                    let logInView = LogInView()
+                    let hostingController = UIHostingController(rootView: logInView)
+                    let navVC = UINavigationController(rootViewController: hostingController)
+                    navVC.navigationBar.prefersLargeTitles = true
+                    window.rootViewController = navVC
+                    window.makeKeyAndVisible()
+                }
+            } else {
+                // Handle sign-out failure here
             }
         }
     }

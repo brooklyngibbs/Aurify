@@ -123,7 +123,7 @@ struct LibraryView: View {
                             } else {
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                                     ForEach(viewModel.playlists.indices, id: \.self) { index in
-                                        NavigationLink(destination: Playlist2VC(playlist: viewModel.playlists[index])) {
+                                        NavigationLink(destination: Playlist2VC(playlist: viewModel.playlists[index], userID: userID)) {
                                             PlaylistCellView(playlist: viewModel.playlists[index])
                                                 .padding(.bottom, 20)
                                                 .id(UUID()) // Ensure each view has a unique ID

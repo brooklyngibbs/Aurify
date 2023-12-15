@@ -1,13 +1,16 @@
 import SwiftUI
 
 struct AuthViewControllerWrapper: UIViewControllerRepresentable {
-    @Binding var isPresented: Bool // Add a binding to control the presentation
+    @Binding var isPresented: Bool
+    var loginCompletion: ((Bool) -> Void)?
     
     func makeUIViewController(context: Context) -> AuthViewController {
         let authVC = AuthViewController()
         authVC.completionHandler = { success in
             DispatchQueue.main.async {
                 self.isPresented = false
+                loginCompletion?(success)
+                
                 if success {
                     if let window = UIApplication.shared.windows.first {
                         window.rootViewController = TabBarViewController()
@@ -59,7 +62,25 @@ struct SpotifyLogInView: View {
                     }
                     .padding(.top, 60)
                     .sheet(isPresented: $showingAuthView) {
-                        AuthViewControllerWrapper(isPresented: $showingAuthView)
+                        AuthViewControllerWrapper(isPresented: $showingAuthView, loginCompletion: { success in
+                            if success {
+                                // Once authentication succeeds, get the user profile
+                                APICaller.shared.getCurrentUserProfile { result in
+                                    switch result {
+                                    case .success(let userProfile):
+                                        // Set the user_id here
+                                        UserDefaults.standard.set(userProfile.id, forKey: "user_id")
+                                        // Handle further navigation or actions
+                                    case .failure(let error):
+                                        // Handle the failure to get the user profile
+                                        print("Error fetching user profile: \(error)")
+                                    }
+                                }
+                            } else {
+                                // Handle login failure
+                                showAlert = true
+                            }
+                        })
                     }
                     
                     Spacer()

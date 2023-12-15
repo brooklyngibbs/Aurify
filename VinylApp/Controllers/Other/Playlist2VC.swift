@@ -1,19 +1,24 @@
 import SwiftUI
 import Combine
+import FirebaseFirestore
 
 struct Playlist2VC: View {
     let playlist: Playlist
+    let userID: String
     @State private var viewModels = [RecommendedTrackCellViewModel]()
     private var cancellables = Set<AnyCancellable>()
     @State private var imageHeight: CGFloat = UIScreen.main.bounds.width
     
-    internal init(playlist: Playlist) {
+    private let db = Firestore.firestore()
+    
+    internal init(playlist: Playlist, userID: String) {
         self.playlist = playlist
+        self.userID = userID 
     }
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            Color(AppColors.gainsboro).edgesIgnoringSafeArea(.all)
+            Color.white.edgesIgnoringSafeArea(.all)
             if let imageURL = playlist.images.first?.url, let url = URL(string: imageURL) {
                 AsyncImage(url: url) { phase in
                     switch phase {
@@ -53,61 +58,83 @@ struct Playlist2VC: View {
         .padding(0)
         .navigationBarHidden(false)
         .toolbarRole(.editor)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Menu {
+                    Button(action: {
+                        //share playlist action
+                    }) {
+                        Label("Share Playlist", systemImage: "square.and.arrow.up")
+                    }
+                    Button(action: {
+                        deletePlaylist()
+                    }) {
+                        Label("Delete Playlist", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .foregroundColor(.black)
+                        .imageScale(.large)
+                }
+            }
+        }
         .onAppear {
             fetchPlaylistDetails()
         }
     }
     
     private var playlistHeader: some View {
+        VStack {
             HStack {
                 Text(playlist.name)
                     .padding(.top, 20)
                     .multilineTextAlignment(.leading)
-                    .frame(maxWidth: UIScreen.main.bounds.width * 0.6, alignment: .leading)
+                    .frame(maxWidth: UIScreen.main.bounds.width * 0.7, alignment: .leading)
                     .lineLimit(4)
                     .font(.custom("Outfit-Bold", size: 25))
                     .foregroundColor(.black)
                     .padding()
                     .background(Color.white)
-                VStack {
-                    openInSpotifyButton
-                }
-                postButton
+                openInSpotifyButton
             }
+            postButton
+        }
     }
-
     
     private var postButton: some View {
-        Button(action: {
-            // Handle posting action
-            // Navigate to PostView or perform post-related actions here
-        }) {
-            Text("Post")
-                .foregroundColor(.white)
-                .padding(.vertical, 10)
-                .padding(.horizontal, 20)
-                .background(Color(AppColors.moonstoneBlue))
-                .cornerRadius(8)
-                .font(.custom("Inter-Medium", size: 16))
+        HStack {
+            Button(action: {
+                // Handle posting action
+                // Navigate to PostView or perform post-related actions here
+            }) {
+                Text("Publish")
+                    .foregroundColor(.white)
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 10)
+                    .background(Color(AppColors.moonstoneBlue))
+                    .cornerRadius(8)
+                    .font(.custom("Inter-Light", size: 16))
+            }
+            Spacer()
         }
-        .padding(.horizontal, 20)
+        .padding(.leading)
     }
+
     
     private var openInSpotifyButton: some View {
         Button(action: {
             openSpotify()
         }) {
-            Image("Spotify_Icon") // Replace "spotify_icon" with your image name
+            Image("Spotify_Icon")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 50, height: 50) // Adjust size as needed
+                .frame(width: 50, height: 50)
                 .background(Color.white)
                 .cornerRadius(8)
         }
-        .padding(.trailing, 10)
+        .padding(.trailing, 20)
     }
 
-    // Function to open Spotify with the playlist
     private func openSpotify() {
         let spotifyURL = URL(string: "spotify:playlist:\(playlist.id)")!
         UIApplication.shared.open(spotifyURL, options: [:], completionHandler: nil)
@@ -121,17 +148,27 @@ struct Playlist2VC: View {
                     RoundedRectangle(cornerRadius: 8)
                         .foregroundColor(viewModels[index].isTrackTapped ? Color.gray.opacity(0.3) : Color.white)
                 )
-                .onTapGesture {
-                    viewModels.indices.forEach { viewModels[$0].isTrackTapped = false }
-                    viewModels[index].isTrackTapped.toggle()
-                    APICaller.shared.startPlaybackRequestByTrack(with: "spotify:playlist:\(playlist.id)", offset: index)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.13) {
-                        viewModels[index].isTrackTapped = false
-                    }
-                }
                 .padding(.bottom, isLastCell ? 20 : 0)
         }
         .padding(.top, 20)
+    }
+    
+    private func deletePlaylist() {
+        if let userSpotifyID = UserDefaults.standard.value(forKey: "user_id") as? String {
+            print("User ID: \(userSpotifyID)")
+            print("Playlist ID: \(playlist.id)")
+            
+            let userPlaylistsRef = db.collection("users").document(userSpotifyID).collection("playlists")
+            userPlaylistsRef.document(playlist.id).delete { error in
+                if let error = error {
+                    print("Error deleting document: \(error)")
+                } else {
+                    print("Playlist successfully deleted")
+                }
+            }
+        } else {
+            print("No user ID found in UserDefaults or it's not a String")
+        }
     }
     
     private func fetchPlaylistDetails() {
