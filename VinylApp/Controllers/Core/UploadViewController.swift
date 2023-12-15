@@ -478,7 +478,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             
             switch result {
             case .success(let playlist):
-                let playlistVC = Playlist2VC(playlist: playlist)
+                let playlistVC = Playlist2VC(playlist: playlist, userID: UserDefaults.standard.value(forKey: "user_id") as! String)
                 DispatchQueue.main.async {
                     let hostingController = UIHostingController(rootView: playlistVC)
                     self.navigationController?.navigationBar.tintColor = UIColor.black
@@ -550,7 +550,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 playlistData["timestamp"] = FieldValue.serverTimestamp()
                 
                 // Add a new document to the "playlists" subcollection in the user's document
-                userDocument.collection("playlists").addDocument(data: playlistData) { error in
+                userDocument.collection("playlists").document(playlist.id).setData(playlistData) { error in
                     if let error = error {
                         completion(.failure(error))
                     } else {
@@ -569,9 +569,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             }
         }
     }
-    
-    
-    
     
     func uploadComplete() {
         selectedImage = nil
