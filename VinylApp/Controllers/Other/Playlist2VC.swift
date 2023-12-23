@@ -8,6 +8,7 @@ struct Playlist2VC: View {
     @State private var viewModels = [RecommendedTrackCellViewModel]()
     private var cancellables = Set<AnyCancellable>()
     @State private var imageHeight: CGFloat = UIScreen.main.bounds.width
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     private let db = Firestore.firestore()
     
@@ -62,7 +63,7 @@ struct Playlist2VC: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
                     Button(action: {
-                        //share playlist action
+                        sharePlaylist()
                     }) {
                         Label("Share Playlist", systemImage: "square.and.arrow.up")
                     }
@@ -97,29 +98,8 @@ struct Playlist2VC: View {
                     .background(Color.white)
                 openInSpotifyButton
             }
-            postButton
         }
     }
-    
-    private var postButton: some View {
-        HStack {
-            Button(action: {
-                // Handle posting action
-                // Navigate to PostView or perform post-related actions here
-            }) {
-                Text("Publish")
-                    .foregroundColor(.white)
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 10)
-                    .background(Color(AppColors.moonstoneBlue))
-                    .cornerRadius(8)
-                    .font(.custom("Inter-Light", size: 16))
-            }
-            Spacer()
-        }
-        .padding(.leading)
-    }
-
     
     private var openInSpotifyButton: some View {
         Button(action: {
@@ -152,6 +132,40 @@ struct Playlist2VC: View {
         }
         .padding(.top, 20)
     }
+    
+    private var spotifyURL: URL? {
+        if let spotifyURLString = playlist.external_urls!["spotify"] as? String {
+            return URL(string: spotifyURLString)
+        }
+        return nil
+    }
+    
+    private func sharePlaylist() {
+        guard let spotifyURL = spotifyURL else {
+            return
+        }
+
+        let customShareMessage = "Check out my Soundtrak!"
+
+        let activityViewController = UIActivityViewController(
+            activityItems: [customShareMessage, spotifyURL],
+            applicationActivities: nil
+        )
+
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            // On iPad, set the popover properties to nil if not presenting from a specific view
+            activityViewController.popoverPresentationController?.sourceView = nil
+            activityViewController.popoverPresentationController?.sourceRect = CGRect(x: 0, y: 0, width: 0, height: 0)
+            activityViewController.popoverPresentationController?.permittedArrowDirections = []
+        }
+
+        UIApplication.shared.windows.first?.rootViewController?.present(
+            activityViewController,
+            animated: true,
+            completion: nil
+        )
+    }
+
     
     private func deletePlaylist() {
         if let userSpotifyID = UserDefaults.standard.value(forKey: "user_id") as? String {
@@ -238,3 +252,5 @@ struct TrackCell: View {
         .cornerRadius(12)
     }
 }
+
+
