@@ -9,6 +9,7 @@ import Foundation
 import FirebaseFirestoreInternal
 
 struct Playlist: Codable, Identifiable {
+    
     let description: String?
     let external_urls: [String: String]?
     let id: String

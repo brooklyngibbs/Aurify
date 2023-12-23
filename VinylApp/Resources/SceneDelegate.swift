@@ -20,7 +20,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         
         if AuthManager.shared.isSignedIn {
-            window.rootViewController = TabBarViewController()
+            let accountView = TabBarViewController()
+            window.rootViewController = accountView
         } else {
             let accountView = LogInView()
             let hostingController = UIHostingController(rootView: accountView)

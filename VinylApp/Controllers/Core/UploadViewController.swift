@@ -20,8 +20,6 @@ struct ImageInfo: Codable {
     var songlist: [SongInfo]
 }
 
-var completedImage: UIImageView!
-var completedLabel: UILabel!
 var vinylImage: UIImageView!
 var errorImage: UIImageView!
 
@@ -140,39 +138,10 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
         
-        // Completed label at the top of the screen
-        completedLabel = UILabel()
-        completedLabel.text = "Curate your next soundtrack!"
-        completedLabel.textAlignment = .center
-        completedLabel.numberOfLines = 0
-        completedLabel.translatesAutoresizingMaskIntoConstraints = false
-        completedLabel.font = UIFont(name: "Outfit-Bold", size: 25)
-        completedLabel.textColor = AppColors.vampireBlack
-        completedLabel.isHidden = true
-        containerView.addSubview(completedLabel)
-        
-        NSLayoutConstraint.activate([
-            completedLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            completedLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            completedLabel.widthAnchor.constraint(equalTo: containerView.widthAnchor),
-        ])
-        
-        // Completed image in the middle of the screen
-        completedImage = UIImageView()
-        completedImage.contentMode = .scaleAspectFit
-        completedImage.translatesAutoresizingMaskIntoConstraints = false
-        completedImage.isHidden = true
-        containerView.addSubview(completedImage)
-        
-        NSLayoutConstraint.activate([
-            completedImage.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            completedImage.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            completedImage.widthAnchor.constraint(equalToConstant: 300),
-            completedImage.heightAnchor.constraint(equalToConstant: 300)
-        ])
         // Start the timer to update the label text periodically
         startLabelTimer()
     }
+    
     
     func startSpinningAnimation() {
         let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation")
@@ -469,8 +438,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         // Hide loading indicator
         vinylImage.isHidden = true
         generatingLabel.isHidden = true
-        completedImage.isHidden = false
-        completedLabel.isHidden = false
         stopLabelTimer()
         
         APICaller.shared.getPlaylist(with: playlist_id) { [weak self] result in
@@ -480,36 +447,15 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             case .success(let playlist):
                 let playlistVC = Playlist2VC(playlist: playlist, userID: UserDefaults.standard.value(forKey: "user_id") as! String)
                 DispatchQueue.main.async {
+                    self.navigationController?.popViewController(animated: true) // Pop the current view controller
+
                     let hostingController = UIHostingController(rootView: playlistVC)
                     self.navigationController?.navigationBar.tintColor = UIColor.black
                     self.navigationController?.pushViewController(hostingController, animated: false)
                     self.navigationController?.isNavigationBarHidden = false
                     self.uploadComplete()
-                    if let image = UIImage(named: "70s_man") {
-                        completedImage.image = image
-                        
-                        completedImage.layer.cornerRadius = 20
-                        completedImage.clipsToBounds = true
-                        
-                        // dashed border
-                        let dashBorder = CAShapeLayer()
-                        dashBorder.strokeColor = AppColors.gainsboro.cgColor
-                        dashBorder.lineDashPattern = [8, 6] // dash length and gap
-                        dashBorder.lineWidth = 5
-                        dashBorder.frame = completedImage.bounds
-                        dashBorder.fillColor = nil
-                        dashBorder.path = UIBezierPath(roundedRect: completedImage.bounds, cornerRadius: 20).cgPath
-                        completedImage.layer.addSublayer(dashBorder)
-                    } else {
-                        DispatchQueue.main.async {
-                            vinylImage.isHidden = true
-                            self.generatingLabel.isHidden = true
-                            self.errorLabel.isHidden = false
-                            errorImage.isHidden = false
-                        }
-                        print("Failed to load image.")
-                    }
                 }
+
                 
             case .failure(let error):
                 DispatchQueue.main.async {
@@ -539,9 +485,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     "description": playlist.description ?? "",
                     "external_urls": playlist.external_urls ?? [:],
                     "id": playlist.id,
-                    "images": playlist.images.map { $0.toDictionary() }, // Convert images array to dictionaries
+                    "images": playlist.images.map { $0.toDictionary() }, 
                     "name": playlist.name,
-                    "owner": playlist.owner.toDictionary(), // Convert owner object to dictionary
+                    "owner": playlist.owner.toDictionary(),
                     "uri": playlist.uri,
                     "isAppGenerated": true
                 ]
