@@ -12,10 +12,13 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
         let nav2 = UINavigationController(rootViewController: vc2)
         let nav3 = UINavigationController(rootViewController: vc3)
 
-        self.viewControllers = [nav3] // Set LibraryView as the main view
+        self.viewControllers = [nav3, nav2]
 
-        // Customize tabBar appearance
-        tabBar.isHidden = true // Hide the tabBar
+        if let items = self.tabBar.items {
+            for item in items {
+                item.isEnabled = false
+            }
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -24,22 +27,22 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
         let uploadButton = UIButton(type: .custom)
         uploadButton.setImage(UIImage(systemName: "plus"), for: .normal)
         uploadButton.backgroundColor = AppColors.vampireBlack
-        uploadButton.tintColor = .white
+        uploadButton.tintColor = .white // plus symbol color
         uploadButton.layer.cornerRadius = 30
-        //uploadButton.layer.shadowColor = UIColor.black.cgColor
-        uploadButton.layer.shadowColor = UIColor.white.cgColor
+        uploadButton.layer.shadowColor = UIColor.black.cgColor
         uploadButton.layer.shadowOffset = CGSize(width: 0, height: 4)
-        uploadButton.layer.shadowOpacity = 0.8
-        uploadButton.layer.shadowRadius = 6
+        uploadButton.layer.shadowOpacity = 0.3
+        uploadButton.layer.shadowRadius = 4
         uploadButton.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
 
         var buttonFrame = uploadButton.frame
         buttonFrame.size = CGSize(width: 60, height: 60)
         uploadButton.frame = buttonFrame
 
-        // Position the uploadButton at the bottom center
-        uploadButton.center = CGPoint(x: view.bounds.width / 2, y: view.bounds.height - 60)
-        
+        var center = self.tabBar.center
+        center.y -= 40
+        uploadButton.center = center
+
         self.view.addSubview(uploadButton)
     }
 
