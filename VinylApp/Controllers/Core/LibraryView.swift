@@ -55,32 +55,6 @@ struct LibraryView: View {
                                                 .foregroundColor(.white)
                                                 .font(.custom("Outfit-Bold", size: 16))
                                                 .padding(.top, 5)
-                                            HStack(spacing: 20) {
-                                                VStack(spacing: 2) {
-                                                    Text("0")
-                                                        .foregroundColor(.white)
-                                                        .font(.custom("Inter-Bold", size: 15))
-                                                    Text("Followers")
-                                                        .foregroundColor(.white)
-                                                        .font(.custom("Inter-Medium", size: 12))
-                                                }
-                                                VStack(spacing: 2) {
-                                                    Text("0")
-                                                        .foregroundColor(.white)
-                                                        .font(.custom("Inter-Bold", size: 15))
-                                                    Text("Following")
-                                                        .foregroundColor(.white)
-                                                        .font(.custom("Inter-Medium", size: 12))
-                                                }
-                                                VStack(spacing: 2) {
-                                                    Text("\(viewModel.playlists.count)")
-                                                        .foregroundColor(.white)
-                                                        .font(.custom("Inter-Bold", size: 15))
-                                                    Text("Playlists")
-                                                        .foregroundColor(.white)
-                                                        .font(.custom("Inter-Medium", size: 12))
-                                                }
-                                            }
                                             .padding(.bottom, 20)
                                             
                                         }
@@ -99,7 +73,7 @@ struct LibraryView: View {
                                             
                                                 .sheet(isPresented: $showingSettings) {
                                                     NavigationView {
-                                                        SettingsViewController(userProfileImage: $userProfileImage, userID: self.userID)
+                                                        SettingsViewController(userProfileImage: $userProfileImage, userName: self.displayName, userID: self.userID)
                                                             .navigationBarTitle("Settings")
                                                     }
                                                 }
@@ -142,6 +116,10 @@ struct LibraryView: View {
         .navigationBarHidden(true) // Hide the navigation bar
         .accentColor(Color(AppColors.vampireBlack))
         .onAppear {
+            fetchProfile()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("UpdateLibraryView"))) { _ in
+            print("arrived")
             fetchProfile()
         }
     }

@@ -9,6 +9,7 @@ struct Playlist2VC: View {
     private var cancellables = Set<AnyCancellable>()
     @State private var imageHeight: CGFloat = UIScreen.main.bounds.width
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    var updateLibraryView: (() -> Void)?
     
     private let db = Firestore.firestore()
     
@@ -81,6 +82,9 @@ struct Playlist2VC: View {
         }
         .onAppear {
             fetchPlaylistDetails()
+        }
+        .onDisappear {
+            NotificationCenter.default.post(name: NSNotification.Name("UpdateLibraryView"), object: nil)
         }
     }
     
@@ -178,6 +182,9 @@ struct Playlist2VC: View {
                     print("Error deleting document: \(error)")
                 } else {
                     print("Playlist successfully deleted")
+                    DispatchQueue.main.async {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
                 }
             }
         } else {
@@ -250,6 +257,7 @@ struct TrackCell: View {
         }
         .padding(.leading, 20)
         .cornerRadius(12)
+        
     }
 }
 

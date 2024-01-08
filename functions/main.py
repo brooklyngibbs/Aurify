@@ -24,10 +24,6 @@ def createJSON(image_desc, artists):
     Format the output in JSON with these fields: 'title', 'artist', 'reason' (explaining the selection's fit with the subgenre and image description).
     The final output should resemble this structure: {{ 'description': '{image_desc}', 'playlistTitle': 'Your Playlist Title', 'music': '', 'genre': 'Your Genre', 'subgenre': 'Your Subgenre', 'songlist': [{'title': 'Song Title', 'artist': 'Artist Name', 'reason': 'Reason for Selection'}] }}"""
 
-
-    
-    # Rest of your code...
-
     
     json_data = {
         "model": "gpt-4-vision-preview",
