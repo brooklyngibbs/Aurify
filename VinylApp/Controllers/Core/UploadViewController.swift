@@ -113,7 +113,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         }
         
         generatingLabel = UILabel()
-        generatingLabel.text = "Generating your picture playlist..."
+        generatingLabel.text = "Generating your picture playlist"
         generatingLabel.textAlignment = .center
         generatingLabel.numberOfLines = 2
         generatingLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -204,6 +204,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                 case .success(let playlist):
                                     // Successfully created playlist
                                     let playlistID = playlist.id
+                                    print("Playlist ID: \(playlistID)")
                                     savePlaylistToFirestore(playlist: playlist) { result in
                                         switch result {
                                         case .success:
@@ -356,8 +357,8 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     //resize image, call func to put in storage, call func to get playlist
     func uploadSelectedImageToFirebase(image: UIImage) {
-        if let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 310, height: 310)),
-           let imageData = resizedImage.jpegData(compressionQuality: 1) {
+        if let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 400, height: 400)),
+           let imageData = image.jpegData(compressionQuality: 1) {
             uploadImageToStorage(imageData: imageData, originalImage: image) { imageUrl in
                 guard let imageUrl = imageUrl else {
                     print("Error: Unable to get image URL")
@@ -419,17 +420,24 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             completion(nil)
             return
         }
-        
+
         let task = URLSession.shared.dataTask(with: imageURL) { data, response, error in
             guard let imageData = data, error == nil else {
                 completion(nil)
                 return
             }
-            
-            let base64String = imageData.base64EncodedString()
-            completion(base64String)
+
+            // Resize the image before converting to base64
+            if let image = UIImage(data: imageData),
+               let resizedImage = self.resizeImage(image: image, targetSize: CGSize(width: 400, height: 400)),
+               let resizedImageData = resizedImage.jpegData(compressionQuality: 1.0) {
+                let base64String = resizedImageData.base64EncodedString()
+                completion(base64String)
+            } else {
+                completion(nil)
+            }
         }
-        
+
         task.resume()
     }
     

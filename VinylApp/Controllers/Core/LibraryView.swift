@@ -42,13 +42,13 @@ struct LibraryView: View {
                                             ZStack {
                                                 Circle()
                                                     .fill(Color.white)
-                                                    .frame(width: 80, height: 80)
+                                                    .frame(width: 100, height: 100)
                                                     .shadow(color: .white.opacity(1.0), radius: 7, x: 0, y: 0)
                                                 
                                                 Image(uiImage: userProfileImage)
                                                     .resizable()
                                                     .aspectRatio(contentMode: .fill)
-                                                    .frame(width: 80, height: 80)
+                                                    .frame(width: 100, height: 100)
                                                     .clipShape(Circle())
                                             }
                                             Text(displayName)
@@ -283,22 +283,19 @@ class PlaylistListViewModel: ObservableObject {
     func fetchDataFromFirestore(userID: String, completion: @escaping () -> Void) {
         // Fetch playlist URIs from FirestoreManager for the specific user ID
         FirestoreManager().fetchPlaylistIDs(forUserID: userID) { playlistIDs in
-            // Introduce a delay to ensure the playlist URIs are received
+            var tempPlaylists = [Playlist?](repeating:nil, count: playlistIDs.count)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 print("Playlist ID found in Firestore:", playlistIDs) // Print the playlist URIs
                 
                 let dispatchGroup = DispatchGroup()
-                for playlistID in playlistIDs {
+                for (index, playlistID) in playlistIDs.enumerated() {
                     dispatchGroup.enter()
+                    print(playlistID)
                     APICaller.shared.getPlaylist(with: playlistID) { result in
                         DispatchQueue.main.async {
                             switch result {
                             case .success(let playlist):
-                                // Check if the fetched playlist already exists in the array
-                                if !self.playlists.contains(where: { $0.id == playlist.id }) {
-                                    // Insert the playlist at index 0 to add it at the beginning
-                                    self.playlists.insert(playlist, at: 0)
-                                }
+                                tempPlaylists.insert(playlist, at: index)
                             case .failure(let error):
                                 print("Failed to fetch playlist: \(error.localizedDescription)")
                             }
@@ -307,6 +304,7 @@ class PlaylistListViewModel: ObservableObject {
                     }
                 }
                 dispatchGroup.notify(queue: .main) {
+                    self.playlists = tempPlaylists.compactMap{ $0 }
                     completion()
                 }
             }

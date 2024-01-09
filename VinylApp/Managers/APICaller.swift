@@ -178,15 +178,15 @@ final class APICaller {
                 do {
                     let result = try JSONDecoder().decode(PlaylistDetailsResponse.self, from: data)
                     completion(.success(result))
-                }
-                catch {
-                    print(error)
+                } catch {
+                    print("Error decoding Playlist: \(error)")
                     completion(.failure(error))
                 }
             }
             task.resume()
         }
     }
+
     
     public func getCurrentUserPlaylists(completion: @escaping (Result<[Playlist], Error>) -> Void) {
         createRequest(

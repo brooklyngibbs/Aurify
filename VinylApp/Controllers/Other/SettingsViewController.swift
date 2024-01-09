@@ -20,10 +20,6 @@ struct SettingsViewController: View {
                 Section(header: Text("Payment")) {
                     // Payment related settings
                 }
-                Section(header: Text("Notifications")) {
-                    Toggle("Enable Notifications", isOn: $notificationsEnabled)
-                        .tint(Color.blue)
-                }
                 Section(header: Text("Terms and Conditions")) {
                     NavigationLink(destination: TermsAndConditionsView()) {
                         Text("View Terms and Conditions")
@@ -37,6 +33,19 @@ struct SettingsViewController: View {
             .sheet(isPresented: $showImagePicker) {
                 ImagePicker(image: $userProfileImage, onSave: saveProfileImage)
             }
+        }
+    }
+    
+    // Function to update notification settings
+    func updateNotificationSettings() {
+        if notificationsEnabled {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in
+                // Handle user response to the permission request
+            }
+        } else {
+            // Disable notifications (if needed)
+            // For example, remove all scheduled notifications
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         }
     }
     
