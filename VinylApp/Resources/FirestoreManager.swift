@@ -21,7 +21,16 @@ class FirestoreManager {
                 return
             }
 
-            let playlistIDs = documents.compactMap { document -> String? in
+            let sortedDocs = documents.sorted { a, b in
+                if let tsa = a.data()["timestamp"] as? Timestamp {
+                    if let tsb = b.data()["timestamp"] as? Timestamp {
+                        return tsa.dateValue() > tsb.dateValue()
+                    }
+                }
+                return true
+            }
+
+            let playlistIDs = sortedDocs.compactMap { document -> String? in
                 let playlistData = document.data()
                 return playlistData["id"] as? String
             }
