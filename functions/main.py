@@ -73,7 +73,7 @@ def get_image_info(image_url, artists):
         }
       ]
     } 
-    Songlist should contain 30 songs for the image that fit the subgenre. All of the songs should fit the mood as well, so that the songs do not clash. 
+    Songlist should contain 30 songs for the image that fit the subgenre. It is very important that I get all 30 songs.  I'll pay $200 for 30 great song selections. All of the songs should fit the mood as well, so that the songs do not clash. 
     These should be real songs from real artists that I can find on Spotify. If there was a band, music artist, or song in the image, include only three song from that music. 
     Also, if applicable, include songs from my top artists: ''' + f"{artists}" + '''. 
     If any of my top artists have songs that fit the subgenre or image description, include them. Try to find niche songs from these artists that fit the subgenre and image description better than their most popular songs. 
