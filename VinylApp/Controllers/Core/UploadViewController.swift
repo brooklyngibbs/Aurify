@@ -169,7 +169,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     // MARK: - Firebase Function
     
-    func sendImageUrlToFirebaseFunction(url: String) {
+    func sendImageUrlToFirebaseFunction(url: String, retries: Int) {
         guard let functionURL = URL(string: "https://make-scene-api-request-36d3pxwmrq-uc.a.run.app") else {
             print("Invalid Firebase Function URL")
             return
@@ -188,6 +188,10 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             request.httpBody = jsonData
             let task = URLSession.shared.dataTask(with: request) { data, response, error in
                 if let error = error {
+                    if retries > 0 {
+                        self.sendImageUrlToFirebaseFunction(url: url, retries: retries - 1)
+                        return
+                    }
                     DispatchQueue.main.async {
                         vinylImage.isHidden = true
                         self.generatingLabel.isHidden = true
@@ -221,7 +225,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                     }
                                     convertImageURLToBase64(imageURLString: url) { base64String in
                                         if let base64String = base64String {
-                                            APICaller.shared.updatePlaylistImage(imageBase64: base64String, playlistID: playlistID) { updateResult in
+                                            APICaller.shared.updatePlaylistImageWithRetries(imageBase64: base64String, playlistID: playlistID, retries: 2) { updateResult in
                                                 switch updateResult {
                                                 case .success:
                                                     self.searchAndAppendTrackURIs(songs: json.songlist, playlistID: playlistID)
@@ -264,6 +268,10 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                 print("Invalid JSON Format. Response:", jsonString)
                             } else {
                                 print("Invalid JSON Format. Unable to parse response data.")
+                            }
+                            if retries > 0 {
+                                self.sendImageUrlToFirebaseFunction(url: url, retries: retries - 1)
+                                return
                             }
                             DispatchQueue.main.async {
                                 vinylImage.isHidden = true
@@ -365,7 +373,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     return
                 }
                 
-                self.sendImageUrlToFirebaseFunction(url: imageUrl)
+                self.sendImageUrlToFirebaseFunction(url: imageUrl, retries: 2)
             }
         }
     }

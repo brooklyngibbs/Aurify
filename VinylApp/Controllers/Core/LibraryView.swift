@@ -4,7 +4,8 @@ import Firebase
 import FirebaseStorage
 
 struct LibraryView: View {
-    @StateObject var viewModel = PlaylistListViewModel()
+    @State private var playlists : [Playlist] = []
+    @State private var listener : ListenerRegistration?
     @State private var isLoading = true // Track loading state
     
     @State private var displayName: String = ""
@@ -84,7 +85,7 @@ struct LibraryView: View {
                             .frame(height: 220)
                             .padding()
 //MARK: PLAYLIST VIEW
-                            if viewModel.playlists.isEmpty {
+                            if playlists.isEmpty {
                                 VStack {
                                     Spacer()
                                     Text("Uh oh!")
@@ -96,9 +97,9 @@ struct LibraryView: View {
                                 }
                             } else {
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                                    ForEach(viewModel.playlists.indices, id: \.self) { index in
-                                        NavigationLink(destination: Playlist2VC(playlist: viewModel.playlists[index], userID: userID)) {
-                                            PlaylistCellView(playlist: viewModel.playlists[index])
+                                    ForEach(playlists.indices, id: \.self) { index in
+                                        NavigationLink(destination: Playlist2VC(playlist: playlists[index], userID: userID)) {
+                                            PlaylistCellView(playlist: playlists[index])
                                                 .padding(.bottom, 20)
                                                 .id(UUID()) // Ensure each view has a unique ID
                                         }
@@ -115,25 +116,54 @@ struct LibraryView: View {
         .navigationBarTitle("", displayMode: .inline)
         .navigationBarHidden(true) // Hide the navigation bar
         .accentColor(Color(AppColors.vampireBlack))
-        .onAppear {
-            fetchProfile()
+        .task {
+            fetchProfile() { userID in
+                print("Fetch Profile completion")
+                listener?.remove()
+                listener = FirestoreManager().fetchPlaylistIDListener(forUserID: userID) { playlistIDs in
+                    fetchDataForPlaylistIDs(playlistIDs: playlistIDs) {
+                        isLoading = false
+                    }
+                }
+            }
         }
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("UpdateLibraryView"))) { _ in
-            print("arrived")
-            fetchProfile()
+        .onDisappear() {
+            listener?.remove()
+            listener = nil
         }
     }
     
-    
+    func fetchDataForPlaylistIDs(playlistIDs : [String], completion: @escaping () -> Void) {
+        var tempPlaylists = [Playlist?](repeating:nil, count: playlistIDs.count)
+        let dispatchGroup = DispatchGroup()
+        for (index, playlistID) in playlistIDs.enumerated() {
+            dispatchGroup.enter()
+            APICaller.shared.getPlaylist(with: playlistID) { result in
+                switch result {
+                case .success(let playlist):
+                    tempPlaylists[index] = playlist
+                    //tempPlaylists.insert(playlist, at: index)
+                case .failure(let error):
+                    print("Failed to fetch playlist: \(error.localizedDescription)")
+                }
+                dispatchGroup.leave()
+            }
+        }
+        dispatchGroup.notify(queue: .main) {
+            self.playlists = tempPlaylists.compactMap{ $0 }
+            completion()
+        }
+    }
 
     //MARK: PROFILE FUNCTIONS
-    private func fetchProfile() {
+    private func fetchProfile(_ completion: @escaping (String) -> Void) {
         APICaller.shared.getCurrentUserProfile { [self] result in
-            DispatchQueue.main.async {
-                switch result {
+            switch result {
                 case .success(let userProfile):
-                    self.userID = userProfile.id
-                    self.displayName = userProfile.display_name
+                    DispatchQueue.main.async {
+                        self.userID = userProfile.id
+                        self.displayName = userProfile.display_name
+                    }
                     
                     checkProfileImageInStorage(userID: self.userID) { profileImageExists in
                         if profileImageExists {
@@ -147,13 +177,9 @@ struct LibraryView: View {
                             }
                         }
                     }
-                    
-                    viewModel.fetchDataFromFirestore(userID: self.userID) {
-                        isLoading = false
-                    }
+                    completion(userProfile.id)
                 case .failure(let error):
                     print(error.localizedDescription)
-                }
             }
         }
     }
@@ -258,55 +284,6 @@ struct PlaylistCellView: View {
                     .onAppear {
                         imageLoader.loadImage(from: playlist.images.first?.url)
                     }
-            }
-        }
-    }
-}
-
-class PlaylistListViewModel: ObservableObject {
-    @Published var playlists: [Playlist] = []
-    
-    func fetchData(completion: @escaping () -> Void) {
-        APICaller.shared.getCurrentUserPlaylists { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let playlists):
-                    self?.playlists = playlists
-                case .failure(let error):
-                    print(error.localizedDescription)
-                }
-                completion()
-            }
-        }
-    }
-    
-    func fetchDataFromFirestore(userID: String, completion: @escaping () -> Void) {
-        // Fetch playlist URIs from FirestoreManager for the specific user ID
-        FirestoreManager().fetchPlaylistIDs(forUserID: userID) { playlistIDs in
-            var tempPlaylists = [Playlist?](repeating:nil, count: playlistIDs.count)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                print("Playlist ID found in Firestore:", playlistIDs) // Print the playlist URIs
-                
-                let dispatchGroup = DispatchGroup()
-                for (index, playlistID) in playlistIDs.enumerated() {
-                    dispatchGroup.enter()
-                    print(playlistID)
-                    APICaller.shared.getPlaylist(with: playlistID) { result in
-                        DispatchQueue.main.async {
-                            switch result {
-                            case .success(let playlist):
-                                tempPlaylists.insert(playlist, at: index)
-                            case .failure(let error):
-                                print("Failed to fetch playlist: \(error.localizedDescription)")
-                            }
-                            dispatchGroup.leave()
-                        }
-                    }
-                }
-                dispatchGroup.notify(queue: .main) {
-                    self.playlists = tempPlaylists.compactMap{ $0 }
-                    completion()
-                }
             }
         }
     }

@@ -213,6 +213,20 @@ final class APICaller {
         }
     }
     
+    func updatePlaylistImageWithRetries(imageBase64: String, playlistID: String, retries: Int, completion: @escaping (Result<Void, Error>) -> Void) {
+        updatePlaylistImage(imageBase64: imageBase64, playlistID: playlistID) { result in
+            switch result {
+            case .success:
+                completion(result)
+            case .failure(_):
+                if retries > 0 {
+                    print("Retrying... \(retries - 1)")
+                    self.updatePlaylistImageWithRetries(imageBase64: imageBase64, playlistID: playlistID, retries: retries - 1, completion: completion)
+                }
+            }
+        }
+    }
+    
     func updatePlaylistImage(imageBase64: String, playlistID: String, completion: @escaping (Result<Void, Error>) -> Void) {
         let urlString = "https://api.spotify.com/v1/playlists/\(playlistID)/images"
 

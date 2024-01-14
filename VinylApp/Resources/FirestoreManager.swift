@@ -2,6 +2,33 @@ import Firebase
 
 class FirestoreManager {
     let db = Firestore.firestore()
+    
+    func fetchPlaylistIDListener(forUserID userID: String, completion: @escaping ([String]) -> Void) -> ListenerRegistration {
+        print("UserID \(userID)")
+        let listener = db.collection("users").document(userID).collection("playlists").order(by: "timestamp", descending: true).addSnapshotListener { snapshot, error in
+            print("Inside listener")
+            if let error = error {
+                print("Error fetching user playlists: \(error.localizedDescription)")
+                completion([])
+                return
+            }
+
+            guard let documents = snapshot?.documents else {
+                print("No playlist documents found for the user")
+                completion([])
+                return
+            }
+
+            let playlistIDs = documents.compactMap { document -> String? in
+                let playlistData = document.data()
+                return playlistData["id"] as? String
+            }
+
+            completion(playlistIDs)
+        }
+        
+        return listener
+    }
 
     func fetchPlaylistIDs(forUserID userID: String, completion: @escaping ([String]) -> Void) {
         print("Fetching playlist IDs for user ID:", userID)
