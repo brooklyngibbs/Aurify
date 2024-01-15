@@ -4,9 +4,7 @@ class FirestoreManager {
     let db = Firestore.firestore()
     
     func fetchPlaylistIDListener(forUserID userID: String, completion: @escaping ([String]) -> Void) -> ListenerRegistration {
-        print("UserID \(userID)")
         let listener = db.collection("users").document(userID).collection("playlists").order(by: "timestamp", descending: true).addSnapshotListener { snapshot, error in
-            print("Inside listener")
             if let error = error {
                 print("Error fetching user playlists: \(error.localizedDescription)")
                 completion([])

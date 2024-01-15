@@ -186,7 +186,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         if let jsonData = try? JSONSerialization.data(withJSONObject: requestData) {
             request.httpBody = jsonData
+            let startTime = DispatchTime.now()
             let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                print("make-scene-api-request time: \(Double(DispatchTime.now().uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000)")
                 if let error = error {
                     if retries > 0 {
                         self.sendImageUrlToFirebaseFunction(url: url, retries: retries - 1)
@@ -203,32 +205,24 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     do {
                         if let json = try? JSONDecoder().decode(ImageInfo.self, from: data) {
                             print("Received JSON data:", json)
+                            let plStartTime = DispatchTime.now()
                             APICaller.shared.createPlaylist(with: json.playlistTitle, description: json.description) { [self] result in
+                                print("createPlaylist time: \(Double(DispatchTime.now().uptimeNanoseconds - plStartTime.uptimeNanoseconds) / 1_000_000)")
                                 switch result {
                                 case .success(let playlist):
                                     // Successfully created playlist
                                     let playlistID = playlist.id
-                                    print("Playlist ID: \(playlistID)")
-                                    savePlaylistToFirestore(playlist: playlist) { result in
-                                        switch result {
-                                        case .success:
-                                            print("Playlist saved to Firestore successfully")
-                                        case .failure(let error):
-                                            DispatchQueue.main.async {
-                                                vinylImage.isHidden = true
-                                                self.generatingLabel.isHidden = true
-                                                self.errorLabel.isHidden = false
-                                                errorImage.isHidden = false
-                                            }
-                                            print("Failed to save playlist to Firestore:", error)
-                                        }
-                                    }
+                                    let coStartTime = DispatchTime.now()
                                     convertImageURLToBase64(imageURLString: url) { base64String in
+                                        print("convertImageUrlToBase64 time: \((DispatchTime.now().uptimeNanoseconds - coStartTime.uptimeNanoseconds) / 1_000_000_000)")
                                         if let base64String = base64String {
+                                            let upStartTime = DispatchTime.now()
                                             APICaller.shared.updatePlaylistImageWithRetries(imageBase64: base64String, playlistID: playlistID, retries: 2) { updateResult in
+                                                print("updatePlaylistImage time: \(Double(DispatchTime.now().uptimeNanoseconds - upStartTime.uptimeNanoseconds) / 1_000_000)")
                                                 switch updateResult {
                                                 case .success:
                                                     self.searchAndAppendTrackURIs(songs: json.songlist, playlistID: playlistID)
+                                                    
                                                     //self.addTracksSequentially(to: playlistID, songlist: json.songlist)
                                                     print("Successfully updated playlist image")
                                                 case .failure(let error):
@@ -251,6 +245,23 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                             print("Failed to convert image URL to base64")
                                         }
                                     }
+                                    let fsStartTime = DispatchTime.now()
+                                    savePlaylistToFirestore(playlist: playlist, imageUrl: url, imageInfo: json) { result in
+                                        print("savePlaylistToFirestore time: \(Double(DispatchTime.now().uptimeNanoseconds - fsStartTime.uptimeNanoseconds) / 1_000_000)")
+                                        switch result {
+                                        case .success:
+                                            print("Playlist saved to Firestore successfully")
+                                        case .failure(let error):
+                                            DispatchQueue.main.async {
+                                                vinylImage.isHidden = true
+                                                self.generatingLabel.isHidden = true
+                                                self.errorLabel.isHidden = false
+                                                errorImage.isHidden = false
+                                            }
+                                            print("Failed to save playlist to Firestore:", error)
+                                        }
+                                    }
+
                                     //print("end")
                                 case .failure(let error):
                                     DispatchQueue.main.async {
@@ -298,7 +309,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     //MARK: ADD TRACKS
     
     func searchAndAppendTrackURIs(songs: [SongInfo], playlistID: String) {
+        let startTime = DispatchTime.now()
         APICaller.shared.searchManySongs(q: songs) {results in
+            print("searchManySongs time: \(Double(DispatchTime.now().uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000)")
             let songURIs = results.compactMap {result in
                 switch(result) {
                 case .success(let trackURI):
@@ -314,7 +327,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     func addTracksToPlaylist(playlistID: String, songURIs: [String]) {
         // Here you have collected all song URIs in self.songURIs
         // You can now add these tracks to the playlist using the obtained URIs
+        let startTime = DispatchTime.now()
         APICaller.shared.addTrackArrayToPlaylist(trackURI: songURIs, playlist_id: playlistID) { addResult in
+            print("addTrackArrayToPlaylist time: \(Double(DispatchTime.now().uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000)")
             switch addResult {
             case .success(let playlist):
                 print("Successfully added tracks to playlist:", playlist)
@@ -480,12 +495,12 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     self.errorLabel.isHidden = false
                     errorImage.isHidden = false
                 }
-                print("Failed to fetch playlist:", error)
+                print("Failed to fetch playlist \(playlist_id):", error)
             }
         }
     }
     
-    func savePlaylistToFirestore(playlist: Playlist, completion: @escaping (Result<Void, Error>) -> Void) {
+    func savePlaylistToFirestore(playlist: Playlist, imageUrl: String, imageInfo: ImageInfo, completion: @escaping (Result<Void, Error>) -> Void) {
         APICaller.shared.getCurrentUserProfile { result in
             switch result {
             case .success(let userProfile):
@@ -499,6 +514,21 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 // Prepare the playlist data to be saved in Firestore
                 var playlistData: [String: Any] = [
                     "description": playlist.description ?? "",
+                    "cover_image_url": imageUrl,
+                    "image_info": [
+                        "description": imageInfo.description,
+                        "music": imageInfo.music ?? "",
+                        "genre": imageInfo.genre,
+                        "subgenre": imageInfo.subgenre,
+                        "mood": imageInfo.mood,
+                        "songs": imageInfo.songlist.map { song in
+                                return [
+                                    "artist": song.artist,
+                                    "title": song.title,
+                                    "reason": song.reason
+                                ]
+                            }
+                    ],
                     "external_urls": playlist.external_urls ?? [:],
                     "id": playlist.id,
                     "images": playlist.images.map { $0.toDictionary() }, 

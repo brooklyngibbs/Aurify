@@ -179,7 +179,7 @@ final class APICaller {
                     let result = try JSONDecoder().decode(PlaylistDetailsResponse.self, from: data)
                     completion(.success(result))
                 } catch {
-                    print("Error decoding Playlist: \(error)")
+                    print("Error decoding Playlist \(playlist.id): \(error)")
                     completion(.failure(error))
                 }
             }
@@ -243,7 +243,6 @@ final class APICaller {
         AuthManager.shared.withValidToken { token in
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-        request.timeoutInterval = 120
 
         guard let imageData = imageBase64.data(using: .utf8) else {
             print("image data null")
@@ -459,7 +458,7 @@ final class APICaller {
                     let result = try JSONDecoder().decode(Playlist.self, from: data)
                     completion(.success(result))
                 } catch {
-                    print("Error decoding Playlist:", error)
+                    print("Error decoding Playlist \(playlist_id):", error)
                     completion(.failure(error))
                 }
             }
