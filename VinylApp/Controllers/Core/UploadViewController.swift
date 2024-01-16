@@ -179,6 +179,8 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        request.timeoutInterval = 120
+        
         let requestData = [
             "image_url": url,
             "artists": topArtists
@@ -214,8 +216,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                     let playlistID = playlist.id
                                     let coStartTime = DispatchTime.now()
                                     convertImageURLToBase64(imageURLString: url) { base64String in
-                                        print("convertImageUrlToBase64 time: \((DispatchTime.now().uptimeNanoseconds - coStartTime.uptimeNanoseconds) / 1_000_000_000)")
+                                        print("convertImageUrlToBase64 time: \((DispatchTime.now().uptimeNanoseconds - coStartTime.uptimeNanoseconds) / 1_000_000)")
                                         if let base64String = base64String {
+                                            print("Image size \(Double(base64String.count) / 1_000_000)")
                                             let upStartTime = DispatchTime.now()
                                             APICaller.shared.updatePlaylistImageWithRetries(imageBase64: base64String, playlistID: playlistID, retries: 2) { updateResult in
                                                 print("updatePlaylistImage time: \(Double(DispatchTime.now().uptimeNanoseconds - upStartTime.uptimeNanoseconds) / 1_000_000)")
@@ -245,6 +248,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                             print("Failed to convert image URL to base64")
                                         }
                                     }
+                                    print("Starting save Playlist to firestore")
                                     let fsStartTime = DispatchTime.now()
                                     savePlaylistToFirestore(playlist: playlist, imageUrl: url, imageInfo: json) { result in
                                         print("savePlaylistToFirestore time: \(Double(DispatchTime.now().uptimeNanoseconds - fsStartTime.uptimeNanoseconds) / 1_000_000)")
@@ -380,7 +384,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     //resize image, call func to put in storage, call func to get playlist
     func uploadSelectedImageToFirebase(image: UIImage) {
-        if let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 400, height: 400)),
+        if //let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 400, height: 400)),
            let imageData = image.jpegData(compressionQuality: 1) {
             uploadImageToStorage(imageData: imageData, originalImage: image) { imageUrl in
                 guard let imageUrl = imageUrl else {
@@ -450,11 +454,22 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 return
             }
 
+            var compression = 1.0
             // Resize the image before converting to base64
             if let image = UIImage(data: imageData),
                let resizedImage = self.resizeImage(image: image, targetSize: CGSize(width: 400, height: 400)),
-               let resizedImageData = resizedImage.jpegData(compressionQuality: 1.0) {
-                let base64String = resizedImageData.base64EncodedString()
+               let resizedImageData = resizedImage.jpegData(compressionQuality: compression) {
+                var base64String = resizedImageData.base64EncodedString()
+                while base64String.count > 256_000 {
+                    compression -= 0.2
+                    if compression >= 0.5,
+                       let resizedImageData = resizedImage.jpegData(compressionQuality: compression) {
+                        base64String = resizedImageData.base64EncodedString()
+                    } else {
+                        completion(nil)
+                        return
+                    }
+                }
                 completion(base64String)
             } else {
                 completion(nil)

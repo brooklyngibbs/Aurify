@@ -218,10 +218,12 @@ final class APICaller {
             switch result {
             case .success:
                 completion(result)
-            case .failure(_):
+            case .failure(let error):
                 if retries > 0 {
-                    print("Retrying... \(retries - 1)")
+                    print("Retrying... \(retries - 1) error: \(error.localizedDescription)")
                     self.updatePlaylistImageWithRetries(imageBase64: imageBase64, playlistID: playlistID, retries: retries - 1, completion: completion)
+                } else {
+                    completion(.failure(error))
                 }
             }
         }
@@ -229,6 +231,8 @@ final class APICaller {
     
     func updatePlaylistImage(imageBase64: String, playlistID: String, completion: @escaping (Result<Void, Error>) -> Void) {
         let urlString = "https://api.spotify.com/v1/playlists/\(playlistID)/images"
+        
+        print("Image size: ", imageBase64.count)
 
         guard let url = URL(string: urlString) else {
             let urlError = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
