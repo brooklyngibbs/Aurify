@@ -113,8 +113,12 @@ struct Playlist2VC: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
-                .background(Color.white)
-                .cornerRadius(8)
+                .clipShape(Circle()) // Make it circular
+                .overlay(
+                    Circle()
+                        .stroke(Color.white, lineWidth: 2)
+                )
+                .shadow(color: Color(AppColors.moonstoneBlue).opacity(0.5), radius: 5, x: 0, y: 3) // Add shadow
         }
         .padding(.trailing, 20)
     }
