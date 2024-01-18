@@ -118,7 +118,6 @@ struct LibraryView: View {
         .accentColor(Color(AppColors.vampireBlack))
         .task {
             fetchProfile() { userID in
-                print("Fetch Profile completion")
                 listener?.remove()
                 listener = FirestoreManager().fetchPlaylistIDListener(forUserID: userID) { playlistIDs in
                     fetchDataForPlaylistIDs(playlistIDs: playlistIDs) {
@@ -165,9 +164,9 @@ struct LibraryView: View {
                         self.displayName = userProfile.display_name
                     }
                     
-                    checkProfileImageInStorage(userID: self.userID) { profileImageExists in
+                checkProfileImageInStorage(userID: userProfile.id) { profileImageExists in
                         if profileImageExists {
-                            loadProfileImageFromStorage(userID: self.userID)
+                            loadProfileImageFromStorage(userID: userProfile.id)
                         } else {
                             if let lastImageURLString = userProfile.images.last?.url,
                                let lastImageURL = URL(string: lastImageURLString) {
@@ -208,17 +207,15 @@ struct LibraryView: View {
     private func checkProfileImageInStorage(userID: String, completion: @escaping (Bool) -> Void) {
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let profileImageRef = storageRef.child("profilePics/\(userID)")
+        let profileImageRef = storageRef.child("profilePics/\(userID)/profileImage.jpg")
         
-        profileImageRef.listAll { result, error in
+        profileImageRef.getMetadata { md, error in
             if let error = error {
-                print("Error listing files in Firebase Storage: \(error.localizedDescription)")
+                print("Could not find profile image file \(error.localizedDescription).")
                 completion(false)
-            } else if let result = result {
-                let profileImageExists = result.items.contains { $0.name == "profileImage.jpg" }
-                completion(profileImageExists)
-            } else {
-                completion(false)
+            } else if let _ = md {
+                print("Found profile image")
+                completion(true)
             }
         }
     }
