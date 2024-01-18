@@ -76,7 +76,7 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
 struct CustomTitleView: View {
     var body: some View {
         HStack {
-            Text("Soundtrak")
+            Text("Aurify")
                 .font(.custom("Outfit-Bold", size: 24))
                 .foregroundColor(Color(AppColors.vampireBlack))
                 .padding(.leading, 16)
