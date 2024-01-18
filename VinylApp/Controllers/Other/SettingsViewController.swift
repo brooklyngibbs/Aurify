@@ -164,7 +164,7 @@ struct ProfileSectionView: View {
         .frame(maxWidth: .infinity, alignment: .center)
         .padding()
         .cornerRadius(10)
-        Text("Name: \(userName ?? "Unavailable")")
+        Text("Name: \(userName)")
     }
 }
 

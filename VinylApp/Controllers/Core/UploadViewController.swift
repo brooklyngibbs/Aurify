@@ -205,7 +205,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                 } else if let data = data {
                     do {
                         if let json = try? JSONDecoder().decode(ImageInfo.self, from: data) {
-                            print("Received JSON data:", json)
                             let plStartTime = DispatchTime.now()
                             APICaller.shared.createPlaylist(with: json.playlistTitle, description: json.description) { [self] result in
                                 print("createPlaylist time: \(Double(DispatchTime.now().uptimeNanoseconds - plStartTime.uptimeNanoseconds) / 1_000_000)")
@@ -224,9 +223,23 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                                 switch updateResult {
                                                 case .success:
                                                     self.searchAndAppendTrackURIs(songs: json.songlist, playlistID: playlistID)
-                                                    
+                                                    let fsStartTime = DispatchTime.now()
+                                                    self.savePlaylistToFirestore(playlist: playlist, imageUrl: url, imageInfo: json) { result in
+                                                        print("savePlaylistToFirestore time: \(Double(DispatchTime.now().uptimeNanoseconds - fsStartTime.uptimeNanoseconds) / 1_000_000)")
+                                                        switch result {
+                                                        case .success:
+                                                            print("Playlist saved to Firestore successfully")
+                                                        case .failure(let error):
+                                                            DispatchQueue.main.async {
+                                                                vinylImage.isHidden = true
+                                                                self.generatingLabel.isHidden = true
+                                                                self.errorLabel.isHidden = false
+                                                                errorImage.isHidden = false
+                                                            }
+                                                            print("Failed to save playlist to Firestore:", error)
+                                                        }
+                                                    }
                                                     //self.addTracksSequentially(to: playlistID, songlist: json.songlist)
-                                                    print("Successfully updated playlist image")
                                                 case .failure(let error):
                                                     DispatchQueue.main.async {
                                                         vinylImage.isHidden = true
@@ -247,23 +260,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                             print("Failed to convert image URL to base64")
                                         }
                                     }
-                                    print("Starting save Playlist to firestore")
-                                    let fsStartTime = DispatchTime.now()
-                                    savePlaylistToFirestore(playlist: playlist, imageUrl: url, imageInfo: json) { result in
-                                        print("savePlaylistToFirestore time: \(Double(DispatchTime.now().uptimeNanoseconds - fsStartTime.uptimeNanoseconds) / 1_000_000)")
-                                        switch result {
-                                        case .success:
-                                            print("Playlist saved to Firestore successfully")
-                                        case .failure(let error):
-                                            DispatchQueue.main.async {
-                                                vinylImage.isHidden = true
-                                                self.generatingLabel.isHidden = true
-                                                self.errorLabel.isHidden = false
-                                                errorImage.isHidden = false
-                                            }
-                                            print("Failed to save playlist to Firestore:", error)
-                                        }
-                                    }
 
                                     //print("end")
                                 case .failure(let error):
@@ -275,7 +271,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                     }
                                     print("Failed to create playlist: \(error.localizedDescription)")
                                 }
-                                
                             }
                         } else {
                             if let jsonString = String(data: data, encoding: .utf8) {
