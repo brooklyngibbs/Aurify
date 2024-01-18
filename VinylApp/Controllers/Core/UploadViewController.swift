@@ -113,7 +113,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         }
         
         generatingLabel = UILabel()
-        generatingLabel.text = "Generating your picture playlist"
+        generatingLabel.text = "Generating your picture playlist. Do not exit out of app"
         generatingLabel.textAlignment = .center
         generatingLabel.numberOfLines = 2
         generatingLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -141,7 +141,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         // Start the timer to update the label text periodically
         startLabelTimer()
     }
-    
     
     func startSpinningAnimation() {
         let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation")

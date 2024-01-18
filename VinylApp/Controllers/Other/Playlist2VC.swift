@@ -90,37 +90,59 @@ struct Playlist2VC: View {
     
     private var playlistHeader: some View {
         VStack {
-            HStack {
-                Text(playlist.name)
-                    .padding(.top, 20)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: UIScreen.main.bounds.width * 0.7, alignment: .leading)
-                    .lineLimit(4)
-                    .font(.custom("Outfit-Bold", size: 25))
-                    .foregroundColor(.black)
-                    .padding()
-                    .background(Color.white)
-                openInSpotifyButton
-            }
+            Text(playlist.name)
+                .padding(.top, 20)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: UIScreen.main.bounds.width * 0.7, alignment: .leading)
+                .lineLimit(4)
+                .font(.custom("Outfit-Bold", size: 25))
+                .foregroundColor(.black)
+                .padding()
+                .background(Color.white)
+
+            openInSpotifyButton
+            Spacer()
         }
     }
     
     private var openInSpotifyButton: some View {
-        Button(action: {
-            openSpotify()
-        }) {
-            Image("Spotify_Icon")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 50, height: 50)
-                .background(Color.white)
-                .cornerRadius(8)
-        }
-        .padding(.trailing, 20)
-    }
+        ZStack {
+            RoundedRectangle(cornerRadius: 10)
+                .frame(width: 200, height: 40)
+                .foregroundColor(Color(AppColors.moonstoneBlue))
 
+            Button(action: {
+                openSpotify()
+            }) {
+                HStack {
+                    Image("Spotify_Icon")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 30, height: 30)
+                        .clipShape(Circle())
+                    
+                    Text("OPEN SPOTIFY")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.black)
+                }
+                .offset(x: 10) // Adjust the offset as needed to center the HStack
+            }
+            .padding(.trailing, 20)
+        }
+    }
+    
     private func openSpotify() {
-        let spotifyURL = URL(string: "spotify:playlist:\(playlist.id)")!
+        guard let spotifyURL = URL(string: "spotify:playlist:\(playlist.id)"),
+              UIApplication.shared.canOpenURL(spotifyURL) else {
+            // If the Spotify app is not installed, open the App Store link
+            guard let appStoreURL = URL(string: "https://apps.apple.com/us/app/spotify-music/id324684580") else {
+                return
+            }
+            UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
+            return
+        }
+
+        // If the Spotify app is installed, open the playlist in the app
         UIApplication.shared.open(spotifyURL, options: [:], completionHandler: nil)
     }
     
@@ -149,7 +171,7 @@ struct Playlist2VC: View {
             return
         }
 
-        let customShareMessage = "Check out my Soundtrak!"
+        let customShareMessage = "Check out my Aurify!"
 
         let activityViewController = UIActivityViewController(
             activityItems: [customShareMessage, spotifyURL],

@@ -43,7 +43,7 @@ struct SpotifyLogInView: View {
                         .frame(height: geometry.size.height * 0.4)
                         .edgesIgnoringSafeArea(.top)
                     
-                    Text("Welcome to Soundtrak!")
+                    Text("Welcome to Aurify!")
                         .font(.custom("Outfit-Bold", size: 30))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.black)

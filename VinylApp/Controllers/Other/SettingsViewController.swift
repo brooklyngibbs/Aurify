@@ -173,28 +173,28 @@ struct TermsAndConditionsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Text("""
-                Terms and Conditions for Soundtrak
+                Terms and Conditions for Aurify
 
                 Last Updated: January 20223
 
-                Welcome to Soundtrak! These terms and conditions outline the rules and regulations for the use of the Soundtrak mobile application, available on iOS and Android platforms, created by Brooklyn Gibbs.
+                Welcome to Aurify! These terms and conditions outline the rules and regulations for the use of the Aurify mobile application, available on iOS and Android platforms, created by Brooklyn Gibbs.
 
-                By accessing Soundtrak, we assume you accept these terms and conditions. Do not continue to use Soundtrak if you do not agree to take all of the terms and conditions stated on this page.
+                By accessing Aurify, we assume you accept these terms and conditions. Do not continue to use Aurify if you do not agree to take all of the terms and conditions stated on this page.
 
                 1. Acceptance of Terms
 
-                By using Soundtrak, you agree to comply with these terms and conditions, our Privacy Policy, and any additional terms and conditions that may apply to specific features or services offered within the app.
+                By using Aurify, you agree to comply with these terms and conditions, our Privacy Policy, and any additional terms and conditions that may apply to specific features or services offered within the app.
 
-                2. Use of Soundtrak
+                2. Use of Aurify
 
-                Soundtrak is designed to create playlists on Spotify based on images stored in your camera roll.
-                Users must have a valid Spotify account to use the playlist creation feature within Soundtrak.
+                Aurify is designed to create playlists on Spotify based on images stored in your camera roll.
+                Users must have a valid Spotify account to use the playlist creation feature within Aurify.
                 The app utilizes images from your camera roll solely for the purpose of generating Spotify playlists and does not store or share these images without explicit consent.
 
                 3. User Content
 
-                You retain ownership of any content uploaded or created by you within Soundtrak.
-                By using Soundtrak, you grant us a non-exclusive, transferable, sub-licensable, royalty-free, worldwide license to use any uploaded content for the sole purpose of providing and improving the app’s services.
+                You retain ownership of any content uploaded or created by you within Aurify.
+                By using Aurify, you grant us a non-exclusive, transferable, sub-licensable, royalty-free, worldwide license to use any uploaded content for the sole purpose of providing and improving the app’s services.
 
                 4. Privacy
 
@@ -202,25 +202,25 @@ struct TermsAndConditionsView: View {
 
                 5. Account Termination
 
-                We reserve the right to suspend or terminate your access to Soundtrak at our discretion if we believe you have violated these terms and conditions or engaged in improper use of the app.
+                We reserve the right to suspend or terminate your access to Aurify at our discretion if we believe you have violated these terms and conditions or engaged in improper use of the app.
 
                 6. Disclaimer
 
-                Soundtrak is provided "as is" and "as available" without warranties of any kind, either expressed or implied.
+                                Aurify is provided "as is" and "as available" without warranties of any kind, either expressed or implied.
                 We do not guarantee that the app will always be available, uninterrupted, secure, or error-free.
 
                 7. Limitation of Liability
 
-                To the extent permitted by law, Soundtrak, its affiliates, or employees shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from your access to or use of Soundtrak.
+                To the extent permitted by law, Aurify, its affiliates, or employees shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from your access to or use of Aurify.
 
                 8. Changes to Terms and Conditions
 
-                We reserve the right to modify or replace these terms and conditions at any time. Your continued use of Soundtrak after any changes indicate your acceptance of those changes.
+                We reserve the right to modify or replace these terms and conditions at any time. Your continued use of Aurify after any changes indicate your acceptance of those changes.
 
                 9. Contact Information
 
                 For questions or concerns regarding these terms and conditions, please contact us at brooklyngibbs22@gmail.com.
-                By using Soundtrak, you acknowledge that you have read and understood these terms and conditions and agree to be bound by them.
+                By using Aurify, you acknowledge that you have read and understood these terms and conditions and agree to be bound by them.
                 """)
                 .padding()
             }

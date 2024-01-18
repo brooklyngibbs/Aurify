@@ -2,6 +2,7 @@ import SwiftUI
 import Combine
 import Firebase
 import FirebaseStorage
+import FirebaseFirestore
 
 struct LibraryView: View {
     @State private var playlists : [Playlist] = []
@@ -263,7 +264,7 @@ struct LibraryView: View {
 struct PlaylistCellView: View {
     @StateObject private var imageLoader = ImageLoader()
     let playlist: Playlist
-    let imageSize: CGFloat = 100
+    let imageSize: CGFloat = 110
     
     var body: some View {
         Group {
