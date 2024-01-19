@@ -1,6 +1,8 @@
 import SwiftUI
+import _StoreKit_SwiftUI
 import FirebaseStorage
 import Firebase
+import StoreKit
 
 struct SettingsViewController: View {
     @State private var notificationsEnabled = false
@@ -17,8 +19,20 @@ struct SettingsViewController: View {
                 Section(header: Text("Profile")) {
                     ProfileSectionView(profileImage: $userProfileImage, showImagePicker: $showImagePicker, userName: userName)
                 }
-                Section(header: Text("Payment")) {
-                    // Payment related settings
+                Section(header: Text("Subscription")) {
+                    NavigationLink("Subscribe") {
+                        SubscriptionStoreView(groupID: "21432070") {
+                            VStack {
+                                Image("clean-logo")
+                                    .resizable()
+                                    .frame(width: 80, height: 80)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                
+                                Text("Subscribe to keep using Aurify")
+                                    .font(.title3)
+                            }
+                        }.storeButton(.hidden, for: .cancellation)
+                    }
                 }
                 Section(header: Text("Terms and Conditions")) {
                     NavigationLink(destination: TermsAndConditionsView()) {
@@ -35,6 +49,7 @@ struct SettingsViewController: View {
             }
         }
     }
+    
     
     // Function to update notification settings
     func updateNotificationSettings() {
@@ -271,3 +286,4 @@ struct ImagePicker: UIViewControllerRepresentable {
         // Update
     }
 }
+

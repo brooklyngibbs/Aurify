@@ -62,6 +62,9 @@
             ReferencedContainer = "container:VinylApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <StoreKitConfigurationFileReference
+         identifier = "../VinylApp/Controllers/Other/AurifySub.storekit">
+      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
