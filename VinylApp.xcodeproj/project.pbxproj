@@ -74,6 +74,7 @@
 		6602FA742B1BF5320043CC93 /* error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = error.png; path = ../../../vinyl_images/error.png; sourceTree = "<group>"; };
 		661BF4ED2B1696E300BBAA16 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotify_Logo.png; path = vinyl_images/Spotify_Logo.png; sourceTree = SOURCE_ROOT; };
+		662A9AC92B59D89D00A39EA6 /* AurifySub.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = AurifySub.storekit; sourceTree = "<group>"; };
 		662F79DE2AE48BA500CEF5CD /* VinylApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VinylApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		664F343A2B2BB90100613F01 /* SpotfiyLogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotfiyLogInView.swift; sourceTree = "<group>"; };
 		664F343E2B2BC3D100613F01 /* LogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInView.swift; sourceTree = "<group>"; };
@@ -151,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				66A0A0E32AE65D4C002EE3B6 /* SettingsViewController.swift */,
+				662A9AC92B59D89D00A39EA6 /* AurifySub.storekit */,
 				66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */,
 				66FCA1A02B16617D00741A1A /* Playlist2VC.swift */,
 				666E43322B2B89F500B7FBDC /* SignUpView.swift */,
@@ -559,7 +561,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -613,7 +615,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

@@ -1,0 +1,104 @@
+{
+  "identifier" : "44C23DE6",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6475698055",
+    "_developerTeamID" : "5SZLNT5DHA",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 727308448.49201298,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21432070",
+      "localizations" : [
+
+      ],
+      "name" : "Aurify Subscription",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "1.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6475698035",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Unlimited uploads",
+              "displayName" : "Subscribe to Aurify",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "Soundtrac_Subscription",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Aurify All Access",
+          "subscriptionGroupID" : "21432070",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
