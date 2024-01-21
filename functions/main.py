@@ -18,10 +18,9 @@ def createJSON(image_desc, artists):
     3. 'music' - optional. Include details about any band, music artist, or song mentioned in the image. Omit if not relevant.
     4. 'genre' - required. Suggest a broad music genre that best represents the image's ambiance. Consider genres like pop, country, hip-hop, RNB, island, etc. Do not take into account the user's preferences.
     5. 'subgenre' - required. Choose a specific and imaginative subgenre portraying the image's mood. Incorporate diverse decades or unique styles.
-    6. 'songlist' - required. Curate a list of 30 songs aligning with the specified subgenre. Utilize real songs by various artists available on Spotify. Do not prioritize a user's preferences. Only add them if they fit the genre.
-    Prioritize less popular tracks from the user's top artists ({artists}) that closely match the subgenre and image description over their most popular songs.
+    6. 'songlist' - required. Curate a list of 30 songs aligning with the specified subgenre. Utilize real songs by various artists available on Spotify. You an artist at most two times, but aim to include an artist only once. If you include an artist, make sure it's their song that fits the genre and image description the most out of their entire discography.
     Encourage diversity by including both well-known and underground artists while ensuring a cohesive playlist.
-    Format the output in JSON with these fields: 'title', 'artist', 'reason' (explaining the selection's fit with the subgenre and image description). Do not prioritize a user's preferences! Only add an song from their top artist if it fits the genre AND the image description AND mood. It is better to put songs not from their artists that fit vs putting a song from their top artists that doesn't fit.
+    Format the output in JSON with these fields: 'title', 'artist', 'reason' (explaining the selection's fit with the subgenre and image description).
     The final output should resemble this structure: {{ 'description': '{image_desc}', 'playlistTitle': 'Your Playlist Title', 'music': '', 'genre': 'Your Genre', 'subgenre': 'Your Subgenre', 'songlist': [{'title': 'Song Title', 'artist': 'Artist Name', 'reason': 'Reason for Selection'}] }}"""
 
     

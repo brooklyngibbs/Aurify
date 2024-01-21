@@ -113,7 +113,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         }
         
         generatingLabel = UILabel()
-        generatingLabel.text = "Generating your picture playlist. Do not exit out of app"
+        generatingLabel.text = "Generating your picture playlist. Do not exit out of the app"
         generatingLabel.textAlignment = .center
         generatingLabel.numberOfLines = 2
         generatingLabel.translatesAutoresizingMaskIntoConstraints = false
