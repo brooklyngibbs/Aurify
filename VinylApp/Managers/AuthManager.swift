@@ -17,7 +17,7 @@ final class AuthManager {
         static let clientID = "eaafa98aa701426389ae69ea33c4deed"
         static let clientSecret = "f2f02a76abbf4e5ebd96d199a08ffa32"
         static let tokenAPIURL = "https://accounts.spotify.com/api/token"
-        static let redirectURI = "https://www.iosacademy.io/"
+        static let redirectURI = "https://www.aurifyapp.com/"
         static let sessionKey = "spotifySessionKey"
         static let scopes = "user-read-private%20playlist-modify-public%20playlist-read-private%20playlist-modify-private%20user-follow-read%20user-library-read%20user-read-email%20ugc-image-upload%20user-modify-playback-state%20user-read-playback-state%20streaming%20app-remote-control%20user-read-currently-playing%20user-library-modify%20user-top-read%20user-read-playback-position%20user-read-recently-played"
     }
@@ -68,7 +68,7 @@ final class AuthManager {
             URLQueryItem(name: "code",
                          value: code),
             URLQueryItem(name: "redirect_uri",
-                         value: "https://www.iosacademy.io/"),
+                         value: "https://www.aurifyapp.com/"),
         ]
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

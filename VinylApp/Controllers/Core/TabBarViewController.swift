@@ -24,6 +24,10 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        showUploadButton()
+    }
+    
+    func showUploadButton() {
         let uploadButton = UIButton(type: .custom)
         uploadButton.setImage(UIImage(systemName: "plus"), for: .normal)
         uploadButton.backgroundColor = AppColors.vampireBlack
@@ -67,7 +71,6 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
         }
     }
 
-    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
     }
@@ -85,5 +88,3 @@ struct CustomTitleView: View {
         }
     }
 }
-
-
