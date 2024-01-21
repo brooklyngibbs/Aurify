@@ -1,5 +1,5 @@
 {
-  "identifier" : "44C23DE6",
+  "identifier" : "0548367A",
   "nonRenewingSubscriptions" : [
 
   ],
@@ -10,7 +10,7 @@
     "_applicationInternalID" : "6475698055",
     "_developerTeamID" : "5SZLNT5DHA",
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 727308448.49201298,
+    "_lastSynchronizedDate" : 727397656.97604704,
     "_locale" : "en_US",
     "_storefront" : "USA",
     "_storeKitErrors" : [
@@ -63,11 +63,11 @@
   },
   "subscriptionGroups" : [
     {
-      "id" : "21432070",
+      "id" : "21436715",
       "localizations" : [
 
       ],
-      "name" : "Aurify Subscription",
+      "name" : "Aurify All Access",
       "subscriptions" : [
         {
           "adHocOffers" : [
@@ -79,19 +79,19 @@
           "displayPrice" : "1.99",
           "familyShareable" : false,
           "groupNumber" : 1,
-          "internalID" : "6475698035",
+          "internalID" : "6476419155",
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Unlimited uploads",
-              "displayName" : "Subscribe to Aurify",
+              "description" : "Upload as many images as you want",
+              "displayName" : "Aurify All Access",
               "locale" : "en_US"
             }
           ],
-          "productID" : "Soundtrac_Subscription",
+          "productID" : "FullAccess",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Aurify All Access",
-          "subscriptionGroupID" : "21432070",
+          "subscriptionGroupID" : "21436715",
           "type" : "RecurringSubscription"
         }
       ]

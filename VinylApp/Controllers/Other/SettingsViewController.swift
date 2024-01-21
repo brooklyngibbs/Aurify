@@ -20,27 +20,40 @@ struct SettingsViewController: View {
                     ProfileSectionView(profileImage: $userProfileImage, showImagePicker: $showImagePicker, userName: userName)
                 }
                 Section(header: Text("Subscription")) {
-                    NavigationLink("Subscribe") {
-                        SubscriptionStoreView(groupID: "21432070") {
+                    NavigationLink(destination:
+                        SubscriptionStoreView(groupID: "21436715") {
                             VStack {
                                 Image("clean-logo")
                                     .resizable()
                                     .frame(width: 80, height: 80)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                                
-                                Text("Subscribe to keep using Aurify")
-                                    .font(.title3)
+                                Text("Aurify+")
+                                    .font(.custom("Outfit-Bold", size: 30))
+                                    .padding()
+                                Text("Subscribe to keep making great playlists")
+                                    .font(.custom("Inter-Regular", size: 18))
+                                    .foregroundColor(Color.gray)
                             }
                         }.storeButton(.hidden, for: .cancellation)
+                        .navigationBarTitle("")
+                        .navigationBarHidden(true)
+                    ) {
+                        Text("Subscribe")
+                            .navigationBarBackButtonHidden(true)
                     }
                 }
+
                 Section(header: Text("Terms and Conditions")) {
-                    NavigationLink(destination: TermsAndConditionsView()) {
+                    NavigationLink(destination: TermsAndConditionsView()
+                        .navigationBarTitle("")
+                        .navigationBarHidden(true)
+                    ) {
                         Text("View Terms and Conditions")
                     }
                 }
+
                 Section(header: Text("Account")) {
-                    AccountSectionView()
+                    AccountSectionView(userName: userName)
                 }
                 
             }
@@ -50,19 +63,6 @@ struct SettingsViewController: View {
         }
     }
     
-    
-    // Function to update notification settings
-    func updateNotificationSettings() {
-        if notificationsEnabled {
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in
-                // Handle user response to the permission request
-            }
-        } else {
-            // Disable notifications (if needed)
-            // For example, remove all scheduled notifications
-            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        }
-    }
     
     func saveProfileImage(_ image: UIImage) {
         guard let imageData = image.jpegData(compressionQuality: 0.5) else {
@@ -89,35 +89,56 @@ struct SettingsViewController: View {
 }
 
 struct AccountSectionView: View {
-    
     @State private var showingSignOutAlert = false
-    
+    @State private var showingDeleteAccountAlert = false
+    var userName: String
+
     var body: some View {
         VStack(alignment: .leading) {
-            Button(action: {
-                showingSignOutAlert = true
-            }) {
-                Text("Sign Out")
-                    .foregroundColor(Color(AppColors.vampireBlack))
+            Section {
+                Button(action: {
+                    showingSignOutAlert = true
+                }) {
+                    Text("Sign Out")
+                        .foregroundColor(Color(AppColors.vampireBlack))
+                }
+                .alert(isPresented: $showingSignOutAlert) {
+                    Alert(
+                        title: Text("Sign Out"),
+                        message: Text("Are you sure you want to sign out?"),
+                        primaryButton: .default(Text("Yes")) {
+                            signOut()
+                        },
+                        secondaryButton: .cancel(Text("No")) {
+                            showingSignOutAlert = false
+                        }
+                    )
+                }
+                .padding(.bottom, 15)
             }
-            .alert(isPresented: $showingSignOutAlert) {
-                Alert(
-                    title: Text("Sign Out"),
-                    message: Text("Are you sure you want to sign out?"),
-                    primaryButton: .default(Text("Yes")) {
-                        signOut()
-                    },
-                    secondaryButton: .cancel(Text("No"))
-                )
+
+            Section {
+                Button(action: {
+                    showingDeleteAccountAlert = true
+                    print("delete")
+                }) {
+                    Text("Delete Account")
+                        .foregroundColor(Color(AppColors.venetian_red))
+                }
+                .alert(isPresented: $showingDeleteAccountAlert) {
+                    Alert(
+                        title: Text("Delete Account"),
+                        message: Text("Are you sure you want to delete your account? This action cannot be undone."),
+                        primaryButton: .destructive(Text("Delete")) {
+                            deleteAccount(userName: userName)
+                        },
+                        secondaryButton: .cancel(Text("Cancel")) {
+                            showingDeleteAccountAlert = false  // Reset the state when Cancel is pressed
+                        }
+                    )
+                }
             }
-            .padding(.bottom, 15)
-            
-            Button(action: {
-                // action for delete account
-            }) {
-                Text("Delete Account")
-                    .foregroundColor(Color(AppColors.venetian_red))
-            }
+
         }
     }
     func signOut() {
@@ -133,6 +154,39 @@ struct AccountSectionView: View {
                 }
             } else {
                 // Handle sign-out failure here
+            }
+        }
+    }
+    
+    func deleteAccount(userName: String) {
+        // Step 1: Delete User Data in Firestore
+        deleteUserDataFromFirestore(userName: userName)
+
+        // Step 2: Delete User Authentication in Firebase Authentication
+        deleteAuthentication()
+    }
+    
+    func deleteUserDataFromFirestore(userName: String) {
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(userName)
+
+        userRef.delete { error in
+            if let error = error {
+                print("Error deleting user data: \(error.localizedDescription)")
+            } else {
+                print("User data deleted successfully")
+            }
+        }
+    }
+
+    func deleteAuthentication() {
+        let user = Auth.auth().currentUser
+
+        user?.delete { error in
+            if let error = error {
+                print("Error deleting user authentication: \(error.localizedDescription)")
+            } else {
+                print("User authentication deleted successfully")
             }
         }
     }
@@ -169,7 +223,7 @@ struct ProfileSectionView: View {
                         )
                 }
                 .clipShape(Circle())
-                .offset(x: 4, y: 4) //adjust position in profile circle
+                .offset(x: 4, y: 4)
             } else {
                 Circle()
                     .foregroundColor(.gray)

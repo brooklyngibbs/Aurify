@@ -66,9 +66,9 @@ struct LibraryView: View {
                                             Button(action: {
                                                 showingSettings = true
                                             }) {
-                                                Image(systemName: "ellipsis")
+                                                Image(systemName: "gear")
                                                     .foregroundColor(.white)
-                                                    .font(.system(size: 15))
+                                                    .font(.system(size: 20))
                                                     .padding(10)
                                             }
                                                 .offset(x: geometry.size.width / 2 - 30, y: -geometry.size.height / 2 + 20)
@@ -76,7 +76,21 @@ struct LibraryView: View {
                                                 .sheet(isPresented: $showingSettings) {
                                                     NavigationView {
                                                         SettingsViewController(userProfileImage: $userProfileImage, userName: self.displayName, userID: self.userID)
-                                                            .navigationBarTitle("Settings")
+                                                            .navigationBarTitleDisplayMode(.inline)
+                                                            .navigationBarItems(
+                                                                leading: EmptyView(),
+                                                                trailing: EmptyView()
+                                                            )
+                                                            .toolbar {
+                                                                ToolbarItem(placement: .principal) {
+                                                                    HStack {
+                                                                        Text("Settings")
+                                                                            .font(.custom("Inter-Medium", size: 20))
+                                                                            .foregroundColor(.primary)
+                                                                        Spacer()
+                                                                    }
+                                                                }
+                                                            }
                                                     }
                                                 }
                                         )

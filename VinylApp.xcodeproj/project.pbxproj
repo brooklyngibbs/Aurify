@@ -74,7 +74,6 @@
 		6602FA742B1BF5320043CC93 /* error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = error.png; path = ../../../vinyl_images/error.png; sourceTree = "<group>"; };
 		661BF4ED2B1696E300BBAA16 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotify_Logo.png; path = vinyl_images/Spotify_Logo.png; sourceTree = SOURCE_ROOT; };
-		662A9AC92B59D89D00A39EA6 /* AurifySub.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = AurifySub.storekit; sourceTree = "<group>"; };
 		662F79DE2AE48BA500CEF5CD /* VinylApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VinylApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		664F343A2B2BB90100613F01 /* SpotfiyLogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotfiyLogInView.swift; sourceTree = "<group>"; };
 		664F343E2B2BC3D100613F01 /* LogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInView.swift; sourceTree = "<group>"; };
@@ -119,6 +118,7 @@
 		66B7A4942B0DEE5A004C81D5 /* spotify_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = spotify_image.png; path = ../../../vinyl_images/spotify_image.png; sourceTree = "<group>"; };
 		66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelTexts.swift; sourceTree = "<group>"; };
 		66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
+		66DF26122B5B3515007C734B /* AurifySubs.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = AurifySubs.storekit; sourceTree = "<group>"; };
 		66DF3CD52AE61733003CB1E2 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		66DF3CD92AE61D7C003CB1E2 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -152,7 +152,6 @@
 			isa = PBXGroup;
 			children = (
 				66A0A0E32AE65D4C002EE3B6 /* SettingsViewController.swift */,
-				662A9AC92B59D89D00A39EA6 /* AurifySub.storekit */,
 				66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */,
 				66FCA1A02B16617D00741A1A /* Playlist2VC.swift */,
 				666E43322B2B89F500B7FBDC /* SignUpView.swift */,
@@ -252,6 +251,7 @@
 				66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */,
 				66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */,
 				66E2DB5B2B16CCC100F44F93 /* FirestoreManager.swift */,
+				66DF26122B5B3515007C734B /* AurifySubs.storekit */,
 			);
 			path = Resources;
 			sourceTree = "<group>";

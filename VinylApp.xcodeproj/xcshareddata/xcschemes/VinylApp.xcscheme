@@ -63,7 +63,7 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
-         identifier = "../VinylApp/Controllers/Other/AurifySub.storekit">
+         identifier = "../VinylApp/Resources/AurifyAllAccess.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
