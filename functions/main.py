@@ -10,53 +10,7 @@ from google.oauth2.id_token import verify_oauth2_token
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
-def createJSON(image_desc, artists):
-    #json_prompt = f"Create a JSON for the following variables 1. description - required. {image_desc} 2. playlistTitle - required. a playlist title that goes with the image description. Example: 'Floating on air: A night with The Boss' 3. music - optional.  If the image contains information on a band, music artist, or song, output the band name, artist name, or song name in this field. If there isn't anything, don't include this field. 4. genre - required. Output a broad music genre that best encapsulates the vibe of the image. It should be something like pop, country, hip-hop, RNB, etc. 5. subgenre - required.  Choose a more specific and creative subgenre of the genre above that best represents the image. For example, indie pop is not specific enough. Feel free to include decades! 6. songlist - required.  Select 30 songs that fit the subgenre mentioned above. Draw inspiration from song lyrics, titles, and mood. These should be real songs from real artists that I can find on Spotify. If there was a band, music artist, or song in the image, include a few songs from that music. Here are my top artists: {artists}. If any of their songs fit the subgenre, include them.  Try to find niche songs from these artists that fit the subgenre and image description better than their most popular songs. Try to use as many top artists as possible, however, the main priority is that the songs FIT THE SUBGENRE. Do NOT include songs from these artists if they do not fit the subgenre. For example, if a top artist is Harry Styles and the subgenre is 90s country ballads, do not include Harry Styles. These should all be real songs from the artists. The songs should include a mix of popular artists and underground arists for diversity. If some of the user's top artists are included, some of the other songs should be inspired by these songs. If the artist is not in the user's top artists, do not include more than one song from an artist. All of the songs should flow together and have a similar tone. Do not include songs just so the top artist is there if the artist does not have songs that fit the subgenre. Format as JSON with three required fields: title, artist, reason (as to why it fits the subgenre and image description). So the final output should be {{ 'description': '{image_desc}', 'playlistTitle': 'Your Playlist Title', 'music': '', 'genre': 'Your Genre', 'subgenre': 'Your Subgenre', 'songlist': [{'title': 'Song Title', 'artist': 'Artist Name', 'reason': 'Reason for Selection'}] }}"
-    json_prompt = f"""Create a JSON for the following variables:
-    1. 'description' - required. {image_desc}
-    2. 'playlistTitle' - required. A title that complements the image description. Example: 'Atmospheric Reverie: A Sonic Journey'. Make it quirky.
-    3. 'music' - optional. Include details about any band, music artist, or song mentioned in the image. Omit if not relevant.
-    4. 'genre' - required. Suggest a broad music genre that best represents the image's ambiance. Consider genres like pop, country, hip-hop, RNB, island, etc. Do not take into account the user's preferences.
-    5. 'subgenre' - required. Choose a specific and imaginative subgenre portraying the image's mood. Incorporate diverse decades or unique styles.
-    6. 'songlist' - required. Curate a list of 30 songs aligning with the specified subgenre. Utilize real songs by various artists available on Spotify. You an artist at most two times, but aim to include an artist only once. If you include an artist, make sure it's their song that fits the genre and image description the most out of their entire discography.
-    Encourage diversity by including both well-known and underground artists while ensuring a cohesive playlist.
-    Format the output in JSON with these fields: 'title', 'artist', 'reason' (explaining the selection's fit with the subgenre and image description).
-    The final output should resemble this structure: {{ 'description': '{image_desc}', 'playlistTitle': 'Your Playlist Title', 'music': '', 'genre': 'Your Genre', 'subgenre': 'Your Subgenre', 'songlist': [{'title': 'Song Title', 'artist': 'Artist Name', 'reason': 'Reason for Selection'}] }}"""
-
-    
-    json_data = {
-        "model": "gpt-4-vision-preview",
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": json_prompt
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": image_url
-                        }
-                    }
-                ]
-            },
-            {
-                "role": "system",
-                "content": "Please use the provided information to curate a diverse playlist that aligns with the image description and specified subgenre. Prioritize less popular songs from the user's top artists if they better fit the subgenre and image context. Aim for a well-balanced mix of both well-known and underground artists while maintaining coherence and relevance to the user's preferences."
-            }
-        ],
-        "max_tokens": 4000
-    }
-    
-    json_headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {OPENAI_API_KEY}"
-    }
-
-
-def get_image_info(image_url, artists):
+def get_image_info(image_url):
     json_prompt = '''Analyze the image and output information as a valid json object (and only the JSON) with the following fields: 
     {
       "description": "containins a detailed description of what is in the image including prominent colors and vibes and emotions provoked",
@@ -73,14 +27,9 @@ def get_image_info(image_url, artists):
       ]
     } 
     Songlist should contain 30 songs for the image that fit the subgenre. It is very important that I get all 30 songs.  I'll pay $200 for 30 great song selections. All of the songs should fit the mood as well, so that the songs do not clash. 
-    These should be real songs from real artists that I can find on Spotify. If there was a band, music artist, or song in the image, include only three song from that music. 
-    Also, if applicable, include songs from my top artists: ''' + f"{artists}" + '''. 
-    If any of my top artists have songs that fit the subgenre or image description, include them. Try to find niche songs from these artists that fit the subgenre and image description better than their most popular songs. 
-    For example (only an example), instead of Cardigan by Taylor Swift, you might choose The Lakes or Seven if they fit the image description better. 
-    Try to use as many top artists as possible, however, the main priority is that the songs FIT THE SUBGENRE. 
-    Do NOT include songs from these artists if they do not fit the subgenre. These should all be real songs from the artists. 
+    These should be real songs from real artists that I can find on Spotify. If there was a band, music artist, or song in the image, include only three song from that music.
     The soundtrack should be mostly diverse underground songs with a few mainstream songs. 
-    All of the songs should flow together and have a similar tone.'''
+    All of the songs should flow together and have a similar tone. Only use one song from each artist you choose. Make sure to choose the song that best fits the genre and image description from their entire discogrpahy.'''
     
     json_data = {
         "model": "gpt-4-vision-preview",
@@ -140,12 +89,11 @@ def make_scene_api_request(req: https_fn.Request) -> https_fn.Response:
     try:
         trigger_data = req.json
         image_url = trigger_data.get("image_url")
-        artists = trigger_data.get("artists")
         
         if not image_url:
             return https_fn.Response("Image URL not provided in trigger data.")
         
-        image_json = get_image_info(image_url, artists)
+        image_json = get_image_info(image_url)
         if image_json:
             json_data = json.loads(image_json)
             genre = json_data.get("genre")

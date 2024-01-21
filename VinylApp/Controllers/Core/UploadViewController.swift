@@ -40,7 +40,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     private var labelIndex = 0
     
     var songURIs: [String] = []
-    var topArtists: [String] = []
+    //var topArtists: [String] = []
     
     
     private let storage = Storage.storage().reference()
@@ -54,7 +54,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         self.navigationItem.hidesBackButton = true
         
-        fetchTopArtists(limit: 10)
+        //fetchTopArtists(limit: 10)
         
         errorLabel = UILabel()
         errorLabel.text = "Uh Oh! Something went wrong."
@@ -151,21 +151,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         vinylImage.layer.add(rotationAnimation, forKey: "rotationAnimation")
     }
     
-    
-    func fetchTopArtists(limit: Int) {
-        APICaller.shared.getTopArtists(limit: limit) { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let artists):
-                self.topArtists = artists
-                print("Fetched Top Artists: \(self.topArtists)")
-                
-            case .failure(let error):
-                print("Error fetching top artists: \(error)")
-            }
-        }
-    }
     // MARK: - Firebase Function
     
     func sendImageUrlToFirebaseFunction(url: String, retries: Int) {
@@ -182,7 +167,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         let requestData = [
             "image_url": url,
-            "artists": topArtists
+            //"artists": topArtists
         ] as [String : Any]
         
         if let jsonData = try? JSONSerialization.data(withJSONObject: requestData) {
