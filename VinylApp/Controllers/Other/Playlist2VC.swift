@@ -192,22 +192,14 @@ struct Playlist2VC: View {
         )
     }
 
-    
     private func deletePlaylist() {
         if let userSpotifyID = UserDefaults.standard.value(forKey: "user_id") as? String {
             print("User ID: \(userSpotifyID)")
             print("Playlist ID: \(playlist.id)")
             
-            let userPlaylistsRef = db.collection("users").document(userSpotifyID).collection("playlists")
-            userPlaylistsRef.document(playlist.id).delete { error in
-                if let error = error {
-                    print("Error deleting document: \(error)")
-                } else {
-                    print("Playlist successfully deleted")
-                    DispatchQueue.main.async {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }
-                }
+            db.collection("users").document(userSpotifyID).collection("playlists").document(playlist.id).setData(["deleted": true], merge: true)
+            DispatchQueue.main.async {
+                self.presentationMode.wrappedValue.dismiss()
             }
         } else {
             print("No user ID found in UserDefaults or it's not a String")

@@ -38,6 +38,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     private var labelTimer: Timer?
     private var labelIndex = 0
+    private var dataTask: URLSessionDataTask? = nil
     
     var songURIs: [String] = []
     var topArtists: [String] = []
@@ -47,11 +48,14 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     // MARK: - View Lifecycle
     
+    override func viewWillDisappear(_ animated: Bool) {
+        dataTask?.cancel()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .white
-        
         self.navigationItem.hidesBackButton = true
         
         fetchTopArtists(limit: 10)
@@ -188,7 +192,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         if let jsonData = try? JSONSerialization.data(withJSONObject: requestData) {
             request.httpBody = jsonData
             let startTime = DispatchTime.now()
-            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
                 print("make-scene-api-request time: \(Double(DispatchTime.now().uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000)")
                 if let error = error {
                     if retries > 0 {
@@ -300,7 +304,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     }
                 }
             }
-            task.resume()
+            dataTask?.resume()
         }
     }
     

@@ -19,6 +19,9 @@ class FirestoreManager {
 
             let playlistIDs = documents.compactMap { document -> String? in
                 let playlistData = document.data()
+                if playlistData["deleted"] as? Bool == true {
+                    return nil
+                }
                 return playlistData["id"] as? String
             }
 
