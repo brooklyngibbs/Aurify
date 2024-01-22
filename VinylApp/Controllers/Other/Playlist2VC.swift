@@ -107,7 +107,7 @@ struct Playlist2VC: View {
     
     private var openInSpotifyButton: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: 20)
                 .frame(width: 200, height: 40)
                 .foregroundColor(Color(AppColors.moonstoneBlue))
 
@@ -115,7 +115,7 @@ struct Playlist2VC: View {
                 openSpotify()
             }) {
                 HStack {
-                    Image("Spotify_Icon")
+                    Image("Spotify_Icon_White")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 30, height: 30)
@@ -123,7 +123,7 @@ struct Playlist2VC: View {
                     
                     Text("OPEN SPOTIFY")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                 }
                 .offset(x: 10) // Adjust the offset as needed to center the HStack
             }

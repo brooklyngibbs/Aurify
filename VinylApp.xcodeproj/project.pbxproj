@@ -53,6 +53,7 @@
 		66B7A4952B0DEE5A004C81D5 /* spotify_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B7A4942B0DEE5A004C81D5 /* spotify_image.png */; };
 		66DC737A2B0FE93A007ECCB5 /* LabelTexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */; };
 		66DC737C2B0FEC0A007ECCB5 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */; };
+		66DF26142B5DBE29007C734B /* Spotify_Icon_White.png in Resources */ = {isa = PBXBuildFile; fileRef = 66DF26132B5DBE29007C734B /* Spotify_Icon_White.png */; };
 		66DF3CD62AE61733003CB1E2 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CD52AE61733003CB1E2 /* AuthManager.swift */; };
 		66DF3CD82AE61B08003CB1E2 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */; };
 		66DF3CDA2AE61D7C003CB1E2 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DF3CD92AE61D7C003CB1E2 /* Extensions.swift */; };
@@ -119,6 +120,7 @@
 		66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelTexts.swift; sourceTree = "<group>"; };
 		66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
 		66DF26122B5B3515007C734B /* AurifySubs.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = AurifySubs.storekit; sourceTree = "<group>"; };
+		66DF26132B5DBE29007C734B /* Spotify_Icon_White.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotify_Icon_White.png; path = vinyl_images/Spotify_Icon_White.png; sourceTree = SOURCE_ROOT; };
 		66DF3CD52AE61733003CB1E2 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		66DF3CD92AE61D7C003CB1E2 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -290,6 +292,7 @@
 				6668831A2B0E6E86005864D0 /* clean-background.png */,
 				6673F40C2B18634000A18E79 /* transparentmusicman.png */,
 				66784C102B19959B00EDCB4B /* vinyl3.png */,
+				66DF26132B5DBE29007C734B /* Spotify_Icon_White.png */,
 				6673F4182B19077000A18E79 /* 70s_man.png */,
 				6668831C2B0E6E8B005864D0 /* clean-logo.png */,
 				66B7A4942B0DEE5A004C81D5 /* spotify_image.png */,
@@ -403,6 +406,7 @@
 				66784C112B19959B00EDCB4B /* vinyl3.png in Resources */,
 				6673F40F2B1901D900A18E79 /* headphones_man.jpeg in Resources */,
 				66F70F972B0C9A42005062AD /* Launch Screen.storyboard in Resources */,
+				66DF26142B5DBE29007C734B /* Spotify_Icon_White.png in Resources */,
 				6673F4092B17E55C00A18E79 /* Inter-SemiBold.ttf in Resources */,
 				6602FA752B1BF5320043CC93 /* error.png in Resources */,
 				6673F4152B19034700A18E79 /* Inter-Light.ttf in Resources */,

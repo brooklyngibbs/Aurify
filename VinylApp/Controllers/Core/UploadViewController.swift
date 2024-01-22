@@ -41,7 +41,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     private var dataTask: URLSessionDataTask? = nil
     
     var songURIs: [String] = []
-    var topArtists: [String] = []
+    //var topArtists: [String] = []
     
     
     private let storage = Storage.storage().reference()
@@ -58,7 +58,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         view.backgroundColor = .white
         self.navigationItem.hidesBackButton = true
         
-        fetchTopArtists(limit: 10)
+        //fetchTopArtists(limit: 10)
         
         errorLabel = UILabel()
         errorLabel.text = "Uh Oh! Something went wrong."
@@ -117,7 +117,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         }
         
         generatingLabel = UILabel()
-        generatingLabel.text = "Generating your picture playlist. Do not exit out of app"
+        generatingLabel.text = "Generating your picture playlist. Do not exit out of the app"
         generatingLabel.textAlignment = .center
         generatingLabel.numberOfLines = 2
         generatingLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -155,21 +155,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         vinylImage.layer.add(rotationAnimation, forKey: "rotationAnimation")
     }
     
-    
-    func fetchTopArtists(limit: Int) {
-        APICaller.shared.getTopArtists(limit: limit) { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let artists):
-                self.topArtists = artists
-                print("Fetched Top Artists: \(self.topArtists)")
-                
-            case .failure(let error):
-                print("Error fetching top artists: \(error)")
-            }
-        }
-    }
     // MARK: - Firebase Function
     
     func sendImageUrlToFirebaseFunction(url: String, retries: Int) {
@@ -186,7 +171,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         let requestData = [
             "image_url": url,
-            "artists": topArtists
+            //"artists": topArtists
         ] as [String : Any]
         
         if let jsonData = try? JSONSerialization.data(withJSONObject: requestData) {
