@@ -89,58 +89,21 @@ struct SettingsViewController: View {
 }
 
 struct AccountSectionView: View {
-    
-    enum AlertType {
-        case signOutAlert
-        case deleteAccountAlert
-        case none
-    }
     var userName: String
-    
-    @State var showAlert: Bool = false
-    @State var alertType: AlertType = .none
+    @State private var isSignOutAlertPresented = false
+    @State private var isDeleteAccountAlertPresented = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Button(action: {
-                alertType = .signOutAlert
-                showAlert = true
-            }) {
-                Text("Sign Out")
-                    .foregroundColor(Color(AppColors.vampireBlack))
-            }
-            Button(action: {
-                alertType = .deleteAccountAlert
-                showAlert = true
-            }) {
-                Text("Delete Account")
-                    .foregroundColor(Color(AppColors.venetian_red))
-            }
-            .alert(isPresented: $showAlert) {
-                switch alertType {
-                case .signOutAlert:
-                    return Alert(
-                        title: Text("Sign Out"),
-                        message: Text("Are you sure you want to sign out?"),
-                        primaryButton: .default(Text("Yes")) {
-                            signOut()
-                        },
-                        secondaryButton: .cancel(Text("No"))
-                    )
-                case .deleteAccountAlert:
-                    return Alert(
-                        title: Text("Delete Account"),
-                        message: Text("This action cannot be undone"),
-                        primaryButton: .default(Text("Delete")) {
-                            deleteAccount(userName: userName)
-                        },
-                        secondaryButton: .cancel(Text("Cancel"))
-                    )
-                case .none:
-                    return Alert(title: Text(""), message: Text("")) // Empty alert for .none case
+            SignOutView(userName: userName, isPresented: $isSignOutAlertPresented)
+                .onTapGesture {
+                    isSignOutAlertPresented = true
                 }
-            }
 
+            DeleteAccountView(userName: userName, isPresented: $isDeleteAccountAlertPresented)
+                .onTapGesture {
+                    isDeleteAccountAlertPresented = true
+                }
         }
     }
     
@@ -162,14 +125,53 @@ struct AccountSectionView: View {
     }
     
     func deleteAccount(userName: String) {
-        // Step 1: Delete User Data in Firestore
-        deleteUserDataFromFirestore() { result in
+        // Step 1: Delete User Playlists
+        deletePlaylists { result in
             switch result {
             case .success:
-                print("successfully deleted user")
+                print("Successfully deleted user playlists")
+                // Step 2: Delete User Data in Firestore
+                deleteUserDataFromFirestore { result in
+                    switch result {
+                    case .success:
+                        print("Successfully deleted user data from Firestore")
+                        // Step 3: Delete User Account
+                        deleteUserAccount()
+                    case .failure(let error):
+                        print("Failed to delete user data from Firestore: \(error.localizedDescription)")
+                        // Handle failure if needed
+                    }
+                }
             case .failure(let error):
-                print("Failed to delete user data: \(error.localizedDescription)")
+                print("Failed to delete user playlists: \(error.localizedDescription)")
                 // Handle failure if needed
+            }
+        }
+    }
+
+    
+    func deletePlaylists(completion: @escaping (Result<Void, Error>) -> Void) {
+        APICaller.shared.getCurrentUserProfile { result in
+            switch result {
+            case .success(let userProfile):
+                let db = Firestore.firestore()
+                let userRef = db.collection("users").document(userProfile.id)
+                let playlistsRef = userRef.collection("playlists")
+            
+                playlistsRef.getDocuments { snapshot, error in
+                    if let error = error {
+                        completion(.failure(error))
+                    } else {
+                        for document in snapshot?.documents ?? [] {
+                            let playlistRef = playlistsRef.document(document.documentID)
+                            playlistRef.delete()
+                        }
+                        completion(.success(()))
+                    }
+                }
+            case .failure(let error):
+                print("Failed to get user profile: \(error.localizedDescription)")
+                completion(.failure(error))
             }
         }
     }
@@ -183,10 +185,10 @@ struct AccountSectionView: View {
                 
                 userRef.delete { error in
                     if let error = error {
-                        print("Error deleting user data: \(error.localizedDescription)")
+                        print("Error deleting user data from Firestore: \(error.localizedDescription)")
                         completion(.failure(error))
                     } else {
-                        print("User data deleted successfully")
+                        print("User data deleted successfully from Firestore")
                         completion(.success(()))
                     }
                 }
@@ -196,6 +198,45 @@ struct AccountSectionView: View {
             }
         }
     }
+    
+    func deleteUserAccount() {
+        print("deleteUserAccount function started")
+        
+        let user = Auth.auth().currentUser
+        
+        user?.delete { error in
+            if let error = error {
+                print("Error deleting user account: \(error.localizedDescription)")
+                // Handle failure if needed
+            } else {
+                print("User account deletion initiated successfully")
+                
+                // Print the user information to verify if the user is logged in
+                if let currentUser = Auth.auth().currentUser {
+                    print("Current user after deletion: \(currentUser)")
+                } else {
+                    print("User is not logged in after deletion")
+                }
+                
+                // Perform the view transition here
+                DispatchQueue.main.async {
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let window = windowScene.windows.first {
+                        let logInView = LogInView()
+                        let hostingController = UIHostingController(rootView: logInView)
+                        let navVC = UINavigationController(rootViewController: hostingController)
+                        navVC.navigationBar.prefersLargeTitles = true
+                        window.rootViewController = navVC
+                        window.makeKeyAndVisible()
+                        print("View transition completed")
+                    }
+                }
+            }
+        }
+        
+        print("deleteUserAccount function completed")
+    }
+
 }
 
 
@@ -344,6 +385,59 @@ struct ImagePicker: UIViewControllerRepresentable {
     
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
         // Update
+    }
+}
+
+struct SignOutView: View {
+    var userName: String
+    @Binding var isPresented: Bool
+    @State private var showAlert: Bool = false
+
+    var body: some View {
+        VStack {
+            Text("Sign Out")
+                .onTapGesture {
+                    showAlert = true
+                }
+                .alert(isPresented: $showAlert) {
+                    Alert(
+                        title: Text("Sign Out"),
+                        message: Text("Are you sure you want to sign out?"),
+                        primaryButton: .default(Text("Yes")) {
+                            isPresented = false
+                            AccountSectionView(userName: userName).signOut()
+                        },
+                        secondaryButton: .cancel(Text("No"))
+                    )
+                }
+        }
+    }
+}
+
+struct DeleteAccountView: View {
+    var userName: String
+    @Binding var isPresented: Bool
+    @State private var showAlert: Bool = false
+
+    var body: some View {
+        VStack {
+            Text("Delete Account")
+                .foregroundColor(Color(AppColors.venetian_red))
+                .onTapGesture {
+                    showAlert = true
+                }
+                .alert(isPresented: $showAlert) {
+                    Alert(
+                        title: Text("Delete Account"),
+                        message: Text("This action cannot be undone"),
+                        primaryButton: .default(Text("Delete")) {
+                            AccountSectionView(userName: userName).deleteAccount(userName: userName)
+                            isPresented = false
+                        },
+                        secondaryButton: .cancel(Text("Cancel"))
+                    )
+                }
+        }
     }
 }
 
