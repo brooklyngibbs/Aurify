@@ -61,7 +61,7 @@ struct SignUpView: View {
                                 .font(.custom("Inter-Light", size: 15))
                             
                             NavigationLink(destination: LogInView().navigationBarBackButtonHidden(true)) {
-                                Text("Sign Up")
+                                Text("Log In")
                                     .font(.custom("Log in", size: 15))
                                     .underline()
                                     .foregroundColor(Color(AppColors.moonstoneBlue))
