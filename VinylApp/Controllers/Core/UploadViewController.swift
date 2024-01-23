@@ -34,6 +34,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     var generatingLabel: UILabel!
     var errorLabel: UILabel!
     var subLabel: UILabel!
+    var backButton: UIButton!
     
     var labelTexts: [String] = LabelTexts.labelTexts
     
@@ -62,7 +63,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         //fetchTopArtists(limit: 10)
         
         errorLabel = UILabel()
-        errorLabel.text = "Uh Oh! Something went wrong."
+        errorLabel.text = "Uh Oh!\nSomething went wrong."
         errorLabel.textAlignment = .center
         errorLabel.numberOfLines = 2
         errorLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -80,9 +81,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         ])
         
         subLabel = UILabel()
-        subLabel.text = "Uh Oh! Subscribe to get more of Aurify!"
+        subLabel.text = "Subscribe to get more of Aurify!"
         subLabel.textAlignment = .center
-        subLabel.numberOfLines = 2
+        subLabel.numberOfLines = 3
         subLabel.translatesAutoresizingMaskIntoConstraints = false
         subLabel.font = UIFont(name: "Inter-SemiBold", size: 17)
         subLabel.textColor = AppColors.vampireBlack
@@ -109,6 +110,26 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             errorImage.topAnchor.constraint(equalTo: errorLabel.bottomAnchor),
             errorImage.widthAnchor.constraint(equalToConstant: 200),
             errorImage.heightAnchor.constraint(equalToConstant: 200)
+        ])
+        
+        backButton = UIButton()
+        backButton.setTitle("Back to Library", for: .normal)
+        backButton.titleLabel?.font = UIFont(name: "Inter-SemiBold", size: 17)
+        backButton.setTitleColor(AppColors.vampireBlack, for: .normal)
+        backButton.addTarget(self, action: #selector(backToLibrary), for: .touchUpInside)
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        backButton.isHidden = true // Initially hide the back button
+        backButton.layer.borderWidth = 1.0
+        backButton.layer.borderColor = AppColors.vampireBlack.cgColor
+        backButton.layer.cornerRadius = 20 // Optional: If you want rounded corners
+        view.addSubview(backButton)
+
+        // Constraints for the backButton
+        NSLayoutConstraint.activate([
+            backButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            backButton.topAnchor.constraint(equalTo: errorImage.bottomAnchor, constant: 20),
+            backButton.widthAnchor.constraint(equalToConstant: 150), // Adjust width as needed
+            backButton.heightAnchor.constraint(equalToConstant: 40) // Adjust height as needed
         ])
         
         vinylImage = UIImageView()
@@ -159,6 +180,10 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         }
     }
     
+    @objc func backToLibrary() {
+        navigationController?.popViewController(animated: true)
+    }
+    
     func startSpinningAnimation() {
         let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation")
         rotationAnimation.fromValue = 0.0
@@ -202,6 +227,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                         self.generatingLabel.isHidden = true
                         self.errorLabel.isHidden = false
                         errorImage.isHidden = false
+                        self.backButton.isHidden = false
                     }
                     print("Error sending data to Firebase Function: \(error.localizedDescription)")
                 } else if let data = data {
@@ -237,6 +263,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                                                 self.generatingLabel.isHidden = true
                                                                 self.errorLabel.isHidden = false
                                                                 errorImage.isHidden = false
+                                                                self.backButton.isHidden = false
                                                             }
                                                             print("Failed to save playlist to Firestore:", error)
                                                         }
@@ -248,6 +275,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                                         self.generatingLabel.isHidden = true
                                                         self.errorLabel.isHidden = false
                                                         errorImage.isHidden = false
+                                                        self.backButton.isHidden = false
                                                     }
                                                     print("Failed to update playlist image:", error)
                                                 }
@@ -258,6 +286,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                                 self.generatingLabel.isHidden = true
                                                 self.errorLabel.isHidden = false
                                                 errorImage.isHidden = false
+                                                self.backButton.isHidden = false
                                             }
                                             print("Failed to convert image URL to base64")
                                         }
@@ -270,6 +299,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                         self.generatingLabel.isHidden = true
                                         self.errorLabel.isHidden = false
                                         errorImage.isHidden = false
+                                        self.backButton.isHidden = false
                                     }
                                     print("Failed to create playlist: \(error.localizedDescription)")
                                 }
@@ -289,6 +319,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                 self.generatingLabel.isHidden = true
                                 self.errorLabel.isHidden = false
                                 errorImage.isHidden = false
+                                self.backButton.isHidden = false
                             }
                         }
                     }
@@ -299,6 +330,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                         self.generatingLabel.isHidden = true
                         self.errorLabel.isHidden = false
                         errorImage.isHidden = false
+                        self.backButton.isHidden = false
                     }
                 }
             }
@@ -351,6 +383,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     self.generatingLabel.isHidden = true
                     self.subLabel.isHidden = false
                     errorImage.isHidden = false
+                    self.backButton.isHidden = false
                 }
             } else {
                 DispatchQueue.main.async {
@@ -571,6 +604,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     self.generatingLabel.isHidden = true
                     self.errorLabel.isHidden = false
                     errorImage.isHidden = false
+                    self.backButton.isHidden = false
                 }
                 print("Failed to fetch playlist \(playlist_id):", error)
             }
@@ -632,6 +666,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                     self.generatingLabel.isHidden = true
                     self.errorLabel.isHidden = false
                     errorImage.isHidden = false
+                    self.backButton.isHidden = false
                 }
                 print("Failed to get user profile: \(error)")
                 completion(.failure(error))
