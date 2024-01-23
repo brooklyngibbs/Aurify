@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		584EA12881A51AE2F1BF1416 /* Pods_VinylApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF9BEE0C09F903E47E7DEF9 /* Pods_VinylApp.framework */; };
 		6602FA752B1BF5320043CC93 /* error.png in Resources */ = {isa = PBXBuildFile; fileRef = 6602FA742B1BF5320043CC93 /* error.png */; };
+		66102FBB2B60435F001A188B /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66102FBA2B60435F001A188B /* SubscriptionManager.swift */; };
 		661BF4EE2B1696E300BBAA16 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BF4ED2B1696E300BBAA16 /* HomeView.swift */; };
 		662A9AC62B587DC200A39EA6 /* Spotify_Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */; };
 		664F343B2B2BB90100613F01 /* SpotfiyLogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F343A2B2BB90100613F01 /* SpotfiyLogInView.swift */; };
@@ -73,6 +74,8 @@
 		03FF342FB39FF7DD9A9F8F52 /* Pods-VinylApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VinylApp.release.xcconfig"; path = "Target Support Files/Pods-VinylApp/Pods-VinylApp.release.xcconfig"; sourceTree = "<group>"; };
 		19D9796EE849F97032D6ADFA /* Pods-VinylApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VinylApp.debug.xcconfig"; path = "Target Support Files/Pods-VinylApp/Pods-VinylApp.debug.xcconfig"; sourceTree = "<group>"; };
 		6602FA742B1BF5320043CC93 /* error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = error.png; path = ../../../vinyl_images/error.png; sourceTree = "<group>"; };
+		66102FBA2B60435F001A188B /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		66102FBF2B605616001A188B /* AurifySubscriptions.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = AurifySubscriptions.storekit; sourceTree = "<group>"; };
 		661BF4ED2B1696E300BBAA16 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotify_Logo.png; path = vinyl_images/Spotify_Logo.png; sourceTree = SOURCE_ROOT; };
 		662F79DE2AE48BA500CEF5CD /* VinylApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VinylApp-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -119,7 +122,6 @@
 		66B7A4942B0DEE5A004C81D5 /* spotify_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = spotify_image.png; path = ../../../vinyl_images/spotify_image.png; sourceTree = "<group>"; };
 		66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelTexts.swift; sourceTree = "<group>"; };
 		66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
-		66DF26122B5B3515007C734B /* AurifySubs.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = AurifySubs.storekit; sourceTree = "<group>"; };
 		66DF26132B5DBE29007C734B /* Spotify_Icon_White.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotify_Icon_White.png; path = vinyl_images/Spotify_Icon_White.png; sourceTree = SOURCE_ROOT; };
 		66DF3CD52AE61733003CB1E2 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		66DF3CD72AE61B08003CB1E2 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 				66547A1B2AE6EFD6009CD777 /* AlbumDetailsResponse.swift */,
 				66547A1D2AE6F2C7009CD777 /* PlaylistDetailsResponse.swift */,
 				66547A282AE72ED1009CD777 /* LibraryPlaylistsResponse.swift */,
+				66102FBA2B60435F001A188B /* SubscriptionManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -253,7 +256,7 @@
 				66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */,
 				66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */,
 				66E2DB5B2B16CCC100F44F93 /* FirestoreManager.swift */,
-				66DF26122B5B3515007C734B /* AurifySubs.storekit */,
+				66102FBF2B605616001A188B /* AurifySubscriptions.storekit */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -506,6 +509,7 @@
 				66DF3CDA2AE61D7C003CB1E2 /* Extensions.swift in Sources */,
 				661BF4EE2B1696E300BBAA16 /* HomeView.swift in Sources */,
 				66547A182AE6E538009CD777 /* Playlist.swift in Sources */,
+				66102FBB2B60435F001A188B /* SubscriptionManager.swift in Sources */,
 				66FCA1A12B16617D00741A1A /* Playlist2VC.swift in Sources */,
 				66547A162AE6E271009CD777 /* Artist.swift in Sources */,
 				66A0A0DE2AE64B21002EE3B6 /* UserProfile.swift in Sources */,

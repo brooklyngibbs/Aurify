@@ -1,5 +1,5 @@
 {
-  "identifier" : "0548367A",
+  "identifier" : "191D067D",
   "nonRenewingSubscriptions" : [
 
   ],
@@ -10,7 +10,7 @@
     "_applicationInternalID" : "6475698055",
     "_developerTeamID" : "5SZLNT5DHA",
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 727397656.97604704,
+    "_lastSynchronizedDate" : 727733785.17938697,
     "_locale" : "en_US",
     "_storefront" : "USA",
     "_storeKitErrors" : [
@@ -63,7 +63,7 @@
   },
   "subscriptionGroups" : [
     {
-      "id" : "21436715",
+      "id" : "21438077",
       "localizations" : [
 
       ],
@@ -79,19 +79,19 @@
           "displayPrice" : "1.99",
           "familyShareable" : false,
           "groupNumber" : 1,
-          "internalID" : "6476419155",
+          "internalID" : "6476573787",
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Upload as many images as you want",
-              "displayName" : "Aurify All Access",
+              "description" : "Get Full Access to Aurify",
+              "displayName" : "Full Access",
               "locale" : "en_US"
             }
           ],
-          "productID" : "FullAccess",
+          "productID" : "AurifyFullAccess",
           "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Aurify All Access",
-          "subscriptionGroupID" : "21436715",
+          "referenceName" : "Aurify Full Access",
+          "subscriptionGroupID" : "21438077",
           "type" : "RecurringSubscription"
         }
       ]

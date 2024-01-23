@@ -21,7 +21,7 @@ struct SettingsViewController: View {
                 }
                 Section(header: Text("Subscription")) {
                     NavigationLink(destination:
-                        SubscriptionStoreView(groupID: "21436715") {
+                        SubscriptionStoreView(groupID: "21438077") {
                             VStack {
                                 Image("clean-logo")
                                     .resizable()
@@ -62,8 +62,7 @@ struct SettingsViewController: View {
             }
         }
     }
-    
-    
+
     func saveProfileImage(_ image: UIImage) {
         guard let imageData = image.jpegData(compressionQuality: 0.5) else {
             print("Failed to convert image to data.")
@@ -110,13 +109,17 @@ struct AccountSectionView: View {
     func signOut() {
         AuthManager.shared.signOut { success in
             if success {
-                if let window = UIApplication.shared.windows.first {
-                    let logInView = LogInView()
-                    let hostingController = UIHostingController(rootView: logInView)
-                    let navVC = UINavigationController(rootViewController: hostingController)
-                    navVC.navigationBar.prefersLargeTitles = true
-                    window.rootViewController = navVC
-                    window.makeKeyAndVisible()
+                DispatchQueue.main.async {
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let window = windowScene.windows.first {
+                        let logInView = LogInView()
+                        let hostingController = UIHostingController(rootView: logInView)
+                        let navVC = UINavigationController(rootViewController: hostingController)
+                        navVC.navigationBar.prefersLargeTitles = true
+                        window.rootViewController = navVC
+                        window.makeKeyAndVisible()
+                        print("View transition completed")
+                    }
                 }
             } else {
                 // Handle sign-out failure here
@@ -236,6 +239,7 @@ struct AccountSectionView: View {
         UserDefaults.standard.removeObject(forKey: "expirationDate")
         UserDefaults.standard.removeObject(forKey: "expires_in")
         UserDefaults.standard.removeObject(forKey: "user_id")
+        UserDefaults.standard.removeObject(forKey: "SubscriptionType")
         print("user defaults removed")
         
         // Ensure that the user is currently authenticated
@@ -284,6 +288,7 @@ struct ProfileSectionView: View {
     @Binding var profileImage: UIImage?
     @Binding var showImagePicker: Bool
     var userName: String
+    @State private var subscriptionStatus: SubscriptionManager.SubscriptionType = .none
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -317,10 +322,21 @@ struct ProfileSectionView: View {
                     .frame(width: 80, height: 80)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding()
-        .cornerRadius(10)
-        Text("Name: \(userName)")
+        .onAppear {
+                    // Fetch subscription type asynchronously
+                    async {
+                        do {
+                            self.subscriptionStatus = try await SubscriptionManager.getSubscriptionType()
+                        } catch {
+                            print("Error fetching subscription type: \(error.localizedDescription)")
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding()
+                .cornerRadius(10)
+                Text("Name: \(userName)")
+                Text("Subscription: \(subscriptionStatus == .fullAccess ? "Full Access" : "None")")
     }
 }
 

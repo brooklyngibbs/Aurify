@@ -33,6 +33,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     var selectedImage: UIImage?
     var generatingLabel: UILabel!
     var errorLabel: UILabel!
+    var subLabel: UILabel!
     
     var labelTexts: [String] = LabelTexts.labelTexts
     
@@ -74,6 +75,24 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -100),
         ])
         
+        subLabel = UILabel()
+        subLabel.text = "Uh Oh! Subscribe to get more of Aurify!"
+        subLabel.textAlignment = .center
+        subLabel.numberOfLines = 2
+        subLabel.translatesAutoresizingMaskIntoConstraints = false
+        subLabel.font = UIFont(name: "Inter-SemiBold", size: 17)
+        subLabel.textColor = AppColors.vampireBlack
+        
+        subLabel.preferredMaxLayoutWidth = 250
+        subLabel.isHidden = true
+        
+        view.addSubview(subLabel)
+        
+        NSLayoutConstraint.activate([
+            subLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            subLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -100),
+        ])
+        
         errorImage = UIImageView()
         errorImage.image = UIImage(named: "error")
         errorImage.contentMode = .scaleAspectFit
@@ -102,16 +121,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             vinylImage.widthAnchor.constraint(equalToConstant: 200), // Adjust width as needed
             vinylImage.heightAnchor.constraint(equalToConstant: 200) // Adjust height as needed
         ])
-        
-        if let image = selectedImage {
-            // Display the selected image
-            vinylImage.isHidden = false
-            startSpinningAnimation()
-            
-            // Upload the selected image to Firebase
-            uploadSelectedImageToFirebase(image: image)
-        }
-        
+
         generatingLabel = UILabel()
         generatingLabel.text = "Generating your picture playlist. Do not exit out of the app"
         generatingLabel.textAlignment = .center
@@ -140,6 +150,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         // Start the timer to update the label text periodically
         startLabelTimer()
+        Task {
+            await checkSubscriptionStatus()
+        }
     }
     
     func startSpinningAnimation() {
@@ -288,6 +301,72 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             task.resume()
         }
     }
+    
+    //MARK: Subscription Check
+    
+    func checkSubscriptionStatus() async {
+        do {
+            let subscriptionType = try await SubscriptionManager.getSubscriptionType()
+            print(subscriptionType)
+            handleSubscriptionType(subscriptionType)
+        } catch {
+            print("Error checking subscription status.")
+        }
+    }
+
+    func handleSubscriptionType(_ subscriptionType: SubscriptionManager.SubscriptionType) {
+        switch subscriptionType {
+        case .fullAccess:
+            startImageGeneration()
+        case .none:
+            checkPlaylistInFirestore()
+        }
+    }
+    
+    func checkPlaylistInFirestore() {
+        guard let userID = UserDefaults.standard.value(forKey: "user_id") as? String else {
+            print("Error: User ID not found")
+            return
+        }
+
+        let db = Firestore.firestore()
+        let userDocument = db.collection("users").document(userID)
+
+        userDocument.collection("playlists").getDocuments { [weak self] (snapshot, error) in
+            guard let self = self else { return }
+
+            if let error = error {
+                print("Error checking playlists in Firestore:", error.localizedDescription)
+                return
+            }
+
+            if let playlistCount = snapshot?.documents.count, playlistCount > 0 {
+                // There is a playlist in Firestore, user cannot generate
+                DispatchQueue.main.async {
+                    vinylImage.isHidden = true
+                    self.generatingLabel.isHidden = true
+                    self.subLabel.isHidden = false
+                    errorImage.isHidden = false
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.startImageGeneration()
+                }
+            }
+        }
+    }
+    
+    func startImageGeneration() {
+        if let image = selectedImage {
+            // Display the selected image
+            vinylImage.isHidden = false
+            startSpinningAnimation()
+            
+            // Upload the selected image to Firebase
+            uploadSelectedImageToFirebase(image: image)
+        }
+    }
+    
     
     //MARK: ADD TRACKS
     
