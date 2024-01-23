@@ -99,7 +99,7 @@ struct AccountSectionView: View {
                 .onTapGesture {
                     isSignOutAlertPresented = true
                 }
-
+            
             DeleteAccountView(userName: userName, isPresented: $isDeleteAccountAlertPresented)
                 .onTapGesture {
                     isDeleteAccountAlertPresented = true
@@ -148,7 +148,6 @@ struct AccountSectionView: View {
             }
         }
     }
-
     
     func deletePlaylists(completion: @escaping (Result<Void, Error>) -> Void) {
         APICaller.shared.getCurrentUserProfile { result in
@@ -157,13 +156,31 @@ struct AccountSectionView: View {
                 let db = Firestore.firestore()
                 let userRef = db.collection("users").document(userProfile.id)
                 let playlistsRef = userRef.collection("playlists")
-            
+                
                 playlistsRef.getDocuments { snapshot, error in
                     if let error = error {
                         completion(.failure(error))
                     } else {
                         for document in snapshot?.documents ?? [] {
                             let playlistRef = playlistsRef.document(document.documentID)
+                            
+                            // Check if cover_image_url field exists in the document
+                            if let coverImageURL = document["cover_image_url"] as? String {
+                                // Construct path to the image in Firebase Storage
+                                let storageReference = Storage.storage().reference(forURL: coverImageURL)
+                                
+                                // Delete the image from Firebase Storage
+                                storageReference.delete { error in
+                                    if let error = error {
+                                        print("Error deleting image: \(error.localizedDescription)")
+                                        // Handle failure if needed
+                                    } else {
+                                        print("Image deleted successfully")
+                                    }
+                                }
+                            }
+                            
+                            // Delete the playlist
                             playlistRef.delete()
                         }
                         completion(.success(()))
@@ -175,6 +192,7 @@ struct AccountSectionView: View {
             }
         }
     }
+    
     
     func deleteUserDataFromFirestore(completion: @escaping (Result<Void, Error>) -> Void) {
         APICaller.shared.getCurrentUserProfile { result in
@@ -189,6 +207,18 @@ struct AccountSectionView: View {
                         completion(.failure(error))
                     } else {
                         print("User data deleted successfully from Firestore")
+                        let storage = Storage.storage()
+                        let storageRef = storage.reference()
+                        let profilePicsRef = storageRef.child("profilePics/\(userRef.documentID)/profileImage.jpg")
+                        
+                        profilePicsRef.delete { error in
+                            if let error = error {
+                                print("Error deleting profile picture: \(error.localizedDescription)")
+                                // Handle failure if needed
+                            } else {
+                                print("Profile picture deleted successfully")
+                            }
+                        }
                         completion(.success(()))
                     }
                 }
@@ -202,9 +232,14 @@ struct AccountSectionView: View {
     func deleteUserAccount() {
         print("deleteUserAccount function started")
         
-        let user = Auth.auth().currentUser
+        // Ensure that the user is currently authenticated
+        guard let user = Auth.auth().currentUser else {
+            print("User is not authenticated")
+            // Handle not authenticated case if needed
+            return
+        }
         
-        user?.delete { error in
+        user.delete { error in
             if let error = error {
                 print("Error deleting user account: \(error.localizedDescription)")
                 // Handle failure if needed
@@ -236,7 +271,6 @@ struct AccountSectionView: View {
         
         print("deleteUserAccount function completed")
     }
-
 }
 
 
@@ -418,6 +452,7 @@ struct DeleteAccountView: View {
     var userName: String
     @Binding var isPresented: Bool
     @State private var showAlert: Bool = false
+    @State private var isReauthViewPresented: Bool = false
 
     var body: some View {
         VStack {
@@ -431,13 +466,80 @@ struct DeleteAccountView: View {
                         title: Text("Delete Account"),
                         message: Text("This action cannot be undone"),
                         primaryButton: .default(Text("Delete")) {
-                            AccountSectionView(userName: userName).deleteAccount(userName: userName)
-                            isPresented = false
+                            isReauthViewPresented = true
                         },
                         secondaryButton: .cancel(Text("Cancel"))
                     )
                 }
+                .fullScreenCover(isPresented: $isReauthViewPresented) {
+                    ReauthView(userName: userName, isReauthSuccessful: $isReauthViewPresented)
+                }
         }
     }
 }
+
+struct ReauthView: View {
+    var userName: String
+    @Binding var isReauthSuccessful: Bool
+    @State private var email: String = ""
+    @State private var password: String = ""
+    @State private var reauthError: String? = nil
+    
+    var body: some View {
+        VStack {
+            TextField("Email", text: $email)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+            
+            SecureField("Password", text: $password)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+            
+            Button(action: {
+                reauthenticate()
+            }) {
+                Text("Confirm")
+                    .foregroundColor(Color.white)
+                    .padding()
+                    .background(Color(AppColors.moonstoneBlue))
+                    .cornerRadius(8)
+            }
+            
+            // Display an error message if reauthentication fails
+            if let error = reauthError {
+                Text(error)
+                    .foregroundColor(.red)
+                    .padding()
+            }
+        }
+        .padding()
+    }
+    
+    func reauthenticate() {
+        // Get the current user
+        guard let user = Auth.auth().currentUser else {
+            print("No user is currently signed in.")
+            return
+        }
+        
+        // Create credentials using the provided email and password
+        let credentials = EmailAuthProvider.credential(withEmail: email, password: password)
+        
+        // Reauthenticate the user
+        user.reauthenticate(with: credentials) { authResult, error in
+            if let error = error {
+                // Reauthentication failed
+                print("Reauthentication failed: \(error.localizedDescription)")
+                reauthError = "Reauthentication failed. Please check your email and password."
+            } else {
+                // Reauthentication successful
+                print("Reauthentication successful")
+                AccountSectionView(userName: userName).deleteAccount(userName: userName)
+                
+            }
+        }
+    }
+}
+
+
 
