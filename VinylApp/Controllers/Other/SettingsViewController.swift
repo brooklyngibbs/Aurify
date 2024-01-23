@@ -231,6 +231,12 @@ struct AccountSectionView: View {
     
     func deleteUserAccount() {
         print("deleteUserAccount function started")
+        UserDefaults.standard.removeObject(forKey: "access_token")
+        UserDefaults.standard.removeObject(forKey: "refresh_token")
+        UserDefaults.standard.removeObject(forKey: "expirationDate")
+        UserDefaults.standard.removeObject(forKey: "expires_in")
+        UserDefaults.standard.removeObject(forKey: "user_id")
+        print("user defaults removed")
         
         // Ensure that the user is currently authenticated
         guard let user = Auth.auth().currentUser else {
@@ -486,33 +492,46 @@ struct ReauthView: View {
     @State private var reauthError: String? = nil
     
     var body: some View {
-        VStack {
-            TextField("Email", text: $email)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
-            SecureField("Password", text: $password)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
-            Button(action: {
-                reauthenticate()
-            }) {
-                Text("Confirm")
-                    .foregroundColor(Color.white)
+        NavigationView {
+            VStack {
+                Text("Delete Account")
+                    .font(.custom("Outfit-Bold", size: 35))
+                
+                TextField("Email", text: $email)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .font(.custom("Inter-Light", size: 20))
                     .padding()
-                    .background(Color(AppColors.moonstoneBlue))
-                    .cornerRadius(8)
-            }
-            
-            // Display an error message if reauthentication fails
-            if let error = reauthError {
-                Text(error)
-                    .foregroundColor(.red)
+                
+                SecureField("Password", text: $password)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .font(.custom("Inter-Light", size: 20))
                     .padding()
+                
+                Button(action: {
+                    reauthenticate()
+                }) {
+                    Text("Confirm")
+                        .foregroundColor(Color.white)
+                        .padding()
+                        .font(.custom("Inter-Regular", size: 18))
+                        .background(Color(AppColors.moonstoneBlue))
+                        .cornerRadius(8)
+                }
+                
+                // Display an error message if reauthentication fails
+                if let error = reauthError {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .padding()
+                }
             }
+            .padding()
+            .navigationBarItems(leading: Button("Cancel") {
+                // Handle back action, for example, by dismissing the sheet or navigating back
+                isReauthSuccessful = false
+            })
+            .foregroundColor(Color(AppColors.vampireBlack))
         }
-        .padding()
     }
     
     func reauthenticate() {
@@ -535,11 +554,11 @@ struct ReauthView: View {
                 // Reauthentication successful
                 print("Reauthentication successful")
                 AccountSectionView(userName: userName).deleteAccount(userName: userName)
-                
             }
         }
     }
 }
+
 
 
 
