@@ -198,7 +198,6 @@ struct LibraryView: View {
         }
     }
     
-    
     private func loadProfileImageFromStorage(userID: String) {
         let storage = Storage.storage()
         let storageRef = storage.reference()
@@ -218,12 +217,10 @@ struct LibraryView: View {
         }
     }
     
-    
     private func checkProfileImageInStorage(userID: String, completion: @escaping (Bool) -> Void) {
         let storage = Storage.storage()
         let storageRef = storage.reference()
         let profileImageRef = storageRef.child("profilePics/\(userID)/profileImage.jpg")
-        
         profileImageRef.getMetadata { md, error in
             if let error = error {
                 print("Could not find profile image file \(error.localizedDescription).")

@@ -30,4 +30,22 @@ public class SubscriptionManager {
         }
         return .none
     }
+    
+    static func canUserGeneratePlaylist() async throws -> Bool {
+        let subscriptionType = try await getSubscriptionType()
+        switch subscriptionType {
+        case .fullAccess:
+            return true
+        case .none:
+            if let userId = UserDefaults.standard.value(forKey: "user_id") as? String {
+                let count = try await withCheckedThrowingContinuation { continuation in
+                    FirestoreManager().fetchPlaylistCount(forUserID: userId) { result in
+                        continuation.resume(with: result)
+                    }
+                }
+                return count == 0
+            }
+            throw NSError(domain: "Could not get user id", code: 0)
+        }
+    }
 }

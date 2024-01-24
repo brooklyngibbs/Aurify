@@ -227,6 +227,7 @@
 				66A0A0DB2AE64AA1002EE3B6 /* APICaller.swift */,
 				66E2DB5B2B16CCC100F44F93 /* FirestoreManager.swift */,
 				FC9F952B2B5DE64C004E071E /* ImageManager.swift */,
+				66102FBA2B60435F001A188B /* SubscriptionManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -244,7 +245,6 @@
 				66547A1B2AE6EFD6009CD777 /* AlbumDetailsResponse.swift */,
 				66547A1D2AE6F2C7009CD777 /* PlaylistDetailsResponse.swift */,
 				66547A282AE72ED1009CD777 /* LibraryPlaylistsResponse.swift */,
-				66102FBA2B60435F001A188B /* SubscriptionManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -261,7 +261,6 @@
 				6681E5B72AE1FC4800A81DB5 /* Assets.xcassets */,
 				66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */,
 				66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */,
-				66E2DB5B2B16CCC100F44F93 /* FirestoreManager.swift */,
 				66102FBF2B605616001A188B /* AurifySubscriptions.storekit */,
 			);
 			path = Resources;

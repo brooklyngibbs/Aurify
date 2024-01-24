@@ -31,7 +31,7 @@ class FirestoreManager {
         return listener
     }
 
-    func fetchPlaylistIDs(forUserID userID: String, completion: @escaping ([String]) -> Void) {
+    func fetchPlaylistCount(forUserID userID: String, completion: @escaping (Result<Int, Error>) -> Void) {
         print("Fetching playlist IDs for user ID:", userID)
         
         let userDocumentRef = db.collection("users").document(userID).collection("playlists")
@@ -39,31 +39,11 @@ class FirestoreManager {
         userDocumentRef.getDocuments { querySnapshot, error in
             if let error = error {
                 print("Error fetching user playlists: \(error.localizedDescription)")
-                completion([])
+                completion(.failure(error))
                 return
             }
 
-            guard let documents = querySnapshot?.documents else {
-                print("No playlist documents found for the user")
-                completion([])
-                return
-            }
-
-            let sortedDocs = documents.sorted { a, b in
-                if let tsa = a.data()["timestamp"] as? Timestamp {
-                    if let tsb = b.data()["timestamp"] as? Timestamp {
-                        return tsa.dateValue() > tsb.dateValue()
-                    }
-                }
-                return true
-            }
-
-            let playlistIDs = sortedDocs.compactMap { document -> String? in
-                let playlistData = document.data()
-                return playlistData["id"] as? String
-            }
-
-            completion(playlistIDs)
+            completion(.success(querySnapshot?.count ?? 0))
         }
     }
     

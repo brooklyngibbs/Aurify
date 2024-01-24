@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct UploadErrorView: View {
+    @Environment(\.dismiss) var dismiss
     var body: some View {
         Spacer()
         Text("Uh Oh!\nSomething went wrong.")
@@ -18,6 +19,14 @@ struct UploadErrorView: View {
             .resizable()
             .scaledToFit()
             .frame(width: 200, height: 200)
+        Button(action: {
+            dismiss()
+        }) {
+            Text("Back to Library")
+                .foregroundStyle(Color(AppColors.vampireBlack))
+                .font(.custom("Inter-SemiBold", size: 17))
+        }.border(Color(AppColors.vampireBlack), width: 1.0)
+         .cornerRadius(20)
         Spacer()
     }
 }
@@ -27,7 +36,7 @@ class APIRunner {
     private let imageAPIURL = URL(string: "https://make-scene-api-request-36d3pxwmrq-uc.a.run.app")!
     private let topArtists: [String] = []
     
-    private func createAPIRequest(imageUrl: String) -> URLRequest {
+    private func createAPIRequest(imageUrl: String) throws -> URLRequest {
         var request = URLRequest(url: imageAPIURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -38,7 +47,7 @@ class APIRunner {
             "artists": topArtists
         ] as [String : Any]
         
-        let jsonData = try! JSONSerialization.data(withJSONObject: requestData)
+        let jsonData = try JSONSerialization.data(withJSONObject: requestData)
         request.httpBody = jsonData
         return request
     }
@@ -133,7 +142,7 @@ class APIRunner {
             let url = try await imageManager.uploadImageToStorage()
             print("Creating api request")
             let json = try await retry(times: 2) {
-                let request = createAPIRequest(imageUrl: url)
+                let request = try createAPIRequest(imageUrl: url)
                 let (data, _) = try await URLSession.shared.data(for: request)
                 print("Data = \(String(data: data, encoding: .utf8) ?? "")")
                 print("Decoding JSON")
@@ -213,30 +222,60 @@ struct SpinningVinylView: View {
     }
 }
 
+struct PleaseSubscribeView : View {
+    @Environment(\.dismiss) var dismiss
+    var body: some View {
+        VStack {
+            Text("Subscribe to get more of Aurify!")
+                .lineLimit(3, reservesSpace: true)
+                .multilineTextAlignment(.center)
+                .font(.custom("Inter-SemiBold", size: 17))
+            Button(action: {
+                dismiss()
+            }) {
+                Text("Back to Library")
+                    .foregroundStyle(Color(AppColors.vampireBlack))
+                    .font(.custom("Inter-SemiBold", size: 17))
+            }.border(Color(AppColors.vampireBlack), width: 1.0)
+             .cornerRadius(20)
+        }
+    }
+}
+
 struct UploadView: View {
     //@Environment(\.dismiss) var dismiss
     @State var showError: Bool = false
+    @State var canGeneratePlaylist: Bool = true
     @State var task: Task<Playlist, Error>? = nil
-    private let dismiss: (Playlist) -> ()
+    private let onComplete: (Playlist) -> ()
     let image: UIImage
     init(im: UIImage, fn: @escaping (Playlist) -> ()) {
         image = im
-        dismiss = fn
+        onComplete = fn
     }
+    
     var body: some View {
         Group {
             if showError {
                 UploadErrorView()
-            } else {
+            } else if canGeneratePlaylist {
                 SpinningVinylView()
+            } else {
+                PleaseSubscribeView()
             }
         }.task {
+            do {
+                canGeneratePlaylist = try await SubscriptionManager.canUserGeneratePlaylist()
+            } catch {
+                showError = true
+                return
+            }
             task = APIRunner().run(image: image)
             let result = await task?.result
             switch result {
             case .success(let playlist):
                 print("Finished running job, dismissing")
-                dismiss(playlist)
+                onComplete(playlist)
             case .failure(let error):
                 print("Error in running job: \(error.localizedDescription)")
                 showError = true

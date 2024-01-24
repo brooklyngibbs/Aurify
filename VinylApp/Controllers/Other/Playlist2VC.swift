@@ -15,7 +15,7 @@ struct Playlist2VC: View {
     
     internal init(playlist: Playlist, userID: String) {
         self.playlist = playlist
-        self.userID = userID 
+        self.userID = userID
     }
     
     var body: some View {
