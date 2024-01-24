@@ -194,7 +194,8 @@ struct SpinningVinylView: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(spacing: 40) {
+            Spacer()
             Spacer()
             Image("vinyl3")
                 .resizable()
@@ -209,7 +210,6 @@ struct SpinningVinylView: View {
                     degreesRotating = 0.0
                 }
                 .frame(width: 200, height: 200)
-                .padding(20)
             Text(generatingText)
                 .foregroundStyle(Color(AppColors.vampireBlack))
                 .font(.custom("Inter-Light", size: 17))
@@ -222,6 +222,19 @@ struct SpinningVinylView: View {
                 .onDisappear() {
                     stopLabelTimer()
                 }
+            Button(action: {
+                // Add cancel action here
+            }) {
+                Text("Cancel")
+                    .foregroundColor(Color(AppColors.vampireBlack))
+                    .font(.custom("Inter-SemiBold", size: 17))
+                    .padding(10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color(AppColors.vampireBlack), lineWidth: 1)
+                    )
+                    .background(Color.white) // Add background color if needed
+            }
             Spacer()
         }
     }
