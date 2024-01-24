@@ -481,7 +481,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     func uploadSelectedImageToFirebase(image: UIImage) {
         if //let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 400, height: 400)),
            let imageData = image.jpegData(compressionQuality: 1) {
-            uploadImageToStorage(imageData: imageData, originalImage: image) { imageUrl in
+            uploadImageToStorage(imageData: imageData) { imageUrl in
                 guard let imageUrl = imageUrl else {
                     print("Error: Unable to get image URL")
                     return
@@ -509,7 +509,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     //puts image in storage
-    func uploadImageToStorage(imageData: Data, originalImage: UIImage, completion: @escaping (String?) -> Void) {
+    func uploadImageToStorage(imageData: Data, completion: @escaping (String?) -> Void) {
         let timestamp = Int(Date().timeIntervalSince1970)
         let uniqueFileName = "\(timestamp)_\(UUID().uuidString)"
         

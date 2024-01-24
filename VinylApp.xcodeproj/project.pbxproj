@@ -68,6 +68,8 @@
 		66FCA1A12B16617D00741A1A /* Playlist2VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FCA1A02B16617D00741A1A /* Playlist2VC.swift */; };
 		66FCA1A32B16850100741A1A /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66FCA1A22B16850100741A1A /* Inter-Medium.ttf */; };
 		66FCA1A72B168B5800741A1A /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FCA1A62B168B5800741A1A /* LibraryView.swift */; };
+		FC9F952A2B5CEA33004E071E /* UploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F95292B5CEA33004E071E /* UploadView.swift */; };
+		FC9F952C2B5DE64C004E071E /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F952B2B5DE64C004E071E /* ImageManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -135,6 +137,8 @@
 		66FCA1A22B16850100741A1A /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Medium.ttf"; path = "../../../vinyl_images/Inter/static/Inter-Medium.ttf"; sourceTree = "<group>"; };
 		66FCA1A62B168B5800741A1A /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		EBF9BEE0C09F903E47E7DEF9 /* Pods_VinylApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VinylApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC9F95292B5CEA33004E071E /* UploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadView.swift; sourceTree = "<group>"; };
+		FC9F952B2B5DE64C004E071E /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -221,6 +225,8 @@
 			children = (
 				66DF3CD52AE61733003CB1E2 /* AuthManager.swift */,
 				66A0A0DB2AE64AA1002EE3B6 /* APICaller.swift */,
+				66E2DB5B2B16CCC100F44F93 /* FirestoreManager.swift */,
+				FC9F952B2B5DE64C004E071E /* ImageManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -280,6 +286,7 @@
 				66547A2E2AE75ACA009CD777 /* PlaylistCollectionViewCell.swift */,
 				66B3B9672AE77F0D00129B1F /* PlayerControlsView.swift */,
 				66F70F962B0C9A42005062AD /* Launch Screen.storyboard */,
+				FC9F95292B5CEA33004E071E /* UploadView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -481,10 +488,12 @@
 				66B3B9682AE77F0D00129B1F /* PlayerControlsView.swift in Sources */,
 				66DF3CD62AE61733003CB1E2 /* AuthManager.swift in Sources */,
 				66DC737A2B0FE93A007ECCB5 /* LabelTexts.swift in Sources */,
+				FC9F952C2B5DE64C004E071E /* ImageManager.swift in Sources */,
 				66547A292AE72ED1009CD777 /* LibraryPlaylistsResponse.swift in Sources */,
 				6681E5B32AE1FC4700A81DB5 /* UploadViewController.swift in Sources */,
 				6681E5AF2AE1FC4700A81DB5 /* AppDelegate.swift in Sources */,
 				66FCA1A72B168B5800741A1A /* LibraryView.swift in Sources */,
+				FC9F952A2B5CEA33004E071E /* UploadView.swift in Sources */,
 				66547A202AE6FA88009CD777 /* TrackCollectionViewCell.swift in Sources */,
 				66547A142AE6E0D5009CD777 /* APIImage.swift in Sources */,
 				66E2DB5C2B16CCC100F44F93 /* FirestoreManager.swift in Sources */,
@@ -642,9 +651,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5SZLNT5DHA;
+				DEVELOPMENT_TEAM = NJ64FZB25H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VinylApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Aurify;
 				INFOPLIST_KEY_NSCameraUsageDescription = "VinylApp camera description.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please Allow Access to Upload Photos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -675,9 +685,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5SZLNT5DHA;
+				DEVELOPMENT_TEAM = NJ64FZB25H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VinylApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Aurify;
 				INFOPLIST_KEY_NSCameraUsageDescription = "VinylApp camera description.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please Allow Access to Upload Photos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

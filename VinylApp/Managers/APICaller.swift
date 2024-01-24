@@ -522,8 +522,6 @@ final class APICaller {
         }
     }
 
-
-
     public func createPlaylist(with name: String, description: String, completion: @escaping (Result<Playlist, Error>) -> Void) {
         getCurrentUserProfile { [weak self] result in
             switch result {
