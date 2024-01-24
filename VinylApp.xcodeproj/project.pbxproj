@@ -11,6 +11,7 @@
 		6602FA752B1BF5320043CC93 /* error.png in Resources */ = {isa = PBXBuildFile; fileRef = 6602FA742B1BF5320043CC93 /* error.png */; };
 		66102FBB2B60435F001A188B /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66102FBA2B60435F001A188B /* SubscriptionManager.swift */; };
 		661BF4EE2B1696E300BBAA16 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BF4ED2B1696E300BBAA16 /* HomeView.swift */; };
+		662930EC2B617C75002B10F9 /* headphones.png in Resources */ = {isa = PBXBuildFile; fileRef = 662930EB2B617C75002B10F9 /* headphones.png */; };
 		662A9AC62B587DC200A39EA6 /* Spotify_Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */; };
 		664F343B2B2BB90100613F01 /* SpotfiyLogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F343A2B2BB90100613F01 /* SpotfiyLogInView.swift */; };
 		664F343F2B2BC3D100613F01 /* LogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F343E2B2BC3D100613F01 /* LogInView.swift */; };
@@ -79,6 +80,7 @@
 		66102FBA2B60435F001A188B /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		66102FBF2B605616001A188B /* AurifySubscriptions.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = AurifySubscriptions.storekit; sourceTree = "<group>"; };
 		661BF4ED2B1696E300BBAA16 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		662930EB2B617C75002B10F9 /* headphones.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = headphones.png; sourceTree = "<group>"; };
 		662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotify_Logo.png; path = vinyl_images/Spotify_Logo.png; sourceTree = SOURCE_ROOT; };
 		662F79DE2AE48BA500CEF5CD /* VinylApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VinylApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		664F343A2B2BB90100613F01 /* SpotfiyLogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotfiyLogInView.swift; sourceTree = "<group>"; };
@@ -293,6 +295,7 @@
 		66F70F982B0D103C005062AD /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				662930EB2B617C75002B10F9 /* headphones.png */,
 				6602FA742B1BF5320043CC93 /* error.png */,
 				6673F40A2B18527200A18E79 /* writing_man_trans.png */,
 				6673F40E2B1901D900A18E79 /* headphones_man.jpeg */,
@@ -427,6 +430,7 @@
 				6673F40D2B18634000A18E79 /* transparentmusicman.png in Resources */,
 				6673F4192B19077000A18E79 /* 70s_man.png in Resources */,
 				6668831B2B0E6E86005864D0 /* clean-background.png in Resources */,
+				662930EC2B617C75002B10F9 /* headphones.png in Resources */,
 				6655DB212AE1FD8F00BC619F /* GoogleService-Info.plist in Resources */,
 				66FCA1A32B16850100741A1A /* Inter-Medium.ttf in Resources */,
 				6673F4132B19033C00A18E79 /* Inter-Regular.ttf in Resources */,
@@ -664,14 +668,17 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brogibbs.VinylApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "VinylApp/VinylApp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -684,7 +691,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = NJ64FZB25H;
+				DEVELOPMENT_TEAM = 5SZLNT5DHA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VinylApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Aurify;
@@ -698,13 +705,16 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brogibbs.VinylApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "VinylApp/VinylApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

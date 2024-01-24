@@ -23,10 +23,15 @@ struct UploadErrorView: View {
             dismiss()
         }) {
             Text("Back to Library")
-                .foregroundStyle(Color(AppColors.vampireBlack))
+                .foregroundColor(Color(AppColors.vampireBlack))
                 .font(.custom("Inter-SemiBold", size: 17))
-        }.border(Color(AppColors.vampireBlack), width: 1.0)
-         .cornerRadius(20)
+                .padding(10)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color(AppColors.vampireBlack), lineWidth: 1)
+                )
+                .background(Color.white)
+        }
         Spacer()
     }
 }
@@ -222,22 +227,34 @@ struct SpinningVinylView: View {
     }
 }
 
-struct PleaseSubscribeView : View {
+struct PleaseSubscribeView: View {
     @Environment(\.dismiss) var dismiss
+
     var body: some View {
         VStack {
+            Spacer()
             Text("Subscribe to get more of Aurify!")
                 .lineLimit(3, reservesSpace: true)
                 .multilineTextAlignment(.center)
                 .font(.custom("Inter-SemiBold", size: 17))
+            Image("headphones")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 200)
             Button(action: {
                 dismiss()
             }) {
                 Text("Back to Library")
-                    .foregroundStyle(Color(AppColors.vampireBlack))
+                    .foregroundColor(Color(AppColors.vampireBlack))
                     .font(.custom("Inter-SemiBold", size: 17))
-            }.border(Color(AppColors.vampireBlack), width: 1.0)
-             .cornerRadius(20)
+                    .padding(10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color(AppColors.vampireBlack), lineWidth: 1)
+                    )
+                    .background(Color.white) // Add background color if needed
+            }
+            Spacer()
         }
     }
 }
