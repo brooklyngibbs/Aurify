@@ -58,7 +58,7 @@ struct SettingsViewController: View {
                 
             }
             .sheet(isPresented: $showImagePicker) {
-                ImagePicker(image: $userProfileImage, onSave: saveProfileImage)
+                ImagePicker(image: $userProfileImage, onSave: saveProfileImage, allowEditing: true)
             }
         }
     }
@@ -405,6 +405,7 @@ struct TermsAndConditionsView: View {
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
     var onSave: (UIImage) -> Void
+    var allowEditing: Bool
     
     class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         var parent: ImagePicker
@@ -416,7 +417,10 @@ struct ImagePicker: UIViewControllerRepresentable {
         }
         
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            if let uiImage = info[.originalImage] as? UIImage {
+            if let uiImage = info[.editedImage] as? UIImage { // Use .editedImage to get the cropped image if editing is allowed
+                onSave(uiImage)
+                parent.image = uiImage
+            } else if let uiImage = info[.originalImage] as? UIImage {
                 onSave(uiImage)
                 parent.image = uiImage
             }
@@ -435,7 +439,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
-        picker.allowsEditing = true
+        picker.allowsEditing = allowEditing
         return picker
     }
     
@@ -574,7 +578,3 @@ struct ReauthView: View {
         }
     }
 }
-
-
-
-

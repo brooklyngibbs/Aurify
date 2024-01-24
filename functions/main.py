@@ -26,9 +26,9 @@ def get_image_info(image_url):
         }
       ]
     } 
-    Songlist should contain 30 songs for the image that fit the subgenre. It is very important that I get all 30 songs.  I'll pay $200 for 30 great song selections. All of the songs should fit the mood as well, so that the songs do not clash. 
+    Songlist should contain 40 songs for the image that fit the subgenre. It is very important that I get all 30 songs.  I'll pay $200 for 40 great song selections. All of the songs should fit the mood as well, so that the songs do not clash.
     These should be real songs from real artists that I can find on Spotify. If there was a band, music artist, or song in the image, include only three song from that music.
-    The soundtrack should be mostly diverse underground songs with a few mainstream songs. 
+    The soundtrack should be 30 songs of underground, less popular artists. The other ten should be more mainstream artists and songs. Make sure to mix them together. Prioritize songs that fit the genre and image description rather than popular songs. 
     All of the songs should flow together and have a similar tone. Only use one song from each artist you choose. Make sure to choose the song that best fits the genre and image description from their entire discogrpahy.'''
     
     json_data = {
