@@ -75,7 +75,6 @@ def get_image_info(image_url):
         json_message = json_response_data.get("choices")[0].get("message").get("content")
         trimmed_content = json_message.strip('```json\n').strip('\n```')
         
-        print("trimmed_content")
         print(trimmed_content)
         
         return trimmed_content
@@ -84,7 +83,7 @@ def get_image_info(image_url):
         print(f"An error occurred: {str(e)}")
         return None
     
-@https_fn.on_request()
+@https_fn.on_request(timeout_sec=120)
 def make_scene_api_request(req: https_fn.Request) -> https_fn.Response:
     try:
         trigger_data = req.json
@@ -109,9 +108,6 @@ def make_scene_api_request(req: https_fn.Request) -> https_fn.Response:
                 "mood": json_data.get("mood"),
                 "songlist": json_data.get("songlist")
             }
-            
-            print("response_dict")
-            print(response_dict)
             
             return https_fn.Response(json.dumps(response_dict))
         else:

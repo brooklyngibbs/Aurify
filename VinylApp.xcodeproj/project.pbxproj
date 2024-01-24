@@ -43,7 +43,6 @@
 		66784C112B19959B00EDCB4B /* vinyl3.png in Resources */ = {isa = PBXBuildFile; fileRef = 66784C102B19959B00EDCB4B /* vinyl3.png */; };
 		6681E5AF2AE1FC4700A81DB5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6681E5AE2AE1FC4700A81DB5 /* AppDelegate.swift */; };
 		6681E5B12AE1FC4700A81DB5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6681E5B02AE1FC4700A81DB5 /* SceneDelegate.swift */; };
-		6681E5B32AE1FC4700A81DB5 /* UploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6681E5B22AE1FC4700A81DB5 /* UploadViewController.swift */; };
 		6681E5B82AE1FC4800A81DB5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6681E5B72AE1FC4800A81DB5 /* Assets.xcassets */; };
 		6687CE942B2C1ECB009FAAEC /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6687CE932B2C1ECB009FAAEC /* ProfileViewController.swift */; };
 		669CFFBF2B237B77007ECC81 /* Spotify_Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 669CFFBE2B237B77007ECC81 /* Spotify_Icon.png */; };
@@ -71,6 +70,8 @@
 		66FCA1A72B168B5800741A1A /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FCA1A62B168B5800741A1A /* LibraryView.swift */; };
 		FC9F952A2B5CEA33004E071E /* UploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F95292B5CEA33004E071E /* UploadView.swift */; };
 		FC9F952C2B5DE64C004E071E /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F952B2B5DE64C004E071E /* ImageManager.swift */; };
+		FC9F95302B618D45004E071E /* SongInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F952F2B618D45004E071E /* SongInfo.swift */; };
+		FC9F95322B618D4F004E071E /* ImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F95312B618D4F004E071E /* ImageInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -113,7 +114,6 @@
 		6681E5AB2AE1FC4700A81DB5 /* VinylApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VinylApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6681E5AE2AE1FC4700A81DB5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6681E5B02AE1FC4700A81DB5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		6681E5B22AE1FC4700A81DB5 /* UploadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadViewController.swift; sourceTree = "<group>"; };
 		6681E5B72AE1FC4800A81DB5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6681E5BC2AE1FC4800A81DB5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6687CE932B2C1ECB009FAAEC /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
@@ -141,6 +141,8 @@
 		EBF9BEE0C09F903E47E7DEF9 /* Pods_VinylApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VinylApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC9F95292B5CEA33004E071E /* UploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadView.swift; sourceTree = "<group>"; };
 		FC9F952B2B5DE64C004E071E /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
+		FC9F952F2B618D45004E071E /* SongInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongInfo.swift; sourceTree = "<group>"; };
+		FC9F95312B618D4F004E071E /* ImageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageInfo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -247,6 +249,8 @@
 				66547A1B2AE6EFD6009CD777 /* AlbumDetailsResponse.swift */,
 				66547A1D2AE6F2C7009CD777 /* PlaylistDetailsResponse.swift */,
 				66547A282AE72ED1009CD777 /* LibraryPlaylistsResponse.swift */,
+				FC9F952F2B618D45004E071E /* SongInfo.swift */,
+				FC9F95312B618D4F004E071E /* ImageInfo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -273,7 +277,6 @@
 			children = (
 				66A0A0D92AE63223002EE3B6 /* TabBarViewController.swift */,
 				66FCA1A62B168B5800741A1A /* LibraryView.swift */,
-				6681E5B22AE1FC4700A81DB5 /* UploadViewController.swift */,
 				661BF4ED2B1696E300BBAA16 /* HomeView.swift */,
 			);
 			path = Core;
@@ -493,13 +496,13 @@
 				66DC737A2B0FE93A007ECCB5 /* LabelTexts.swift in Sources */,
 				FC9F952C2B5DE64C004E071E /* ImageManager.swift in Sources */,
 				66547A292AE72ED1009CD777 /* LibraryPlaylistsResponse.swift in Sources */,
-				6681E5B32AE1FC4700A81DB5 /* UploadViewController.swift in Sources */,
 				6681E5AF2AE1FC4700A81DB5 /* AppDelegate.swift in Sources */,
 				66FCA1A72B168B5800741A1A /* LibraryView.swift in Sources */,
 				FC9F952A2B5CEA33004E071E /* UploadView.swift in Sources */,
 				66547A202AE6FA88009CD777 /* TrackCollectionViewCell.swift in Sources */,
 				66547A142AE6E0D5009CD777 /* APIImage.swift in Sources */,
 				66E2DB5C2B16CCC100F44F93 /* FirestoreManager.swift in Sources */,
+				FC9F95322B618D4F004E071E /* ImageInfo.swift in Sources */,
 				66547A122AE6DF74009CD777 /* Album.swift in Sources */,
 				66547A2B2AE731A9009CD777 /* ActionLabelView.swift in Sources */,
 				664F343B2B2BB90100613F01 /* SpotfiyLogInView.swift in Sources */,
@@ -511,6 +514,7 @@
 				66547A102AE6DE3F009CD777 /* AudioTrack.swift in Sources */,
 				66A0A0E42AE65D4C002EE3B6 /* SettingsViewController.swift in Sources */,
 				6681E5B12AE1FC4700A81DB5 /* SceneDelegate.swift in Sources */,
+				FC9F95302B618D45004E071E /* SongInfo.swift in Sources */,
 				66547A1C2AE6EFD6009CD777 /* AlbumDetailsResponse.swift in Sources */,
 				66DF3CD82AE61B08003CB1E2 /* AuthViewController.swift in Sources */,
 				66547A232AE7049F009CD777 /* RecommendedTrackCellViewModel.swift in Sources */,
@@ -691,7 +695,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5SZLNT5DHA;
+				DEVELOPMENT_TEAM = NJ64FZB25H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VinylApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Aurify;
