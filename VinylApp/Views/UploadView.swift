@@ -287,6 +287,9 @@ struct UploadView: View {
                 showError = true
                 return
             }
+            if !canGeneratePlaylist {
+                return
+            }
             task = APIRunner().run(image: image)
             let result = await task?.result
             switch result {
