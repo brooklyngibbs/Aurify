@@ -62,8 +62,6 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
         picker.dismiss(animated: true, completion: nil)
         
         if let selectedImage = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
-            //let uploadVC = UploadViewController()
-            //uploadVC.selectedImage = selectedImage
             
             if let navController = selectedViewController as? UINavigationController {
                 let uploadView = UploadView(im: selectedImage) { playlist in

@@ -16,10 +16,19 @@ final class APICaller {
     
     struct Constants {
         static let baseAPIURL = "https://api.spotify.com/v1"
+        static let imageAPIURL = URL(string: "https://make-scene-api-request-36d3pxwmrq-uc.a.run.app")!
     }
     
     enum APIError: Error {
         case failedToGetData
+    }
+    
+    public func getCurrentUserProfile() async throws -> UserProfile {
+        return try await withCheckedThrowingContinuation() { continuation in
+            getCurrentUserProfile { result in
+                continuation.resume(with: result)
+            }
+        }
     }
     
     public func getCurrentUserProfile(completion: @escaping (Result<UserProfile, Error>) -> Void) {
@@ -213,24 +222,16 @@ final class APICaller {
         }
     }
     
-    func updatePlaylistImageWithRetries(imageBase64: String, playlistID: String, retries: Int, completion: @escaping (Result<Void, Error>) -> Void) {
-        updatePlaylistImage(imageBase64: imageBase64, playlistID: playlistID) { result in
-            switch result {
-            case .success:
-                completion(result)
-            case .failure(let error):
-                if retries > 0 {
-                    print("Retrying... \(retries - 1) error: \(error.localizedDescription)")
-                    self.updatePlaylistImageWithRetries(imageBase64: imageBase64, playlistID: playlistID, retries: retries - 1, completion: completion)
-                } else {
-                    completion(.failure(error))
-                }
+    public func updatePlaylistImage(imageBase64: String, playlistId: String) async throws {
+        try await withCheckedThrowingContinuation() { continuation in
+            APICaller.shared.updatePlaylistImage(imageBase64: imageBase64, playlistId: playlistId) { result in
+                continuation.resume(with: result)
             }
         }
     }
     
-    func updatePlaylistImage(imageBase64: String, playlistID: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        let urlString = "https://api.spotify.com/v1/playlists/\(playlistID)/images"
+    func updatePlaylistImage(imageBase64: String, playlistId: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        let urlString = "https://api.spotify.com/v1/playlists/\(playlistId)/images"
         
         print("Image size: ", imageBase64.count)
 
@@ -348,8 +349,16 @@ final class APICaller {
         }
     }
     
-    public func addTrackArrayToPlaylist(trackURI: [String], playlist_id: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let urlString = Constants.baseAPIURL + "/playlists/\(playlist_id)/tracks"
+    public func addTrackArrayToPlaylist(trackURI: [String], playlistId: String) async throws -> String {
+        return try await withCheckedThrowingContinuation() { continuation in
+            addTrackArrayToPlaylist(trackURI: trackURI, playlistId: playlistId) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
+    public func addTrackArrayToPlaylist(trackURI: [String], playlistId: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let urlString = Constants.baseAPIURL + "/playlists/\(playlistId)/tracks"
         guard !trackURI.isEmpty else {
             completion(.failure(NSError(domain: "No tracks given for playlist", code: 0)))
             return
@@ -392,6 +401,14 @@ final class APICaller {
                 }
             }
             task.resume()
+        }
+    }
+    
+    public func searchManySongs(q: [SongInfo]) async -> [Result<String, Error>] {
+        return await withCheckedContinuation { continuation in
+            searchManySongs(q: q) { results in
+                continuation.resume(returning: results)
+            }
         }
     }
 
@@ -443,10 +460,17 @@ final class APICaller {
             task.resume()
         }
     }
+    
+    public func getPlaylist(with playlistId: String) async throws -> Playlist {
+        return try await withCheckedThrowingContinuation() { continuation in
+            getPlaylist(with: playlistId) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
 
-
-    public func getPlaylist(with playlist_id: String, completion: @escaping (Result<Playlist, Error>) -> Void) {
-        let urlString = Constants.baseAPIURL + "/playlists/\(playlist_id)"
+    public func getPlaylist(with playlistId: String, completion: @escaping (Result<Playlist, Error>) -> Void) {
+        let urlString = Constants.baseAPIURL + "/playlists/\(playlistId)"
         guard let url = URL(string: urlString) else {
             completion(.failure(APIError.failedToGetData))
             return
@@ -462,7 +486,7 @@ final class APICaller {
                     let result = try JSONDecoder().decode(Playlist.self, from: data)
                     completion(.success(result))
                 } catch {
-                    print("Error decoding Playlist \(playlist_id):", error)
+                    print("Error decoding Playlist \(playlistId):", error)
                     completion(.failure(error))
                 }
             }
@@ -519,6 +543,14 @@ final class APICaller {
         group.notify(queue: .main) {
             let uniqueArtists = Array(Set(allTopArtists))
             completion(.success(uniqueArtists))
+        }
+    }
+    
+    public func createPlaylist(with name: String, description: String) async throws -> Playlist {
+        return try await withCheckedThrowingContinuation() { continuation in
+            createPlaylist(with: name, description: description) { result in
+                continuation.resume(with: result)
+            }
         }
     }
 

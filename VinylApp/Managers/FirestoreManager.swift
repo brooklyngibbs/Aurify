@@ -47,6 +47,14 @@ class FirestoreManager {
         }
     }
     
+    func savePlaylistToFirestore(userID: String, playlist: Playlist, imageUrl: String, imageInfo: ImageInfo) async throws {
+        try await withCheckedThrowingContinuation() { continuation in
+            savePlaylistToFirestore(userID: userID, playlist: playlist, imageUrl: imageUrl, imageInfo: imageInfo) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     func savePlaylistToFirestore(userID: String, playlist: Playlist, imageUrl: String, imageInfo: ImageInfo, completion: @escaping (Result<Void, Error>) -> Void) {
         // Access Firestore and create a reference to the users collection
         let usersCollection = db.collection("users")
@@ -90,5 +98,22 @@ class FirestoreManager {
                 completion(.success(()))
             }
         }
+    }
+}
+
+extension APIImage {
+    func toDictionary() -> [String: Any] {
+        var imageDictionary: [String: Any] = [:]
+        imageDictionary["url"] = self.url
+        
+        return imageDictionary
+    }
+}
+
+extension User {
+    func toDictionary() -> [String: Any] {
+        var userDictionary: [String: Any] = [:]
+        userDictionary["id"] = self.id
+        return userDictionary
     }
 }
