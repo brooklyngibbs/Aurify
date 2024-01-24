@@ -233,14 +233,20 @@ struct PleaseSubscribeView: View {
     var body: some View {
         VStack {
             Spacer()
-            Text("Subscribe to get more of Aurify!")
+            Text("Subscribe")
                 .lineLimit(3, reservesSpace: true)
                 .multilineTextAlignment(.center)
-                .font(.custom("Inter-SemiBold", size: 17))
+                .font(.custom("Outfit-Bold", size: 27))
+            Text("to get more of Aurify!")
+                .lineLimit(3, reservesSpace: true)
+                .multilineTextAlignment(.center)
+                .font(.custom("Inter-Regular", size: 17))
+                .padding(.top, -75)
             Image("headphones")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 200, height: 200)
+                .padding(.top, -50)
             Button(action: {
                 dismiss()
             }) {
