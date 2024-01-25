@@ -191,7 +191,6 @@ struct SpinningVinylView: View {
                 .onDisappear() {
                     stopLabelTimer()
                 }
-            Spacer()
             Button(action: {
                 task?.cancel()
                 task = nil

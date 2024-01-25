@@ -48,6 +48,14 @@ struct LogInView: View {
                                 .padding(8)
                                 .background(Color(AppColors.venetian_red))
                                 .cornerRadius(8)
+                            if errorMessage == "Please verify your email before signing in" {
+                                Button(action: resendVerificationEmail) {
+                                    Text("Resend Verification Email")
+                                    .font(.custom("Inter-Regular", size: 18))
+                                    .foregroundColor(Color(AppColors.moonstoneBlue))
+                                }
+                                .padding(.top, 10)
+                            }
                         }
                         
                         Button(action: loginUser) {
@@ -137,6 +145,22 @@ struct LogInView: View {
                     errorMessage = "Please verify your email before signing in"
                     showError = true
                 }
+            }
+        }
+    }
+    
+    func resendVerificationEmail() {
+        guard let currentUser = Auth.auth().currentUser else {
+            return
+        }
+
+        currentUser.sendEmailVerification { error in
+            if let error = error {
+                print("Error resending verification email:", error.localizedDescription)
+                // Handle the error, show an alert, etc.
+            } else {
+                print("Verification email resent successfully")
+                // Update UI or show a success message
             }
         }
     }

@@ -194,6 +194,7 @@ struct LibraryView: View {
                                 loadImage(from: lastImageURL)
                             } else {
                                 print("No valid image URL available")
+                                loadDefaultImageFromStorage()
                             }
                         }
                     }
@@ -208,6 +209,25 @@ struct LibraryView: View {
         let storage = Storage.storage()
         let storageRef = storage.reference()
         let profilePicsRef = storageRef.child("profilePics/\(userID)/profileImage.jpg")
+        
+        profilePicsRef.getData(maxSize: 10 * 1024 * 1024) { [self] data, error in
+            if let error = error {
+                print("Error downloading profile image: \(error.localizedDescription)")
+
+            } else {
+                if let imageData = data, let loadedImage = UIImage(data: imageData) {
+                    DispatchQueue.main.async {
+                        self.userProfileImage = loadedImage
+                    }
+                }
+            }
+        }
+    }
+    
+    private func loadDefaultImageFromStorage() {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let profilePicsRef = storageRef.child("profilePics/defaultProfilePic.jpg")
         
         profilePicsRef.getData(maxSize: 10 * 1024 * 1024) { [self] data, error in
             if let error = error {

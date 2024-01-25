@@ -40,6 +40,12 @@ final class APICaller {
                     return
                 }
                 
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print("Raw JSON data: \(jsonString)")
+                } else {
+                    print("Failed to convert data to UTF-8 string")
+                }
+                
                 do {
                     let result = try JSONDecoder().decode(UserProfile.self, from: data)
                     completion(.success(result))
@@ -563,7 +569,8 @@ final class APICaller {
                 self?.createRequest(with: URL(string: urlString), type: .POST) { baseRequest in
                     var request = baseRequest
                     let json = [
-                        "name": name
+                        "name": name,
+                        "description": description
                     ]
                     request.httpBody = try? JSONSerialization.data(withJSONObject: json, options: .fragmentsAllowed)
                     
