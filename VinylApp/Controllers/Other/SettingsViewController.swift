@@ -347,7 +347,7 @@ struct TermsAndConditionsView: View {
                 Text("""
                 Terms and Conditions for Aurify
 
-                Last Updated: January 20223
+                Last Updated: January 2024
 
                 Welcome to Aurify! These terms and conditions outline the rules and regulations for the use of the Aurify mobile application, available on iOS and Android platforms, created by Brooklyn Gibbs.
 
@@ -391,7 +391,7 @@ struct TermsAndConditionsView: View {
 
                 9. Contact Information
 
-                For questions or concerns regarding these terms and conditions, please contact us at brooklyngibbs22@gmail.com.
+                For questions or concerns regarding these terms and conditions, please contact us at contactus@aurifyapp.com.
                 By using Aurify, you acknowledge that you have read and understood these terms and conditions and agree to be bound by them.
                 """)
                 .padding()

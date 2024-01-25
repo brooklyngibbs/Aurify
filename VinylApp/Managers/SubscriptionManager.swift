@@ -2,7 +2,7 @@ import Foundation
 import StoreKit
 
 public class SubscriptionManager {
-    public static let shared = SubscriptionManager() // Singleton instance
+    public static let shared = SubscriptionManager() 
 
     public enum SubscriptionType: String {
         case none

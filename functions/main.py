@@ -83,6 +83,44 @@ def get_image_info(image_url):
         print(f"An error occurred: {str(e)}")
         return None
     
+@https_fn.on_call(
+    enforce_app_check=True  # Reject requests with missing or invalid App Check tokens.
+)
+def make_scene_api_request(data, context) -> dict:
+    try:
+        trigger_data = data.get("data")
+        image_url = trigger_data.get("image_url")
+
+        if not image_url:
+            return {"error": "Image URL not provided in trigger data."}
+
+        image_json = get_image_info(image_url)
+        if image_json:
+            json_data = json.loads(image_json)
+            genre = json_data.get("genre")
+            subgenre = json_data.get("subgenre")
+            music = json_data.get("music")
+
+            response_dict = {
+                "description": json_data.get("description"),
+                "playlistTitle": json_data.get("playlistTitle"),
+                "music": music,
+                "genre": genre,
+                "subgenre": subgenre,
+                "mood": json_data.get("mood"),
+                "songlist": json_data.get("songlist")
+            }
+
+            return response_dict
+        else:
+            return {"error": "No image information obtained."}
+
+    except KeyError as key_error:
+        return {"error": f"KeyError occurred: {str(key_error)}"}
+
+    except Exception as e:
+        return {"error": f"An error occurred: {str(e)}"}
+        
 @https_fn.on_request(timeout_sec=120)
 def make_scene_api_request(req: https_fn.Request) -> https_fn.Response:
     try:

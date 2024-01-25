@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct UploadErrorView: View {
     @Environment(\.dismiss) var dismiss
@@ -84,7 +85,7 @@ class APIRunner {
             print("Converting image")
             let base64Data = try imageManager.convertImageToBase64(maxBytes: 256_000)
             print("Creating playlist")
-            let playlist = try await APICaller.shared.createPlaylist(with: json.playlistTitle, description: json.description)
+            let playlist = try await APICaller.shared.createPlaylist(with: json.playlistTitle, description: "Created by Aurify")
             print("Updating playlist image")
             let _ = try await retry(times: 2) {
                 return try await APICaller.shared.updatePlaylistImage(imageBase64: base64Data, playlistId: playlist.id)
@@ -190,6 +191,7 @@ struct SpinningVinylView: View {
                 .onDisappear() {
                     stopLabelTimer()
                 }
+            Spacer()
             Button(action: {
                 task?.cancel()
                 task = nil

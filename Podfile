@@ -12,6 +12,7 @@ pod 'SDWebImage'
 pod 'Firebase/Firestore'
 pod 'Firebase/Auth'
 pod 'TOCropViewController'
+pod 'FirebaseAppCheck'
 
 post_install do |installer|
      installer.generated_projects.each do |project|
