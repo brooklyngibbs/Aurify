@@ -31,7 +31,7 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
         uploadButton = UIButton(type: .custom)
         uploadButton.setImage(UIImage(systemName: "plus"), for: .normal)
         uploadButton.backgroundColor = AppColors.vampireBlack
-        uploadButton.tintColor = .white // plus symbol color
+        uploadButton.tintColor = .white
         uploadButton.layer.cornerRadius = 30
         uploadButton.layer.shadowColor = UIColor.black.cgColor
         uploadButton.layer.shadowOffset = CGSize(width: 0, height: 4)
@@ -52,10 +52,12 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
     
     func hideUploadButton() {
         uploadButton?.isHidden = true
+        tabBar.isHidden = true
     }
 
     func unhideUploadButton() {
         uploadButton?.isHidden = false
+        tabBar.isHidden = false
     }
 
     @objc func uploadButtonTapped() {
