@@ -103,11 +103,47 @@ class APIRunner {
     }
 }
 
-struct SpinningVinylView: View {
+struct SpinningVinylImage: View {
     @State private var degreesRotating = 0.0
-    @State private var generatingText = "Generating your picture playlist. Do not exit out of app"
-    @State private var labelTimer : Timer?
-    private var topArtists: [String] = []
+    private var foreverAnimation : Animation {
+        Animation.linear(duration: 1.0)
+            .repeatForever(autoreverses: false)
+    }
+    var body: some View {
+        Image("vinyl3")
+            .resizable()
+            .scaledToFit()
+            .rotationEffect(.degrees(degreesRotating))
+            .onAppear {
+                withAnimation(foreverAnimation) {
+                    degreesRotating = 360.0
+                }
+            }
+            .onDisappear() {
+                degreesRotating = 0.0
+            }
+            .frame(width: 200, height: 200)
+    }
+}
+
+struct LoadingView: View {
+    var body: some View {
+        Spacer()
+        Spacer()
+        SpinningVinylImage()
+        Spacer()
+        Spacer()
+        Spacer()
+    }
+}
+
+struct SpinningVinylView: View {
+    @Environment(\.dismiss) var dismiss
+    @State var degreesRotating = 0.0
+    @State var generatingText = "Generating your picture playlist. Do not exit out of app"
+    @State var labelTimer : Timer?
+    @Binding var task: Task<Playlist, Error>?
+    var topArtists: [String] = []
     
     private var foreverAnimation : Animation {
         Animation.linear(duration: 1.0)
@@ -155,7 +191,9 @@ struct SpinningVinylView: View {
                     stopLabelTimer()
                 }
             Button(action: {
-                // Add cancel action here
+                task?.cancel()
+                task = nil
+                dismiss()
             }) {
                 Text("Cancel")
                     .foregroundColor(Color(AppColors.vampireBlack))
@@ -166,7 +204,7 @@ struct SpinningVinylView: View {
                             .stroke(Color(AppColors.vampireBlack), lineWidth: 1)
                     )
                     .background(Color.white) // Add background color if needed
-            }
+            }.disabled(task == nil)
             Spacer()
         }
     }
@@ -174,7 +212,6 @@ struct SpinningVinylView: View {
 
 struct PleaseSubscribeView: View {
     @Environment(\.dismiss) var dismiss
-
     var body: some View {
         VStack {
             Spacer()
@@ -206,7 +243,6 @@ struct PleaseSubscribeView: View {
 }
 
 struct UploadView: View {
-    //@Environment(\.dismiss) var dismiss
     @State var showError: Bool = false
     @State var canGeneratePlaylist: Bool = true
     @State var task: Task<Playlist, Error>? = nil
@@ -223,7 +259,7 @@ struct UploadView: View {
             if showError {
                 UploadErrorView()
             } else if canGeneratePlaylist {
-                SpinningVinylView()
+                SpinningVinylView(task: $task)
             } else {
                 PleaseSubscribeView()
             }
