@@ -11,11 +11,14 @@ struct Playlist2VC: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var updateLibraryView: (() -> Void)?
     
+    var tabBarViewController: TabBarViewController
+    
     private let db = Firestore.firestore()
     
-    internal init(playlist: Playlist, userID: String) {
+    internal init(playlist: Playlist, userID: String, tabBarViewController: TabBarViewController) {
         self.playlist = playlist
         self.userID = userID
+        self.tabBarViewController = tabBarViewController
     }
     
     var body: some View {
@@ -82,9 +85,11 @@ struct Playlist2VC: View {
         }
         .onAppear {
             fetchPlaylistDetails()
+            tabBarViewController.hideUploadButton()
         }
         .onDisappear {
             NotificationCenter.default.post(name: NSNotification.Name("UpdateLibraryView"), object: nil)
+            tabBarViewController.unhideUploadButton()
         }
     }
     

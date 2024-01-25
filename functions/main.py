@@ -11,7 +11,7 @@ from google.oauth2.id_token import verify_oauth2_token
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 def get_image_info(image_url):
-    json_prompt = '''Analyze the image and output information as a valid json object (and only the JSON) with the following fields: 
+    json_prompt = '''Analyze the image and output information as a valid json object (and only the JSON) with the following fields:
     {
       "description": "containins a detailed description of what is in the image including prominent colors and vibes and emotions provoked",
       "playlistTitle": "a playlist title that goes with the image description. Example: \"Floating on air: A night with The Boss\"",
@@ -25,11 +25,11 @@ def get_image_info(image_url):
          "reason": "The reason the song was selected"
         }
       ]
-    } 
+    }
     Songlist should contain 40 songs for the image that fit the subgenre. It is very important that I get all 40 songs.  I'll pay $200 for 40 great song selections. All of the songs should fit the mood as well, so that the songs do not clash.
     These should be real songs from real artists that I can find on Spotify. If there was a band, music artist, or song in the image, include only three song from that music.
-    The soundtrack should be 40 songs of underground, less popular artists. The other ten should be more mainstream artists and songs. Make sure to mix them together. Prioritize songs that fit the genre and image description rather than popular songs.
-    All of the songs should flow together and have a similar tone. Only use one song from each artist you choose. Make sure to choose the song that best fits the genre and image description from their entire discogrpahy. Do not include anything but the JSON. '''
+    The soundtrack should be 40 songs of underground, less popular artists. The other ten should be more mainstream artists and songs. Make sure to mix them together. Prioritize songs that fit the subgenre and image description rather than popular songs.
+    All of the songs should flow together and have a similar tone. Only use one song from each artist you choose. Make sure to choose the song that best fits the subgenre and image description from their entire discogrpahy. Do not include anything but the JSON. '''
     
     json_data = {
         "model": "gpt-4-vision-preview",

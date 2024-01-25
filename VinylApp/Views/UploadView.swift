@@ -9,6 +9,7 @@ import SwiftUI
 
 struct UploadErrorView: View {
     @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         Spacer()
         Text("Uh Oh!\nSomething went wrong.")
@@ -211,6 +212,7 @@ struct UploadView: View {
     @State var task: Task<Playlist, Error>? = nil
     private let onComplete: (Playlist) -> ()
     let image: UIImage
+    
     init(im: UIImage, fn: @escaping (Playlist) -> ()) {
         image = im
         onComplete = fn
@@ -250,8 +252,4 @@ struct UploadView: View {
             }
         }
     }
-}
-
-#Preview {
-    UploadView(im: UIImage(), fn: {_ in})
 }

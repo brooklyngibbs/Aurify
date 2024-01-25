@@ -1,15 +1,15 @@
 import SwiftUI
 
 class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    var uploadButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         tabBar.tintColor = AppColors.jellybeanBlue
 
-        //let vc2 = UIHostingController(rootView: UploadView())
-        let vc3 = UIHostingController(rootView: LibraryView())
+        let vc3 = UIHostingController(rootView: LibraryView(tabBarViewController: self))
 
-        //let nav2 = UINavigationController(rootViewController: vc2)
         let nav3 = UINavigationController(rootViewController: vc3)
 
         self.viewControllers = [nav3]
@@ -28,7 +28,7 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
     }
     
     func showUploadButton() {
-        let uploadButton = UIButton(type: .custom)
+        uploadButton = UIButton(type: .custom)
         uploadButton.setImage(UIImage(systemName: "plus"), for: .normal)
         uploadButton.backgroundColor = AppColors.vampireBlack
         uploadButton.tintColor = .white // plus symbol color
@@ -49,6 +49,14 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
 
         self.view.addSubview(uploadButton)
     }
+    
+    func hideUploadButton() {
+        uploadButton?.isHidden = true
+    }
+
+    func unhideUploadButton() {
+        uploadButton?.isHidden = false
+    }
 
     @objc func uploadButtonTapped() {
         let imagePickerController = UIImagePickerController()
@@ -64,11 +72,12 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
         if let selectedImage = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
             
             if let navController = selectedViewController as? UINavigationController {
+                self.hideUploadButton()
                 let uploadView = UploadView(im: selectedImage) { playlist in
                     DispatchQueue.main.async {
                         navController.popViewController(animated: true) // Pop the current view controller
-
-                        let hostingController = UIHostingController(rootView: Playlist2VC(playlist: playlist, userID: UserDefaults.standard.value(forKey: "user_id") as! String))
+                        self.hideUploadButton() // Hide the button when transitioning to Playlist2VC
+                        let hostingController = UIHostingController(rootView: Playlist2VC(playlist: playlist, userID: UserDefaults.standard.value(forKey: "user_id") as! String, tabBarViewController: self))
                         navController.navigationBar.tintColor = UIColor.black
                         navController.pushViewController(hostingController, animated: false)
                         navController.isNavigationBarHidden = false

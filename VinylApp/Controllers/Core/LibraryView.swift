@@ -15,6 +15,8 @@ struct LibraryView: View {
     @State private var showingSettings = false
     @State private var userProfileImage: UIImage?
     
+    var tabBarViewController: TabBarViewController
+    
     var body: some View {
         ZStack {
             if isLoading {
@@ -113,7 +115,7 @@ struct LibraryView: View {
                             } else {
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                                     ForEach(playlists.indices, id: \.self) { index in
-                                        NavigationLink(destination: Playlist2VC(playlist: playlists[index], userID: userID)) {
+                                        NavigationLink(destination: Playlist2VC(playlist: playlists[index], userID: userID, tabBarViewController: tabBarViewController)) {
                                             PlaylistCellView(playlist: playlists[index])
                                                 .padding(.bottom, 20)
                                                 .id(UUID()) // Ensure each view has a unique ID
@@ -137,6 +139,7 @@ struct LibraryView: View {
                 listener = FirestoreManager().fetchPlaylistIDListener(forUserID: userID) { playlistIDs in
                     fetchDataForPlaylistIDs(playlistIDs: playlistIDs) {
                         isLoading = false
+                        //tabBarViewController.unhideUploadButton()
                     }
                 }
             }
@@ -314,11 +317,5 @@ class ImageLoader: ObservableObject {
                 }
             }
         }.resume()
-    }
-}
-
-struct LibraryView_Previews: PreviewProvider {
-    static var previews: some View {
-        LibraryView()
     }
 }
