@@ -55,7 +55,7 @@ struct Playlist2VC: View {
                 .cornerRadius(30)
                 .shadow(color: Color(AppColors.vampireBlack).opacity(0.4), radius: 10, x: 0, y: 4)
                 .padding(.horizontal)
-                .padding(.top, 4 * 320 / 5) // tracks starting position (4/5 of image)
+                .padding(.top, 4 * 320 / 5)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(0)
@@ -95,10 +95,9 @@ struct Playlist2VC: View {
     
     private var playlistHeader: some View {
         VStack {
-            Text(playlist.name)
+            Text(formatPlaylistName(playlist.name))
                 .padding(.top, 20)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: UIScreen.main.bounds.width * 0.7, alignment: .leading)
+                .frame(maxWidth: UIScreen.main.bounds.width, alignment: .leading)
                 .lineLimit(4)
                 .font(.custom("Outfit-Bold", size: 25))
                 .foregroundColor(.black)
@@ -108,6 +107,11 @@ struct Playlist2VC: View {
             openInSpotifyButton
             Spacer()
         }
+    }
+    
+    private func formatPlaylistName(_ name: String) -> String {
+        // Replace ":" with "\n"
+        return name.replacingOccurrences(of: ": ", with: ":\n")
     }
     
     private var openInSpotifyButton: some View {
@@ -130,7 +134,7 @@ struct Playlist2VC: View {
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.white)
                 }
-                .offset(x: 10) // Adjust the offset as needed to center the HStack
+                .offset(x: 10)
             }
             .padding(.trailing, 20)
         }
@@ -165,7 +169,7 @@ struct Playlist2VC: View {
     }
     
     private var spotifyURL: URL? {
-        if let spotifyURLString = playlist.external_urls!["spotify"] as? String {
+        if let spotifyURLString = playlist.external_urls!["spotify"] {
             return URL(string: spotifyURLString)
         }
         return nil
@@ -190,11 +194,14 @@ struct Playlist2VC: View {
             activityViewController.popoverPresentationController?.permittedArrowDirections = []
         }
 
-        UIApplication.shared.windows.first?.rootViewController?.present(
-            activityViewController,
-            animated: true,
-            completion: nil
-        )
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+            let window = windowScene.windows.first {
+            window.rootViewController?.present(
+                activityViewController,
+                animated: true,
+                completion: nil
+            )
+        }
     }
 
     private func deletePlaylist() {
