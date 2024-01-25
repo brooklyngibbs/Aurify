@@ -144,6 +144,9 @@ struct LibraryView: View {
                 }
             }
         }
+        .onAppear {
+            tabBarViewController.unhideUploadButton()
+        }
         .onDisappear() {
             listener?.remove()
             listener = nil
