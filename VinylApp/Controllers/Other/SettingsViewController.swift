@@ -323,20 +323,20 @@ struct ProfileSectionView: View {
             }
         }
         .onAppear {
-                    // Fetch subscription type asynchronously
-                    async {
-                        do {
-                            self.subscriptionStatus = try await SubscriptionManager.getSubscriptionType()
-                        } catch {
-                            print("Error fetching subscription type: \(error.localizedDescription)")
-                        }
-                    }
+            // Fetch subscription type asynchronously
+            Task {
+                do {
+                    self.subscriptionStatus = try await SubscriptionManager.getSubscriptionType()
+                } catch {
+                    print("Error fetching subscription type: \(error.localizedDescription)")
                 }
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding()
-                .cornerRadius(10)
-                Text("Name: \(userName)")
-                Text("Subscription: \(subscriptionStatus == .fullAccess ? "Full Access" : "None")")
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding()
+        .cornerRadius(10)
+        Text("Name: \(userName)")
+        Text("Subscription: \(subscriptionStatus == .fullAccess ? "Full Access" : "None")")
     }
 }
 

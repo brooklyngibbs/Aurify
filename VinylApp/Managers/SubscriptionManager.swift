@@ -12,23 +12,26 @@ public class SubscriptionManager {
     private init() {}
 
     static func getSubscriptionType() async throws -> SubscriptionType {
-        let productIds = ["AurifyFullAccess"]
-        let products = try await Product.products(for: productIds)
-        for product in products {
-            if let status = try await product.subscription?.status {
-                if status.count == 0 {
-                    UserDefaults.standard.set("None", forKey: "SubscriptionType")
-                    return .none
-                }
-                if status[0].state == .subscribed {
-                    if product.id == "AurifyFullAccess" {
+        do {
+            let productIds = ["AurifyFullAccess"]
+            let products = try await Product.products(for: productIds)
+            
+            for product in products {
+                if let status = try await product.subscription?.status {
+                    if status.isEmpty {
+                        UserDefaults.standard.set("None", forKey: "SubscriptionType")
+                        return .none
+                    }
+                    if status[0].state == .subscribed, product.id == "AurifyFullAccess" {
                         UserDefaults.standard.set("FullAccess", forKey: "SubscriptionType")
                         return .fullAccess
                     }
                 }
             }
+            throw NSError(domain: "Subscription information not found", code: 0)
+        } catch {
+            throw error
         }
-        return .none
     }
     
     static func canUserGeneratePlaylist() async throws -> Bool {

@@ -17,6 +17,8 @@ final class APICaller {
     struct Constants {
         static let baseAPIURL = "https://api.spotify.com/v1"
         static let imageAPIURL = URL(string: "https://make-scene-api-request-36d3pxwmrq-uc.a.run.app")!
+        static let revenue_api_key = "appl_YHwdOYWWDyTRpiCMXOQGziXrImM"
+        static let entitlementID = "fullAccess"
     }
     
     enum APIError: Error {
