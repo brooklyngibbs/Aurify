@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseFirestoreInternal
 import FirebaseAuth
 
 struct SignUpView: View {
@@ -12,6 +13,8 @@ struct SignUpView: View {
     
     @State private var showSuccess: Bool = false
     @State private var successMessage: String = ""
+    
+    @State private var firestoreEmails: [String] = []
     
     var body: some View {
         NavigationView {
@@ -91,6 +94,21 @@ struct SignUpView: View {
                 LogInView()
             }
         }
+        .onAppear {
+            fetchFirestoreEmails()
+        }
+    }
+    
+    func fetchFirestoreEmails() {
+        let db = Firestore.firestore()
+        
+        db.collection("users").getDocuments { querySnapshot, error in
+            if let error = error {
+                print("Error fetching documents: \(error)")
+            } else {
+                self.firestoreEmails = querySnapshot?.documents.compactMap { $0["email"] as? String } ?? []
+            }
+        }
     }
     
     func createUser(email: String, password: String, completion: @escaping (AuthDataResult?, Error?) -> Void) {
@@ -101,7 +119,15 @@ struct SignUpView: View {
     
     func signUp() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        
+
+        // Check if the email is in the Firestore array
+        guard firestoreEmails.contains(email) else {
+            errorMessage = "Development mode user limit reached. Unable to create more users."
+            showError = true
+            return
+        }
+
+        // Create the user
         createUser(email: email, password: password) { authResult, error in
             if let error = error as NSError? {
                 switch error.code {
@@ -123,6 +149,7 @@ struct SignUpView: View {
             }
         }
     }
+
     
     func sendEmailVerification(for user: FirebaseAuth.User) {
         user.sendEmailVerification { error in

@@ -23,10 +23,12 @@ public class SubscriptionManager {
             UserDefaults.standard.set("None", forKey: "SubscriptionType")
             return .none
         } catch {
-            // Handle error if needed
+            // Log detailed error information for debugging
+            print("Error in getSubscriptionType: \(error.localizedDescription)")
             throw error
         }
     }
+
 
     
     static func canUserGeneratePlaylist() async throws -> Bool {
