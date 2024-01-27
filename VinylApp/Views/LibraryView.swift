@@ -5,7 +5,7 @@ import FirebaseStorage
 import FirebaseFirestore
 
 struct LibraryView: View {
-    @State private var playlists : [Playlist] = []
+    @State private var playlists : [FirebasePlaylist] = []
     @State private var listener : ListenerRegistration?
     @State private var isLoading = true // Track loading state
     
@@ -136,11 +136,10 @@ struct LibraryView: View {
         .task {
             fetchProfile() { userID in
                 listener?.remove()
-                listener = FirestoreManager().fetchPlaylistIDListener(forUserID: userID) { playlistIDs in
-                    fetchDataForPlaylistIDs(playlistIDs: playlistIDs) {
-                        isLoading = false
-                        //tabBarViewController.unhideUploadButton()
-                    }
+                listener = FirestoreManager().fetchPlaylistIDListener(forUserID: userID) {
+                    playlists = $0
+                    print("Count = \(playlists.count)")
+                    isLoading = false
                 }
             }
         }
@@ -150,28 +149,6 @@ struct LibraryView: View {
         .onDisappear() {
             listener?.remove()
             listener = nil
-        }
-    }
-    
-    func fetchDataForPlaylistIDs(playlistIDs : [String], completion: @escaping () -> Void) {
-        var tempPlaylists = [Playlist?](repeating:nil, count: playlistIDs.count)
-        let dispatchGroup = DispatchGroup()
-        for (index, playlistID) in playlistIDs.enumerated() {
-            dispatchGroup.enter()
-            APICaller.shared.getPlaylist(with: playlistID) { result in
-                switch result {
-                case .success(let playlist):
-                    tempPlaylists[index] = playlist
-                    //tempPlaylists.insert(playlist, at: index)
-                case .failure(let error):
-                    print("Failed to fetch playlist: \(error.localizedDescription)")
-                }
-                dispatchGroup.leave()
-            }
-        }
-        dispatchGroup.notify(queue: .main) {
-            self.playlists = tempPlaylists.compactMap{ $0 }
-            completion()
         }
     }
 
@@ -300,10 +277,85 @@ struct LibraryView: View {
 //MARK: Playlist Cell Structs
 struct PlaylistCellView: View {
     @StateObject private var imageLoader = ImageLoader()
-    let playlist: Playlist
+    let playlist: FirebasePlaylist
     let imageSize: CGFloat = 110
     
     var body: some View {
+        if let ciUrl = URL(string: playlist.coverImageUrl) {
+            AsyncImage(url: ciUrl) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                        .cornerRadius(20)
+                        .shadow(color: Color.gray.opacity(0.3), radius: 4, x: 0, y: 5)
+                case .failure:
+                    if let val = playlist.images.first?.url,
+                       let eurl = URL(string: val) {
+                        AsyncImage(url: eurl) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                                    .cornerRadius(20)
+                                    .shadow(color: Color.gray.opacity(0.3), radius: 4, x: 0, y: 5)
+                            case .failure:
+                                Color.gray.opacity(0.2)
+                                    .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                                    .cornerRadius(20)
+                            case .empty:
+                                Color.gray.opacity(0.2)
+                                    .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                                    .cornerRadius(20)
+                            @unknown default:
+                                Color.gray.opacity(0.2)
+                                    .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                                    .cornerRadius(20)
+                            }
+                        }
+                    }
+                case .empty:
+                    Color.gray.opacity(0.2)
+                        .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                        .cornerRadius(20)
+                @unknown default:
+                    Color.gray.opacity(0.2)
+                        .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                        .cornerRadius(20)
+                }
+            }
+        } else if let estr = playlist.images.first?.url,
+                  let eurl = URL(string: estr) {
+            AsyncImage(url: eurl) { phase in
+                switch(phase) {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                        .cornerRadius(20)
+                        .shadow(color: Color.gray.opacity(0.3), radius: 4, x: 0, y: 5)
+                case .failure:
+                    Color.gray.opacity(0.2)
+                        .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                        .cornerRadius(20)
+                case .empty:
+                    Color.gray.opacity(0.2)
+                        .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                        .cornerRadius(20)
+                @unknown default:
+                    Color.gray.opacity(0.2)
+                        .frame(width: imageSize, height: imageSize) // Set width and height to create a square
+                        .cornerRadius(20)
+                }
+            }
+            
+        }
+        /*
         Group {
             if let uiImage = imageLoader.image {
                 Image(uiImage: uiImage)
@@ -317,10 +369,11 @@ struct PlaylistCellView: View {
                     .frame(width: imageSize, height: imageSize) // Set width and height to create a square
                     .cornerRadius(20)
                     .onAppear {
-                        imageLoader.loadImage(from: playlist.images.first?.url)
+                        imageLoader.loadImage(from: playlist.coverImageUrl)
                     }
             }
         }
+         */
     }
 }
 

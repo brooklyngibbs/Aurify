@@ -3,7 +3,7 @@ import Combine
 import FirebaseFirestore
 
 struct Playlist2VC: View {
-    let playlist: Playlist
+    let playlist: FirebasePlaylist
     let userID: String
     @State private var viewModels = [RecommendedTrackCellViewModel]()
     private var cancellables = Set<AnyCancellable>()
@@ -15,7 +15,7 @@ struct Playlist2VC: View {
     
     private let db = Firestore.firestore()
     
-    internal init(playlist: Playlist, userID: String, tabBarViewController: TabBarViewController) {
+    internal init(playlist: FirebasePlaylist, userID: String, tabBarViewController: TabBarViewController) {
         self.playlist = playlist
         self.userID = userID
         self.tabBarViewController = tabBarViewController
@@ -24,7 +24,7 @@ struct Playlist2VC: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.white.edgesIgnoringSafeArea(.all)
-            if let imageURL = playlist.images.first?.url, let url = URL(string: imageURL) {
+            if let url = URL(string: playlist.coverImageUrl) {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .success(let image):
@@ -33,7 +33,26 @@ struct Playlist2VC: View {
                             .aspectRatio(contentMode: .fill)
                             .frame(width: UIScreen.main.bounds.width, height: imageHeight)
                     case .failure:
-                        Text("Failed to load image")
+                        if let spotifyImageUrlString = playlist.images.first?.url,
+                           let spotifyImageUrl = URL(string: spotifyImageUrlString) {
+                            AsyncImage(url: spotifyImageUrl) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: UIScreen.main.bounds.width, height: imageHeight)
+                                case .failure:
+                                    Text("Failed to load backup image")
+                                case .empty:
+                                    Text("Loading image")
+                                @unknown default:
+                                    Text("Loading image")
+                                }
+                            }
+                        } else {
+                            Text("Failed to load image")
+                        }
                     case .empty:
                         Text("Loading image")
                     @unknown default:
@@ -83,8 +102,10 @@ struct Playlist2VC: View {
                 }
             }
         }
-        .onAppear {
+        .task {
             fetchPlaylistDetails()
+        }
+        .onAppear {
             tabBarViewController.hideUploadButton()
         }
         .onDisappear {
@@ -141,7 +162,7 @@ struct Playlist2VC: View {
     }
     
     private func openSpotify() {
-        guard let spotifyURL = URL(string: "spotify:playlist:\(playlist.id)"),
+        guard let spotifyURL = URL(string: "spotify:playlist:\(playlist.playlistId)"),
               UIApplication.shared.canOpenURL(spotifyURL) else {
             // If the Spotify app is not installed, open the App Store link
             guard let appStoreURL = URL(string: "https://apps.apple.com/us/app/spotify-music/id324684580") else {
@@ -169,7 +190,7 @@ struct Playlist2VC: View {
     }
     
     private var spotifyURL: URL? {
-        if let spotifyURLString = playlist.external_urls!["spotify"] {
+        if let spotifyURLString = playlist.externalUrls["spotify"] {
             return URL(string: spotifyURLString)
         }
         return nil
@@ -207,9 +228,9 @@ struct Playlist2VC: View {
     private func deletePlaylist() {
         if let userSpotifyID = UserDefaults.standard.value(forKey: "user_id") as? String {
             print("User ID: \(userSpotifyID)")
-            print("Playlist ID: \(playlist.id)")
+            print("Playlist ID: \(playlist.playlistId)")
             
-            db.collection("users").document(userSpotifyID).collection("playlists").document(playlist.id).setData(["deleted": true], merge: true)
+            db.collection("users").document(userSpotifyID).collection("playlists").document(playlist.playlistId).setData(["deleted": true], merge: true)
             DispatchQueue.main.async {
                 self.presentationMode.wrappedValue.dismiss()
             }
@@ -219,7 +240,7 @@ struct Playlist2VC: View {
     }
     
     private func fetchPlaylistDetails() {
-        APICaller.shared.getPlaylistDetails(for: playlist) { result in
+        APICaller.shared.getPlaylistDetails(for: playlist.playlistId) { result in
             switch result {
             case .success(let model):
                 DispatchQueue.main.async {

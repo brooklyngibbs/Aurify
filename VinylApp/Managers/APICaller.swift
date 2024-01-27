@@ -181,9 +181,9 @@ final class APICaller {
     
     //MARK: - Playlists
     
-    public func getPlaylistDetails(for playlist: Playlist, completion: @escaping (Result<PlaylistDetailsResponse, Error>) -> Void) {
+    public func getPlaylistDetails(for playlistId: String, completion: @escaping (Result<PlaylistDetailsResponse, Error>) -> Void) {
         createRequest(
-            with: URL(string: Constants.baseAPIURL + "/playlists/" + playlist.id),
+            with: URL(string: Constants.baseAPIURL + "/playlists/" + playlistId),
             type: .GET
         ) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
@@ -196,7 +196,7 @@ final class APICaller {
                     let result = try JSONDecoder().decode(PlaylistDetailsResponse.self, from: data)
                     completion(.success(result))
                 } catch {
-                    print("Error decoding Playlist \(playlist.id): \(error)")
+                    print("Error decoding Playlist \(playlistId): \(error). \(String(data: data, encoding: .utf8) ?? "")")
                     completion(.failure(error))
                 }
             }
@@ -230,8 +230,14 @@ final class APICaller {
         }
     }
     
+    public func fetchPlaylistImage(playlistId: String) async throws -> URL {
+        return try await withCheckedThrowingContinuation { continuation in
+            
+        }
+    }
+    
     public func updatePlaylistImage(imageBase64: String, playlistId: String) async throws {
-        try await withCheckedThrowingContinuation() { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             APICaller.shared.updatePlaylistImage(imageBase64: imageBase64, playlistId: playlistId) { result in
                 continuation.resume(with: result)
             }
@@ -240,8 +246,6 @@ final class APICaller {
     
     func updatePlaylistImage(imageBase64: String, playlistId: String, completion: @escaping (Result<Void, Error>) -> Void) {
         let urlString = "https://api.spotify.com/v1/playlists/\(playlistId)/images"
-        
-        print("Image size: ", imageBase64.count)
 
         guard let url = URL(string: urlString) else {
             let urlError = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
@@ -485,16 +489,29 @@ final class APICaller {
         }
 
         createRequest(with: url, type: .GET) { request in
-            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
                 guard let data = data, error == nil else {
                     completion(.failure(error ?? APIError.failedToGetData))
+                    return
+                }
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    completion(.failure(NSError(domain: "getPlaylist did not return an HTTPURLResponse \(String(data: data, encoding: .utf8) ?? "")", code: 0)))
+                    return
+                }
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    if httpResponse.statusCode == 429 {
+                        // Timeout
+                        let retryAfter = httpResponse.value(forHTTPHeaderField: "Retry-After")
+                        print("Retry after: \(retryAfter ?? "")")
+                    }
+                    completion(.failure(NSError(domain: "getPlaylist received \(httpResponse.statusCode). \(String(data: data, encoding: .utf8) ?? "")", code: httpResponse.statusCode)))
                     return
                 }
                 do {
                     let result = try JSONDecoder().decode(Playlist.self, from: data)
                     completion(.success(result))
                 } catch {
-                    print("Error decoding Playlist \(playlistId):", error)
+                    print("Error decoding Playlist \(playlistId): \(error). \(String(data: data, encoding: .utf8) ?? "")")
                     completion(.failure(error))
                 }
             }

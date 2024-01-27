@@ -70,7 +70,7 @@ class APIRunner {
         }
     }
     
-    func run(image: UIImage) -> Task<Playlist, Error> {
+    func run(image: UIImage) -> Task<FirebasePlaylist, Error> {
         let task = Task {
             let imageManager = ImageManager(image)
             print("Uploading to storage")
@@ -96,9 +96,12 @@ class APIRunner {
             let _ = try await APICaller.shared.addTrackArrayToPlaylist(trackURI: songURIs, playlistId: playlist.id)
             let userId = try await APICaller.shared.getCurrentUserProfile().id
             print("Saving playlist to firestore")
-            try await FirestoreManager().savePlaylistToFirestore(userID: userId, playlist: playlist, imageUrl: url, imageInfo: json)
             // Refetch playlist to get updated image urls
-            return try await APICaller.shared.getPlaylist(with: playlist.id)
+            let spotifyPlaylist = try await retry(times: 2) {
+                return try await APICaller.shared.getPlaylist(with: playlist.id)
+            }
+            try await FirestoreManager().savePlaylistToFirestore(userID: userId, playlist: spotifyPlaylist, imageUrl: url, imageInfo: json)
+            return FirebasePlaylist(playlistId: playlist.id, coverImageUrl: url, name: playlist.name, images: spotifyPlaylist.images, externalUrls: spotifyPlaylist.external_urls ?? [:], deleted: nil)
         }
         return task
     }
@@ -143,7 +146,7 @@ struct SpinningVinylView: View {
     @State var degreesRotating = 0.0
     @State var generatingText = "Generating your picture playlist. Do not exit out of app"
     @State var labelTimer : Timer?
-    @Binding var task: Task<Playlist, Error>?
+    @Binding var task: Task<FirebasePlaylist, Error>?
     var topArtists: [String] = []
     
     private var foreverAnimation : Animation {
@@ -246,11 +249,11 @@ struct PleaseSubscribeView: View {
 struct UploadView: View {
     @State var showError: Bool = false
     @State var canGeneratePlaylist: Bool = true
-    @State var task: Task<Playlist, Error>? = nil
-    private let onComplete: (Playlist) -> ()
+    @State var task: Task<FirebasePlaylist, Error>? = nil
+    private let onComplete: (FirebasePlaylist) -> ()
     let image: UIImage
     
-    init(im: UIImage, fn: @escaping (Playlist) -> ()) {
+    init(im: UIImage, fn: @escaping (FirebasePlaylist) -> ()) {
         image = im
         onComplete = fn
     }
