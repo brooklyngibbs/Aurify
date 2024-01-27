@@ -3,6 +3,7 @@ import RevenueCat
 
 struct PaywallView: View {
     @State private var offering: Offering?
+    @State private var isSubscribed: Bool = false
 
     var body: some View {
         HStack {
@@ -14,9 +15,9 @@ struct PaywallView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
-                    .cornerRadius(15) 
+                    .cornerRadius(15)
                     .padding()
-                
+
                 if let monthlyFullAccessPackage = offering?.availablePackages.first(where: { $0.identifier == "fullAccess" }) {
                     VStack {
                         Text(monthlyFullAccessPackage.storeProduct.localizedTitle)
@@ -39,13 +40,14 @@ struct PaywallView: View {
                 .padding()
 
                 Spacer()
-                
+
                 Button(action: purchaseButtonTapped) {
                     Text("Purchase")
                         .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(RoundedRectangle(cornerRadius: 10).foregroundColor(Color(AppColors.moonstoneBlue)))
+                        .background(RoundedRectangle(cornerRadius: 10).foregroundColor(isSubscribed ? .gray : Color(AppColors.moonstoneBlue)))
+                        .disabled(isSubscribed)
                 }
                 .padding()
 
@@ -69,6 +71,16 @@ struct PaywallView: View {
                 }
 
                 self.offering = offerings?.current
+
+                // Check subscription status
+                Task {
+                    do {
+                        let subscriptionType = try await SubscriptionManager.getSubscriptionType()
+                        isSubscribed = (subscriptionType == .fullAccess)
+                    } catch {
+                        print("Error fetching subscription type: \(error.localizedDescription)")
+                    }
+                }
             }
         }
     }
