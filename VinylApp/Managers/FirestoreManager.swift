@@ -3,7 +3,7 @@ import Firebase
 class FirestoreManager {
     let db = Firestore.firestore()
     
-    func fetchPlaylistIDListener(forUserID userID: String, completion: @escaping ([String]) -> Void) -> ListenerRegistration {
+    func fetchPlaylistIDListener(forUserID userID: String, completion: @escaping ([FirebasePlaylist]) -> Void) -> ListenerRegistration {
         let listener = db.collection("users").document(userID).collection("playlists").order(by: "timestamp", descending: true).addSnapshotListener { snapshot, error in
             if let error = error {
                 print("Error fetching user playlists: \(error.localizedDescription)")
@@ -17,15 +17,18 @@ class FirestoreManager {
                 return
             }
 
-            let playlistIDs = documents.compactMap { document -> String? in
-                let playlistData = document.data()
-                if playlistData["deleted"] as? Bool == true {
-                    return nil
+            let playlists = documents.compactMap { document -> FirebasePlaylist? in
+                if let playlist = try? document.data(as: FirebasePlaylist.self) {
+                    if playlist.deleted ?? false {
+                        return nil
+                    }
+                    return playlist
                 }
-                return playlistData["id"] as? String
+                print("Could not convert: \(String(describing: document.data()["id"]))")
+                return nil
             }
 
-            completion(playlistIDs)
+            completion(playlists)
         }
         
         return listener

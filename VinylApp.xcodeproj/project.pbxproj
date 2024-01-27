@@ -73,6 +73,9 @@
 		FC9F952C2B5DE64C004E071E /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F952B2B5DE64C004E071E /* ImageManager.swift */; };
 		FC9F95302B618D45004E071E /* SongInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F952F2B618D45004E071E /* SongInfo.swift */; };
 		FC9F95322B618D4F004E071E /* ImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F95312B618D4F004E071E /* ImageInfo.swift */; };
+		FC9F95342B62EA11004E071E /* FirebasePlaylist.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F95332B62EA11004E071E /* FirebasePlaylist.swift */; };
+		FCF3DF2F2B64EE0000EBB392 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = FCF3DF2E2B64EE0000EBB392 /* RevenueCat */; };
+		FCF3DF312B64EE0000EBB392 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = FCF3DF302B64EE0000EBB392 /* RevenueCatUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -145,6 +148,7 @@
 		FC9F952B2B5DE64C004E071E /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
 		FC9F952F2B618D45004E071E /* SongInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongInfo.swift; sourceTree = "<group>"; };
 		FC9F95312B618D4F004E071E /* ImageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageInfo.swift; sourceTree = "<group>"; };
+		FC9F95332B62EA11004E071E /* FirebasePlaylist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebasePlaylist.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +158,8 @@
 			files = (
 				66FCA19F2B1566D600741A1A /* SDWebImageSwiftUI in Frameworks */,
 				66FCA19D2B1566C700741A1A /* SDWebImageSwiftUI in Frameworks */,
+				FCF3DF312B64EE0000EBB392 /* RevenueCatUI in Frameworks */,
+				FCF3DF2F2B64EE0000EBB392 /* RevenueCat in Frameworks */,
 				6655DB242AE4557400BC619F /* SpotifyiOS in Frameworks */,
 				584EA12881A51AE2F1BF1416 /* Pods_VinylApp.framework in Frameworks */,
 			);
@@ -254,6 +260,7 @@
 				66547A282AE72ED1009CD777 /* LibraryPlaylistsResponse.swift */,
 				FC9F952F2B618D45004E071E /* SongInfo.swift */,
 				FC9F95312B618D4F004E071E /* ImageInfo.swift */,
+				FC9F95332B62EA11004E071E /* FirebasePlaylist.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -279,7 +286,6 @@
 			isa = PBXGroup;
 			children = (
 				66A0A0D92AE63223002EE3B6 /* TabBarViewController.swift */,
-				66FCA1A62B168B5800741A1A /* LibraryView.swift */,
 				661BF4ED2B1696E300BBAA16 /* HomeView.swift */,
 			);
 			path = Core;
@@ -290,6 +296,7 @@
 			children = (
 				66547A1F2AE6FA88009CD777 /* TrackCollectionViewCell.swift */,
 				66547A2A2AE731A9009CD777 /* ActionLabelView.swift */,
+				66FCA1A62B168B5800741A1A /* LibraryView.swift */,
 				66547A2E2AE75ACA009CD777 /* PlaylistCollectionViewCell.swift */,
 				66B3B9672AE77F0D00129B1F /* PlayerControlsView.swift */,
 				66F70F962B0C9A42005062AD /* Launch Screen.storyboard */,
@@ -371,6 +378,8 @@
 				6655DB232AE4557400BC619F /* SpotifyiOS */,
 				66FCA19C2B1566C700741A1A /* SDWebImageSwiftUI */,
 				66FCA19E2B1566D600741A1A /* SDWebImageSwiftUI */,
+				FCF3DF2E2B64EE0000EBB392 /* RevenueCat */,
+				FCF3DF302B64EE0000EBB392 /* RevenueCatUI */,
 			);
 			productName = VinylApp;
 			productReference = 6681E5AB2AE1FC4700A81DB5 /* VinylApp.app */;
@@ -404,6 +413,7 @@
 			packageReferences = (
 				6655DB222AE4557400BC619F /* XCRemoteSwiftPackageReference "ios-sdk" */,
 				66FCA19B2B1566C700741A1A /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				FCF3DF2D2B64EE0000EBB392 /* XCRemoteSwiftPackageReference "purchases-ios" */,
 			);
 			productRefGroup = 6681E5AC2AE1FC4700A81DB5 /* Products */;
 			projectDirPath = "";
@@ -533,6 +543,7 @@
 				66FCA1A12B16617D00741A1A /* Playlist2VC.swift in Sources */,
 				66547A162AE6E271009CD777 /* Artist.swift in Sources */,
 				66A0A0DE2AE64B21002EE3B6 /* UserProfile.swift in Sources */,
+				FC9F95342B62EA11004E071E /* FirebasePlaylist.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -766,6 +777,14 @@
 				minimumVersion = 2.2.4;
 			};
 		};
+		FCF3DF2D2B64EE0000EBB392 /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.32.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -783,6 +802,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 66FCA19B2B1566C700741A1A /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		FCF3DF2E2B64EE0000EBB392 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FCF3DF2D2B64EE0000EBB392 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
+		};
+		FCF3DF302B64EE0000EBB392 /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FCF3DF2D2B64EE0000EBB392 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCatUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
