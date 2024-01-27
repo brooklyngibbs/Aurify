@@ -3,6 +3,7 @@ import _StoreKit_SwiftUI
 import FirebaseStorage
 import Firebase
 import StoreKit
+import RevenueCat
 
 struct SettingsViewController: View {
     @State private var notificationsEnabled = false
@@ -20,29 +21,10 @@ struct SettingsViewController: View {
                     ProfileSectionView(profileImage: $userProfileImage, showImagePicker: $showImagePicker, userName: userName)
                 }
                 Section(header: Text("Subscription")) {
-                    NavigationLink(destination:
-                        SubscriptionStoreView(groupID: "21438077") {
-                            VStack {
-                                Image("clean-logo")
-                                    .resizable()
-                                    .frame(width: 80, height: 80)
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                Text("Aurify+")
-                                    .font(.custom("Outfit-Bold", size: 30))
-                                    .padding()
-                                Text("Subscribe to keep making great playlists")
-                                    .font(.custom("Inter-Regular", size: 18))
-                                    .foregroundColor(Color.gray)
-                            }
-                        }.storeButton(.hidden, for: .cancellation)
-                        .navigationBarTitle("")
-                        .navigationBarHidden(true)
-                    ) {
+                    NavigationLink(destination: PaywallView()) {
                         Text("Subscribe")
-                            .navigationBarBackButtonHidden(true)
                     }
                 }
-
                 Section(header: Text("Terms and Conditions")) {
                     NavigationLink(destination: TermsAndConditionsView()
                         .navigationBarTitle("")
@@ -326,7 +308,15 @@ struct ProfileSectionView: View {
             // Fetch subscription type asynchronously
             Task {
                 do {
-                    self.subscriptionStatus = try await SubscriptionManager.getSubscriptionType()
+                    let customerInfo = try await Purchases.shared.customerInfo()
+                    let entitlementId = "fullAccess"
+                    
+                    if customerInfo.entitlements.all[entitlementId]?.isActive == true {
+                        // User is "premium"
+                        self.subscriptionStatus = .fullAccess
+                    } else {
+                        self.subscriptionStatus = .none
+                    }
                 } catch {
                     print("Error fetching subscription type: \(error.localizedDescription)")
                 }

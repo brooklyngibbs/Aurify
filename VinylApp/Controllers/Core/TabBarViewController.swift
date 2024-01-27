@@ -1,5 +1,4 @@
 import SwiftUI
-import RevenueCat
 
 class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     var uploadButton: UIButton!

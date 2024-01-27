@@ -1,4 +1,5 @@
 import Foundation
+import RevenueCat
 import StoreKit
 
 public class SubscriptionManager {
@@ -13,26 +14,20 @@ public class SubscriptionManager {
 
     static func getSubscriptionType() async throws -> SubscriptionType {
         do {
-            let productIds = ["AurifyFullAccess"]
-            let products = try await Product.products(for: productIds)
-            
-            for product in products {
-                if let status = try await product.subscription?.status {
-                    if status.isEmpty {
-                        UserDefaults.standard.set("None", forKey: "SubscriptionType")
-                        return .none
-                    }
-                    if status[0].state == .subscribed, product.id == "AurifyFullAccess" {
-                        UserDefaults.standard.set("FullAccess", forKey: "SubscriptionType")
-                        return .fullAccess
-                    }
-                }
+            let customerInfo = try await Purchases.shared.customerInfo()
+
+            if customerInfo.entitlements.all["fullAccess"]?.isActive == true {
+                UserDefaults.standard.set("FullAccess", forKey: "SubscriptionType")
+                return .fullAccess
             }
-            throw NSError(domain: "Subscription information not found", code: 0)
+            UserDefaults.standard.set("None", forKey: "SubscriptionType")
+            return .none
         } catch {
+            // Handle error if needed
             throw error
         }
     }
+
     
     static func canUserGeneratePlaylist() async throws -> Bool {
         let subscriptionType = try await getSubscriptionType()

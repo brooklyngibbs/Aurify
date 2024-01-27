@@ -63,6 +63,7 @@
 		66F70F972B0C9A42005062AD /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66F70F962B0C9A42005062AD /* Launch Screen.storyboard */; };
 		66F70FA62B0D1722005062AD /* Outfit-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66F70FA52B0D1722005062AD /* Outfit-Bold.ttf */; };
 		66F70FA82B0D1765005062AD /* ZillaSlab-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66F70FA72B0D1765005062AD /* ZillaSlab-Light.ttf */; };
+		66FB9A5E2B64234A0063D42A /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FB9A5D2B64234A0063D42A /* PaywallView.swift */; };
 		66FCA19D2B1566C700741A1A /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 66FCA19C2B1566C700741A1A /* SDWebImageSwiftUI */; };
 		66FCA19F2B1566D600741A1A /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 66FCA19E2B1566D600741A1A /* SDWebImageSwiftUI */; };
 		66FCA1A12B16617D00741A1A /* Playlist2VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FCA1A02B16617D00741A1A /* Playlist2VC.swift */; };
@@ -135,6 +136,7 @@
 		66F70F962B0C9A42005062AD /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		66F70FA52B0D1722005062AD /* Outfit-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Outfit-Bold.ttf"; path = "../../../vinyl_images/Outfit/static/Outfit-Bold.ttf"; sourceTree = "<group>"; };
 		66F70FA72B0D1765005062AD /* ZillaSlab-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ZillaSlab-Light.ttf"; path = "../../../vinyl_images/Zilla_Slab/ZillaSlab-Light.ttf"; sourceTree = "<group>"; };
+		66FB9A5D2B64234A0063D42A /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		66FCA1A02B16617D00741A1A /* Playlist2VC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist2VC.swift; sourceTree = "<group>"; };
 		66FCA1A22B16850100741A1A /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Medium.ttf"; path = "../../../vinyl_images/Inter/static/Inter-Medium.ttf"; sourceTree = "<group>"; };
 		66FCA1A62B168B5800741A1A /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				664F343A2B2BB90100613F01 /* SpotfiyLogInView.swift */,
 				6687CE932B2C1ECB009FAAEC /* ProfileViewController.swift */,
 				664F343E2B2BC3D100613F01 /* LogInView.swift */,
+				66FB9A5D2B64234A0063D42A /* PaywallView.swift */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -496,6 +499,7 @@
 				66DC737A2B0FE93A007ECCB5 /* LabelTexts.swift in Sources */,
 				FC9F952C2B5DE64C004E071E /* ImageManager.swift in Sources */,
 				66547A292AE72ED1009CD777 /* LibraryPlaylistsResponse.swift in Sources */,
+				66FB9A5E2B64234A0063D42A /* PaywallView.swift in Sources */,
 				6681E5AF2AE1FC4700A81DB5 /* AppDelegate.swift in Sources */,
 				66FCA1A72B168B5800741A1A /* LibraryView.swift in Sources */,
 				FC9F952A2B5CEA33004E071E /* UploadView.swift in Sources */,

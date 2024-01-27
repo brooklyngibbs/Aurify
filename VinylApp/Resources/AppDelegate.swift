@@ -9,6 +9,7 @@ import UIKit
 import Firebase
 import FirebaseFirestore
 import SwiftUI
+import RevenueCat
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,6 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
+        Purchases.logLevel = .debug
+        Purchases.configure(withAPIKey: APICaller.Constants.revenueKey)
+        Purchases.shared.delegate = self
         
         let window = UIWindow(frame: UIScreen.main.bounds)
         if AuthManager.shared.isSignedIn {
@@ -49,3 +53,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 }
+
+extension AppDelegate: PurchasesDelegate {
+    func purchases(_ purchases: Purchases, receivedUpdated customerInfo: CustomerInfo) {
+        Task {
+            do {
+                if let entitlement = customerInfo.entitlements.all["fullAccess"], entitlement.isActive {
+                    try await SubscriptionManager.getSubscriptionType()
+                    print("User is premium!")
+                } else {
+                    // User is not "premium" or entitlement is not active
+                    try await SubscriptionManager.getSubscriptionType()
+                    print("User is not premium.")
+                }
+            } catch {
+                print("Error fetching subscription type: \(error.localizedDescription)")
+            }
+        }
+    }
+}
+

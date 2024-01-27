@@ -834,6 +834,7 @@ PODS:
   - nanopb/encode (2.30909.1)
   - PromisesObjC (2.3.1)
   - RecaptchaInterop (100.0.0)
+  - RevenueCat (4.32.2)
   - SDWebImage (5.18.10):
     - SDWebImage/Core (= 5.18.10)
   - SDWebImage/Core (5.18.10)
@@ -846,6 +847,7 @@ DEPENDENCIES:
   - Firebase/Firestore
   - Firebase/Storage
   - FirebaseAppCheck
+  - RevenueCat
   - SDWebImage
   - TOCropViewController
 
@@ -877,6 +879,7 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - RecaptchaInterop
+    - RevenueCat
     - SDWebImage
     - TOCropViewController
 
@@ -907,9 +910,10 @@ SPEC CHECKSUMS:
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  RevenueCat: 298f40f434e6675ea51744cfca5945f09f7c5a07
   SDWebImage: fc8f2d48bbfd72ef39d70e981bd24a3f3be53fec
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
 
-PODFILE CHECKSUM: e3cbd2068ae5d2429377c36936de5bb3f0a2ec0c
+PODFILE CHECKSUM: f34c1c0897e2c02779fe33725da6553bc592b06c
 
 COCOAPODS: 1.14.3
