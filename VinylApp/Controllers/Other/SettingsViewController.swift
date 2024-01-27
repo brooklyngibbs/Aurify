@@ -21,7 +21,10 @@ struct SettingsViewController: View {
                     ProfileSectionView(profileImage: $userProfileImage, showImagePicker: $showImagePicker, userName: userName)
                 }
                 Section(header: Text("Subscription")) {
-                    NavigationLink(destination: PaywallView()) {
+                    NavigationLink(destination: PaywallView()
+                        .navigationBarTitle("")
+                        .navigationBarHidden(true)
+                    ) {
                         Text("Subscribe")
                     }
                 }

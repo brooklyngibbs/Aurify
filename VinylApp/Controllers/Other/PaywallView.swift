@@ -5,32 +5,62 @@ struct PaywallView: View {
     @State private var offering: Offering?
 
     var body: some View {
-        VStack {
-            List {
-                // Display the offerings in the list
-                ForEach(offering?.availablePackages ?? [], id: \.identifier) { package in
-                    Text("\(package.storeProduct.localizedTitle) - \(package.localizedPriceString )")
-                }
-            }
-            .navigationTitle("Subscription Options")
-
-            Button(action: purchaseButtonTapped) {
-                Text("Purchase")
-                    .foregroundColor(.white)
+        HStack {
+            Spacer()
+            Spacer()
+            VStack(alignment: .center) {
+                Spacer()
+                Image("clean-logo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 100, height: 100)
+                    .cornerRadius(15) 
                     .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(RoundedRectangle(cornerRadius: 10).foregroundColor(Color(AppColors.moonstoneBlue)))
-            }
-            .padding()
+                
+                if let monthlyFullAccessPackage = offering?.availablePackages.first(where: { $0.identifier == "fullAccess" }) {
+                    VStack {
+                        Text(monthlyFullAccessPackage.storeProduct.localizedTitle)
+                            .font(Font.custom("Outfit-Bold", size: 24))
+                            .padding()
 
-            Button("Restore Purchases") {
-                // Restore previous purchases
-                Purchases.shared.restorePurchases { (customerInfo, error) in
-                    handlePurchaseResult(customerInfo: customerInfo, error: error)
+                        Text(monthlyFullAccessPackage.localizedPriceString)
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                            .padding()
+                    }
                 }
+
+                Spacer()
+
+                ForEach(offering?.availablePackages.filter { $0.identifier != "fullAccess" } ?? [], id: \.identifier) { package in
+                    SquareListItem(package: package)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding()
+
+                Spacer()
+                
+                Button(action: purchaseButtonTapped) {
+                    Text("Purchase")
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(RoundedRectangle(cornerRadius: 10).foregroundColor(Color(AppColors.moonstoneBlue)))
+                }
+                .padding()
+
+                Button("Restore Purchases") {
+                    // Restore previous purchases
+                    Purchases.shared.restorePurchases { (customerInfo, error) in
+                        handlePurchaseResult(customerInfo: customerInfo, error: error)
+                    }
+                }
+                .foregroundColor(Color(AppColors.moonstoneBlue))
+                .padding()
             }
-            .foregroundColor(Color(AppColors.moonstoneBlue))
-            .padding()
+            .frame(maxWidth: .infinity)
+
+            Spacer()
         }
         .onAppear {
             Purchases.shared.getOfferings { (offerings, error) in
@@ -57,11 +87,12 @@ struct PaywallView: View {
     func handlePurchaseResult(customerInfo: CustomerInfo?, error: Error?) {
         if let error = error {
             print("Purchase error: \(error.localizedDescription)")
-            // Handle purchase error if needed
         } else {
             Task {
                 do {
                     let subscriptionType = try await SubscriptionManager.getSubscriptionType()
+                    print("Subscription Type: \(subscriptionType)") // Add this line to print the subscription type
+
                     if subscriptionType == .fullAccess {
                         print("Pro content unlocked!")
                     } else {
@@ -69,10 +100,37 @@ struct PaywallView: View {
                     }
                 } catch {
                     print("Error fetching subscription type: \(error.localizedDescription)")
-                    // Handle error if needed
                 }
             }
         }
+    }
+
+}
+
+struct SquareListItem: View {
+    let package: Package
+
+    var body: some View {
+        VStack {
+            Text(package.storeProduct.localizedTitle)
+                .foregroundColor(.primary)
+                .font(Font.custom("Outfit-Bold", size: 24))
+                .multilineTextAlignment(.center)
+                .padding(8)
+            
+            Text("\(package.localizedPriceString) / month")
+                .foregroundColor(.secondary)
+                .font(.caption)
+                .padding(.bottom, 4)
+
+            Text("Unlock unlimited playlists")
+                .foregroundColor(.secondary)
+                .font(.caption)
+                .padding(.bottom, 4)
+        }
+        .padding(8)
+        .frame(maxWidth: .infinity)
+        .background(RoundedRectangle(cornerRadius: 8).stroke(Color.black, lineWidth: 2).background(RoundedRectangle(cornerRadius: 8).foregroundColor(Color.gray.opacity(0.2))))
     }
 }
 
