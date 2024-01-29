@@ -23,6 +23,7 @@ struct PaywallView: View {
                         Text(monthlyFullAccessPackage.storeProduct.localizedTitle)
                             .font(Font.custom("Outfit-Bold", size: 24))
                             .padding()
+                            .foregroundColor(Color(AppColors.vampireBlack))
 
                         Text(monthlyFullAccessPackage.localizedPriceString)
                             .font(.headline)
@@ -57,8 +58,25 @@ struct PaywallView: View {
                         handlePurchaseResult(customerInfo: customerInfo, error: error)
                     }
                 }
-                .foregroundColor(Color(AppColors.moonstoneBlue))
+                    .foregroundColor(Color(AppColors.moonstoneBlue))
+                    .padding()
+                    
+                HStack {
+                    Button(action: linkToPrivacyPolicy) {
+                        Text("Privacy Policy")
+                            .foregroundColor(.secondary)
+                            .font(Font.custom("Inter-Regular", size: 10))
+                    }
+                    Button(action: linkToTerms) {
+                        Text("Terms & Conditions")
+                            .foregroundColor(.secondary)
+                            .font(Font.custom("Inter-Regular", size: 10))
+                    }
+                }
                 .padding()
+                Text("Payment will be charged to your ITunes account at confirmation of purchase. Subscriptions will automatically renew unless auto-renew is turned off at least 24 hours before the end of the current period. Your account will be charged according to your plan for renewal within 24 hours prior to the end of your current period. You can manage or turn off auto-renew in your Apple ID account settings at any time after purchase.")
+                    .foregroundColor(.secondary)
+                    .font(Font.custom("Inter-Regular", size: 10))
             }
             .frame(maxWidth: .infinity)
 
@@ -83,6 +101,20 @@ struct PaywallView: View {
                 }
             }
         }
+    }
+    
+    func linkToPrivacyPolicy() {
+        guard let privacyPolicyURL = URL(string: "https://www.aurifyapp.com/privacy-policy") else {
+            return
+        }
+        UIApplication.shared.open(privacyPolicyURL)
+    }
+    
+    func linkToTerms() {
+        guard let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/") else {
+            return
+        }
+        UIApplication.shared.open(termsURL)
     }
 
     func purchaseButtonTapped() {
@@ -124,7 +156,7 @@ struct SquareListItem: View {
 
     var body: some View {
         VStack {
-            Text(package.storeProduct.localizedTitle)
+            Text("Aurify All Access")
                 .foregroundColor(.primary)
                 .font(Font.custom("Outfit-Bold", size: 24))
                 .multilineTextAlignment(.center)
