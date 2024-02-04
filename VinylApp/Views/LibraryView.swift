@@ -142,6 +142,11 @@ struct LibraryView: View {
                     isLoading = false
                 }
             }
+            do {
+                try await AuthManager.shared.retrieveClientToken()
+            } catch {
+                print("Error getting client token \(error.localizedDescription)")
+            }
         }
         .onAppear {
             tabBarViewController.unhideUploadButton()

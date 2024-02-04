@@ -95,13 +95,6 @@ struct LogInView: View {
                     
                     Spacer()
                 }
-                .task {
-                    do {
-                        try await AuthManager.shared.retrieveClientToken()
-                    } catch {
-                        print("Error getting client token \(error.localizedDescription)")
-                    }
-                }
                 .edgesIgnoringSafeArea(.vertical)
                 .onChange(of: loginSuccess) { newValue in
                     if newValue {

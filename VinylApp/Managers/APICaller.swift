@@ -446,7 +446,7 @@ final class APICaller {
         //let formattedQ = ("artist:\(q.artist) track:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let formattedQ = ("\(q.title) artist:\(q.artist)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let urlString = Constants.baseAPIURL + "/search?q=\(formattedQ)&type=track&limit=1"
-        createClientRequest(with: URL(string: urlString), type: .GET) { request in
+        if let request = createClientRequest(with: URL(string: urlString), type: .GET) {
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
                 guard let data = data, error == nil else {
                     completion(.failure(APIError.failedToGetData))
@@ -459,7 +459,6 @@ final class APICaller {
                        let items = tracks["items"] as? [[String: Any]],
                        let firstItem = items.first,
                        let uri = firstItem["uri"] as? String {
-                        
                         completion(.success(uri))
                     } else {
                         completion(.failure(APIError.failedToGetData))
@@ -469,6 +468,8 @@ final class APICaller {
                 }
             }
             task.resume()
+        } else {
+            completion(.failure(NSError(domain: "Could not get client token", code: 0)))
         }
     }
     
@@ -622,15 +623,16 @@ final class APICaller {
         case PUT
     }
     
-    private func createClientRequest(with url: URL?, type: HTTPMethod, completion: @escaping (URLRequest) -> Void) {
-        if let token = UserDefaults.standard.string(forKey: "access_token"),
+    private func createClientRequest(with url: URL?, type: HTTPMethod) -> URLRequest? {
+        if let token = UserDefaults.standard.string(forKey: "client_token"),
            let apiUrl = url {
             var request = URLRequest(url: apiUrl)
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             request.httpMethod = type.rawValue
             request.timeoutInterval = 30
-            completion(request)
+            return request
         }
+        return nil
     }
     
     private func createRequest(with url: URL?, type: HTTPMethod, completion: @escaping (URLRequest) -> Void) {

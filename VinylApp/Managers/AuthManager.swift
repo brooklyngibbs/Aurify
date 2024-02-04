@@ -77,9 +77,10 @@ final class AuthManager {
         }
         request.setValue("Basic \(base64String)", forHTTPHeaderField: "Authorization")
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, _) = try await URLSession.shared.data(for: request)
         let result = try JSONDecoder().decode(ClientCredentialAccessToken.self, from: data)
-        UserDefaults.standard.setValue(result.access_token, forKey: "access_token")
+        print("Client access token \(result.access_token)")
+        UserDefaults.standard.setValue(result.access_token, forKey: "client_token")
     }
     
     public func exchangeCodeForToken(code: String, completion: @escaping ((Bool) -> Void)) {
