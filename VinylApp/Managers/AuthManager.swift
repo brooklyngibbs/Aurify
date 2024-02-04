@@ -56,6 +56,32 @@ final class AuthManager {
         return currentDate.addingTimeInterval(fiveMinutes) >= expirationDate
     }
     
+    public func retrieveClientToken() async throws {
+        guard let url = URL(string: Constants.tokenAPIURL) else {
+            throw NSError(domain: "Could not get token API url", code: 0)
+        }
+        
+        var components = URLComponents()
+        components.queryItems = [
+            URLQueryItem(name: "grant_type", value: "client_credentials")
+        ]
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = components.query?.data(using: .utf8)
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        
+        let basicToken = Constants.clientID+":"+Constants.clientSecret
+        guard let base64String = basicToken.data(using: .utf8)?.base64EncodedString() else {
+            throw NSError(domain: "Could not get base64 string in retrieveClientToken", code: 0)
+        }
+        request.setValue("Basic \(base64String)", forHTTPHeaderField: "Authorization")
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        let result = try JSONDecoder().decode(ClientCredentialAccessToken.self, from: data)
+        UserDefaults.standard.setValue(result.access_token, forKey: "access_token")
+    }
+    
     public func exchangeCodeForToken(code: String, completion: @escaping ((Bool) -> Void)) {
         guard let url = URL(string: Constants.tokenAPIURL) else {
             return

@@ -10,7 +10,6 @@
 		584EA12881A51AE2F1BF1416 /* Pods_VinylApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF9BEE0C09F903E47E7DEF9 /* Pods_VinylApp.framework */; };
 		6602FA752B1BF5320043CC93 /* error.png in Resources */ = {isa = PBXBuildFile; fileRef = 6602FA742B1BF5320043CC93 /* error.png */; };
 		66102FBB2B60435F001A188B /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66102FBA2B60435F001A188B /* SubscriptionManager.swift */; };
-		661BF4EE2B1696E300BBAA16 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BF4ED2B1696E300BBAA16 /* HomeView.swift */; };
 		662930EC2B617C75002B10F9 /* headphones.png in Resources */ = {isa = PBXBuildFile; fileRef = 662930EB2B617C75002B10F9 /* headphones.png */; };
 		662A9AC62B587DC200A39EA6 /* Spotify_Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */; };
 		664F343B2B2BB90100613F01 /* SpotfiyLogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F343A2B2BB90100613F01 /* SpotfiyLogInView.swift */; };
@@ -84,7 +83,6 @@
 		6602FA742B1BF5320043CC93 /* error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = error.png; path = ../../../vinyl_images/error.png; sourceTree = "<group>"; };
 		66102FBA2B60435F001A188B /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		66102FBF2B605616001A188B /* AurifySubscriptions.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = AurifySubscriptions.storekit; sourceTree = "<group>"; };
-		661BF4ED2B1696E300BBAA16 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		662930EB2B617C75002B10F9 /* headphones.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = headphones.png; sourceTree = "<group>"; };
 		662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotify_Logo.png; path = vinyl_images/Spotify_Logo.png; sourceTree = SOURCE_ROOT; };
 		662F79DE2AE48BA500CEF5CD /* VinylApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VinylApp-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -286,7 +284,6 @@
 			isa = PBXGroup;
 			children = (
 				66A0A0D92AE63223002EE3B6 /* TabBarViewController.swift */,
-				661BF4ED2B1696E300BBAA16 /* HomeView.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -537,7 +534,6 @@
 				66547A2F2AE75ACA009CD777 /* PlaylistCollectionViewCell.swift in Sources */,
 				66A0A0DC2AE64AA1002EE3B6 /* APICaller.swift in Sources */,
 				66DF3CDA2AE61D7C003CB1E2 /* Extensions.swift in Sources */,
-				661BF4EE2B1696E300BBAA16 /* HomeView.swift in Sources */,
 				66547A182AE6E538009CD777 /* Playlist.swift in Sources */,
 				66102FBB2B60435F001A188B /* SubscriptionManager.swift in Sources */,
 				66FCA1A12B16617D00741A1A /* Playlist2VC.swift in Sources */,
@@ -673,7 +669,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5SZLNT5DHA;
+				DEVELOPMENT_TEAM = NJ64FZB25H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VinylApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Aurify;
@@ -710,7 +706,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5SZLNT5DHA;
+				DEVELOPMENT_TEAM = NJ64FZB25H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VinylApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Aurify;

@@ -15,3 +15,6 @@ struct AuthResponse: Codable {
     let token_type: String
 }
 
+struct ClientCredentialAccessToken: Codable {
+    let access_token: String
+}

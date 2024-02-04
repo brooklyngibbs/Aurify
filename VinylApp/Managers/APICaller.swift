@@ -446,7 +446,7 @@ final class APICaller {
         //let formattedQ = ("artist:\(q.artist) track:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let formattedQ = ("\(q.title) artist:\(q.artist)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let urlString = Constants.baseAPIURL + "/search?q=\(formattedQ)&type=track&limit=1"
-        createRequest(with: URL(string: urlString), type: .GET) { request in
+        createClientRequest(with: URL(string: urlString), type: .GET) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
                 guard let data = data, error == nil else {
                     completion(.failure(APIError.failedToGetData))
@@ -620,6 +620,17 @@ final class APICaller {
         case GET
         case POST
         case PUT
+    }
+    
+    private func createClientRequest(with url: URL?, type: HTTPMethod, completion: @escaping (URLRequest) -> Void) {
+        if let token = UserDefaults.standard.string(forKey: "access_token"),
+           let apiUrl = url {
+            var request = URLRequest(url: apiUrl)
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.httpMethod = type.rawValue
+            request.timeoutInterval = 30
+            completion(request)
+        }
     }
     
     private func createRequest(with url: URL?, type: HTTPMethod, completion: @escaping (URLRequest) -> Void) {
