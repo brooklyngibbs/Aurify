@@ -4,6 +4,7 @@ import FirebaseStorage
 import Firebase
 import StoreKit
 import RevenueCat
+import FirebaseAuth
 
 struct SettingsViewController: View {
     @State private var notificationsEnabled = false
@@ -11,8 +12,6 @@ struct SettingsViewController: View {
     @Binding var userProfileImage: UIImage?
     @State private var showImagePicker = false
     var userName: String
-    
-    var userID: String
     
     var body: some View {
         NavigationView {
@@ -56,6 +55,7 @@ struct SettingsViewController: View {
         
         let storage = Storage.storage()
         let storageRef = storage.reference()
+        let userID = Auth.auth().currentUser!.uid
         let profilePicsRef = storageRef.child("profilePics/\(userID)/profileImage.jpg")
         
         let metadata = StorageMetadata()

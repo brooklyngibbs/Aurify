@@ -10,13 +10,6 @@ struct AuthViewControllerWrapper: UIViewControllerRepresentable {
             DispatchQueue.main.async {
                 self.isPresented = false
                 loginCompletion?(success)
-                
-                if success {
-                    if let window = UIApplication.shared.windows.first {
-                        window.rootViewController = TabBarViewController()
-                        window.makeKeyAndVisible()
-                    }
-                }
             }
         }
         return authVC
@@ -69,11 +62,17 @@ struct SpotifyLogInView: View {
                                     switch result {
                                     case .success(let userProfile):
                                         // Set the user_id here
+                                        print("Setting user default \(userProfile.id)")
                                         UserDefaults.standard.set(userProfile.id, forKey: "user_id")
+                                        if let window = UIApplication.shared.windows.first {
+                                            window.rootViewController = TabBarViewController()
+                                            window.makeKeyAndVisible()
+                                        }
                                         // Handle further navigation or actions
                                     case .failure(let error):
                                         // Handle the failure to get the user profile
                                         print("Error fetching user profile: \(error)")
+                                        showAlert = true
                                     }
                                 }
                             } else {
@@ -81,6 +80,21 @@ struct SpotifyLogInView: View {
                                 showAlert = true
                             }
                         })
+                    }
+                    
+                    Button(action: {
+                        if let window = UIApplication.shared.windows.first {
+                            window.rootViewController = TabBarViewController()
+                            window.makeKeyAndVisible()
+                        }
+                    }) {
+                        Text("Use without Spotify")
+                            .font(.custom("Inter-Light", size: 20))
+                            .foregroundColor(.black)
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(8)
+                            .shadow(radius: 5)
                     }
                     
                     Spacer()

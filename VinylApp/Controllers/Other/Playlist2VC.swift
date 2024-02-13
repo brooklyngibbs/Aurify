@@ -1,23 +1,25 @@
 import SwiftUI
 import Combine
 import FirebaseFirestore
+import FirebaseAuth
 
 struct Playlist2VC: View {
     let playlist: FirebasePlaylist
-    let userID: String
     @State private var viewModels = [RecommendedTrackCellViewModel]()
     private var cancellables = Set<AnyCancellable>()
     @State private var imageHeight: CGFloat = UIScreen.main.bounds.width
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var updateLibraryView: (() -> Void)?
+    @AppStorage("user_id") private var spotifyId: String = ""
+    @State private var showingAuthView = false
+    @State private var showAlert = false
     
     var tabBarViewController: TabBarViewController
     
     private let db = Firestore.firestore()
     
-    internal init(playlist: FirebasePlaylist, userID: String, tabBarViewController: TabBarViewController) {
+    internal init(playlist: FirebasePlaylist, tabBarViewController: TabBarViewController) {
         self.playlist = playlist
-        self.userID = userID
         self.tabBarViewController = tabBarViewController
     }
     
@@ -33,7 +35,7 @@ struct Playlist2VC: View {
                             .aspectRatio(contentMode: .fill)
                             .frame(width: UIScreen.main.bounds.width, height: imageHeight)
                     case .failure:
-                        if let spotifyImageUrlString = playlist.images.first?.url,
+                        if let spotifyImageUrlString = playlist.images.first,
                            let spotifyImageUrl = URL(string: spotifyImageUrlString) {
                             AsyncImage(url: spotifyImageUrl) { phase in
                                 switch phase {
@@ -102,15 +104,49 @@ struct Playlist2VC: View {
                 }
             }
         }
+        /*
         .task {
-            fetchPlaylistDetails()
-        }
+            //fetchPlaylistDetails()
+        }*/
         .onAppear {
             tabBarViewController.hideUploadButton()
         }
         .onDisappear {
             NotificationCenter.default.post(name: NSNotification.Name("UpdateLibraryView"), object: nil)
             tabBarViewController.unhideUploadButton()
+        }
+        .sheet(isPresented: $showingAuthView) {
+            AuthViewControllerWrapper(isPresented: $showingAuthView, loginCompletion: { success in
+                if success {
+                    // Once authentication succeeds, get the user profile
+                    APICaller.shared.getCurrentUserProfile { result in
+                        switch result {
+                        case .success(let userProfile):
+                            // Set the user_id here
+                            print("Setting user default \(userProfile.id)")
+                            UserDefaults.standard.set(userProfile.id, forKey: "user_id")
+                            // Handle further navigation or actions
+                        case .failure(let error):
+                            // Handle the failure to get the user profile
+                            print("Error fetching user profile: \(error)")
+                            showAlert = true
+                        }
+                    }
+                } else {
+                    // Handle login failure
+                    showAlert = true
+                }
+                showingAuthView = false
+                if !showAlert {
+                    Task {
+                        do {
+                            try await createPlaylist()
+                        } catch {
+                            print("Error creating playlist: \(error.localizedDescription)")
+                        }
+                    }
+                }
+            })
         }
     }
     
@@ -124,8 +160,7 @@ struct Playlist2VC: View {
                 .foregroundColor(.black)
                 .padding()
                 .background(Color.white)
-
-            openInSpotifyButton
+                openInSpotifyButton
             Spacer()
         }
     }
@@ -142,7 +177,9 @@ struct Playlist2VC: View {
                 .foregroundColor(Color(AppColors.moonstoneBlue))
 
             Button(action: {
-                openSpotify()
+                Task {
+                    try await openSpotify()
+                }
             }) {
                 HStack {
                     Image("Spotify_Icon_White")
@@ -161,28 +198,54 @@ struct Playlist2VC: View {
         }
     }
     
-    private func openSpotify() {
-        guard let spotifyURL = URL(string: "spotify:playlist:\(playlist.playlistId)"),
-              UIApplication.shared.canOpenURL(spotifyURL) else {
+    private func openSpotify() async throws {
+        // ensure user is logged into spotify
+        if spotifyId == "" {
+            // log into spotify
+            showingAuthView = true
+            return
+        }
+        try await createPlaylist()
+    }
+    
+    private func createPlaylist() async throws {
+        // ensure playlist exists in spotify
+        var spotifyId = playlist.spotifyId
+        if spotifyId == "" {
+            // create playlist in spotify
+            let imageManager = try await ImageManager(URL(string: playlist.coverImageUrl)!)
+            let base64Data = try imageManager.convertImageToBase64(maxBytes: 256_000)
+            print("Creating playlist")
+            let spotifyPlaylist = try await APICaller.shared.createPlaylist(with: playlist.name, description: "Created by Aurify")
+            spotifyId = spotifyPlaylist.id
+            print("Updating playlist image")
+            try await APICaller.shared.updatePlaylistImage(imageBase64: base64Data, playlistId: spotifyPlaylist.id)
+            let _ = try await APICaller.shared.addTrackArrayToPlaylist(trackURI: playlist.playlistDetails.map {$0.spotifyUri}, playlistId: spotifyPlaylist.id)
+            let updatedPlaylist = try await APICaller.shared.getPlaylist(with: spotifyId)
+            // update firestore
+            try await FirestoreManager().updateFirestoreWithSpotify(userId: Auth.auth().currentUser!.uid, fsPlaylist: playlist, spPlaylist: updatedPlaylist)
+        }
+        guard let spotifyURL = URL(string: "spotify:playlist:\(spotifyId)"),
+              await UIApplication.shared.canOpenURL(spotifyURL) else {
             // If the Spotify app is not installed, open the App Store link
             guard let appStoreURL = URL(string: "https://apps.apple.com/us/app/spotify-music/id324684580") else {
                 return
             }
-            UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
+            await UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
             return
         }
 
         // If the Spotify app is installed, open the playlist in the app
-        UIApplication.shared.open(spotifyURL, options: [:], completionHandler: nil)
+        await UIApplication.shared.open(spotifyURL, options: [:], completionHandler: nil)
     }
     
     private var trackList: some View {
-        ForEach(viewModels.indices, id: \.self) { index in
-            let isLastCell = index == viewModels.indices.last
-            TrackCell(viewModel: viewModels[index], isLastCell: isLastCell)
+        ForEach(playlist.playlistDetails, id: \.spotifyUri) { details in
+            let isLastCell = details.spotifyUri == playlist.playlistDetails.last?.spotifyUri
+            TrackCell(viewModel: RecommendedTrackCellViewModel(name: details.title, artistName: details.artistName, artworkURL: URL(string: details.artworkUrl)), isLastCell: isLastCell)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .foregroundColor(viewModels[index].isTrackTapped ? Color.gray.opacity(0.3) : Color.white)
+                        .foregroundColor(Color.white)
                 )
                 .padding(.bottom, isLastCell ? 20 : 0)
         }
@@ -226,35 +289,16 @@ struct Playlist2VC: View {
     }
 
     private func deletePlaylist() {
-        if let userSpotifyID = UserDefaults.standard.value(forKey: "user_id") as? String {
-            print("User ID: \(userSpotifyID)")
+        if let userId = Auth.auth().currentUser?.uid {
+            print("User ID: \(userId)")
             print("Playlist ID: \(playlist.playlistId)")
-            
-            db.collection("users").document(userSpotifyID).collection("playlists").document(playlist.playlistId).setData(["deleted": true], merge: true)
+            // Delete the playlist cover image
+            db.collection("users").document(userId).collection("playlists").document(playlist.playlistId).setData(["deleted": true], merge: true)
             DispatchQueue.main.async {
                 self.presentationMode.wrappedValue.dismiss()
             }
         } else {
             print("No user ID found in UserDefaults or it's not a String")
-        }
-    }
-    
-    private func fetchPlaylistDetails() {
-        APICaller.shared.getPlaylistDetails(for: playlist.playlistId) { result in
-            switch result {
-            case .success(let model):
-                DispatchQueue.main.async {
-                    self.viewModels = model.tracks.items.compactMap({
-                        RecommendedTrackCellViewModel(
-                            name: $0.track.name,
-                            artistName: $0.track.artists.first?.name ?? "-",
-                            artworkURL: URL(string: $0.track.album?.images.first?.url ?? "")
-                        )
-                    })
-                }
-            case .failure(let error):
-                print("API Error: \(error.localizedDescription)")
-            }
         }
     }
     

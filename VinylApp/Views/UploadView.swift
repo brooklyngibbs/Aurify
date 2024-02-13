@@ -82,26 +82,15 @@ class APIRunner {
                 print("Decoding JSON")
                 return try JSONDecoder().decode(ImageInfo.self, from: data)
             }
+            print("Adding Tracks")
+            let results = await APICaller.shared.searchManySongs(q: json.songlist).compactMap { try? $0.get() }
+            let songURIs = results.map {$0.spotifyUri}
+            let songImages = results.map {$0.artworkUrl}
             print("Converting image")
             let base64Data = try imageManager.convertImageToBase64(maxBytes: 256_000)
-            print("Creating playlist")
-            let playlist = try await APICaller.shared.createPlaylist(with: json.playlistTitle, description: "Created by Aurify")
-            print("Updating playlist image")
-            let _ = try await retry(times: 2) {
-                return try await APICaller.shared.updatePlaylistImage(imageBase64: base64Data, playlistId: playlist.id)
-            }
-            print("Adding Tracks")
-            let results = await APICaller.shared.searchManySongs(q: json.songlist)
-            let songURIs = results.compactMap {try? $0.get()}
-            let _ = try await APICaller.shared.addTrackArrayToPlaylist(trackURI: songURIs, playlistId: playlist.id)
-            let userId = try await APICaller.shared.getCurrentUserProfile().id
-            print("Saving playlist to firestore")
-            // Refetch playlist to get updated image urls
-            let spotifyPlaylist = try await retry(times: 2) {
-                return try await APICaller.shared.getPlaylist(with: playlist.id)
-            }
-            try await FirestoreManager().savePlaylistToFirestore(userID: userId, playlist: spotifyPlaylist, imageUrl: url, imageInfo: json)
-            return FirebasePlaylist(playlistId: playlist.id, coverImageUrl: url, name: playlist.name, images: spotifyPlaylist.images, externalUrls: spotifyPlaylist.external_urls ?? [:], deleted: nil)
+            let userId = Auth.auth().currentUser!.uid
+            let playlistId = try await FirestoreManager().savePlaylistToFirestore(userID: userId, name: json.playlistTitle, description: json.description, songInfo: results, imageUrl: url, imageInfo: json)
+            return FirebasePlaylist(playlistId: playlistId, spotifyId: "", coverImageUrl: url, name: json.playlistTitle, images: songImages, externalUrls: [:], playlistDetails: results, deleted: nil)
         }
         return task
     }

@@ -18,6 +18,12 @@ class ImageManager {
         currentImage = im
     }
     
+    init(_ imUrl: URL) async throws {
+        let (data, response) = try await URLSession.shared.data(from: imUrl)
+        originalImage = UIImage(data: data)!
+        currentImage = originalImage
+    }
+    
     func resizeImage(targetSize: CGSize) -> ImageManager {
         let renderer = UIGraphicsImageRenderer(size: targetSize)
         currentImage = renderer.image { context in

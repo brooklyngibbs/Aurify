@@ -225,10 +225,15 @@ final class AuthManager {
     
     func signOut(completion: @escaping (Bool) -> Void) {
         do {
+            UserDefaults.standard.removeObject(forKey: "user_id")
             try Auth.auth().signOut()
             
             // Update the isSignedIn status to false
             UserDefaults.standard.setValue(nil, forKey: "access_token")
+            UserDefaults.standard.setValue(nil, forKey: "refresh_token")
+            UserDefaults.standard.setValue(nil, forKey: "expirationDate")
+            UserDefaults.standard.setValue(nil, forKey: "client_token")
+            UserDefaults.standard.setValue(nil, forKey: "expires_in")
             
             completion(true) // Sign-out successful
         } catch {

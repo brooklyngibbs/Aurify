@@ -8,6 +8,7 @@
 import UIKit
 import Firebase
 import FirebaseFirestore
+import FirebaseAuth
 import SwiftUI
 import RevenueCat
 
@@ -25,6 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let window = UIWindow(frame: UIScreen.main.bounds)
         if AuthManager.shared.isSignedIn {
             AuthManager.shared.refreshIfNeeded(completion: nil)
+            window.rootViewController = TabBarViewController()
+        } else if Auth.auth().currentUser != nil {
             window.rootViewController = TabBarViewController()
         } else {
             let accountView = LogInView()

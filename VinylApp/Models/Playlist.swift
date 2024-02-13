@@ -11,7 +11,7 @@ import FirebaseFirestoreInternal
 struct Playlist: Codable, Identifiable {
     
     let description: String?
-    let external_urls: [String: String]?
+    let externalUrls: [String: String]?
     let id: String
     let images: [APIImage]
     let name: String
@@ -21,8 +21,8 @@ struct Playlist: Codable, Identifiable {
     var timestamp: Timestamp?
     
     enum CodingKeys: String, CodingKey {
-        case description, external_urls, id, images, name, owner, uri
-        case isAppGenerated = "isAppGenerated" 
+        case description, isAppGenerated, id, images, name, owner, uri
+        case externalUrls = "external_urls"
     }
 }
 

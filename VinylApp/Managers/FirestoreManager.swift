@@ -50,22 +50,24 @@ class FirestoreManager {
         }
     }
     
-    func savePlaylistToFirestore(userID: String, playlist: Playlist, imageUrl: String, imageInfo: ImageInfo) async throws {
-        try await withCheckedThrowingContinuation() { continuation in
-            savePlaylistToFirestore(userID: userID, playlist: playlist, imageUrl: imageUrl, imageInfo: imageInfo) { result in
+    func savePlaylistToFirestore(userID: String, name: String, description: String, songInfo: [CleanSongInfo], imageUrl: String, imageInfo: ImageInfo) async throws -> String {
+        return try await withCheckedThrowingContinuation() { continuation in
+            savePlaylistToFirestore(userID: userID, name: name, description: description, songInfo: songInfo, imageUrl: imageUrl, imageInfo: imageInfo) { result in
                 continuation.resume(with: result)
             }
         }
     }
     
-    func savePlaylistToFirestore(userID: String, playlist: Playlist, imageUrl: String, imageInfo: ImageInfo, completion: @escaping (Result<Void, Error>) -> Void) {
+    func savePlaylistToFirestore(userID: String, name: String, description: String, songInfo: [CleanSongInfo], imageUrl: String, imageInfo: ImageInfo, completion: @escaping (Result<String, Error>) -> Void) {
         // Access Firestore and create a reference to the users collection
         let usersCollection = db.collection("users")
         let userDocument = usersCollection.document(userID)
                 
+        let docRef = userDocument.collection("playlists").document()
+        let docId = docRef.documentID
         // Prepare the playlist data to be saved in Firestore
         var playlistData: [String: Any] = [
-            "description": playlist.description ?? "",
+            "description": description,
             "cover_image_url": imageUrl,
             "image_info": [
                 "description": imageInfo.description,
@@ -81,26 +83,50 @@ class FirestoreManager {
                     ]
                 }
             ],
-            "external_urls": playlist.external_urls ?? [:],
-            "id": playlist.id,
-            "images": playlist.images.map { $0.toDictionary() },
-            "name": playlist.name,
-            "owner": playlist.owner.toDictionary(),
-            "uri": playlist.uri,
-            "isAppGenerated": true
+            "playlist_info": songInfo.map { song in
+                return [
+                    "artist": song.artistName,
+                    "title": song.title,
+                    "uri": song.spotifyUri,
+                    "preview_url": song.previewUrl,
+                    "cover_image_url": song.artworkUrl,
+                ]
+            },
+            "id": docId,
+            "spotify_id": "",
+            "images": songInfo.map {$0.artworkUrl },
+            "name": name,
+            "isAppGenerated": true,
+            "external_urls": [:],
         ]
                 
         // Add a timestamp to the playlist data
         playlistData["timestamp"] = FieldValue.serverTimestamp()
                 
         // Add a new document to the "playlists" subcollection in the user's document
-        userDocument.collection("playlists").document(playlist.id).setData(playlistData) { error in
+        docRef.setData(playlistData) { error in
             if let error = error {
                 completion(.failure(error))
             } else {
-                completion(.success(()))
+                completion(.success((docId)))
             }
         }
+    }
+    
+    func updateFirestoreWithSpotify(userId: String, fsPlaylist: FirebasePlaylist, spPlaylist: Playlist) async throws {
+        let usersCollection = db.collection("users")
+        let userDocument = usersCollection.document(userId)
+                
+        let docRef = userDocument.collection("playlists").document(fsPlaylist.playlistId)
+        print("Spotify id: \(spPlaylist.id)")
+        print("Playlist id: \(fsPlaylist.playlistId)")
+        let externalUrls = spPlaylist.externalUrls ?? [:]
+        let appGenerated = spPlaylist.isAppGenerated ?? true
+        let timestamp = spPlaylist.timestamp ?? Timestamp.init()
+        try await docRef.updateData(["spotify_id": spPlaylist.id,
+                                     "external_urls": externalUrls,
+                                     "isAppGenerated": appGenerated,
+                                     "timestamp": timestamp])
     }
 }
 

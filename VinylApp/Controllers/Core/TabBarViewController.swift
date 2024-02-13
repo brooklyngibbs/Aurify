@@ -79,7 +79,7 @@ class TabBarViewController: UITabBarController, UIImagePickerControllerDelegate 
                     DispatchQueue.main.async {
                         navController.popViewController(animated: true) // Pop the current view controller
                         self.hideUploadButton() // Hide the button when transitioning to Playlist2VC
-                        let hostingController = UIHostingController(rootView: Playlist2VC(playlist: playlist, userID: UserDefaults.standard.value(forKey: "user_id") as! String, tabBarViewController: self))
+                        let hostingController = UIHostingController(rootView: Playlist2VC(playlist: playlist, tabBarViewController: self))
                         navController.navigationBar.tintColor = UIColor.black
                         navController.pushViewController(hostingController, animated: false)
                         navController.isNavigationBarHidden = false

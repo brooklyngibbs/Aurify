@@ -1,6 +1,7 @@
 import Foundation
 import RevenueCat
 import StoreKit
+import FirebaseAuth
 
 public class SubscriptionManager {
     public static let shared = SubscriptionManager() 
@@ -37,7 +38,7 @@ public class SubscriptionManager {
         case .fullAccess:
             return true
         case .none:
-            if let userId = UserDefaults.standard.value(forKey: "user_id") as? String {
+            if let userId = Auth.auth().currentUser?.uid {
                 let count = try await withCheckedThrowingContinuation { continuation in
                     FirestoreManager().fetchPlaylistCount(forUserID: userId) { result in
                         continuation.resume(with: result)

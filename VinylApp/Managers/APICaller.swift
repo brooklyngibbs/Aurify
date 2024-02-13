@@ -415,7 +415,7 @@ final class APICaller {
         }
     }
     
-    public func searchManySongs(q: [SongInfo]) async -> [Result<String, Error>] {
+    public func searchManySongs(q: [SongInfo]) async -> [Result<CleanSongInfo, Error>] {
         return await withCheckedContinuation { continuation in
             searchManySongs(q: q) { results in
                 continuation.resume(returning: results)
@@ -423,10 +423,10 @@ final class APICaller {
         }
     }
 
-    public func searchManySongs(q: [SongInfo], completion: @escaping ([Result<String, Error>]) -> Void) {
+    public func searchManySongs(q: [SongInfo], completion: @escaping ([Result<CleanSongInfo, Error>]) -> Void) {
         let group = DispatchGroup()
         var index = 0
-        var output = [Result<String, Error>](repeating: .success(""), count: q.count)
+        var output = [Result<CleanSongInfo, Error>](repeating: .success(CleanSongInfo(title: "", artistName: "", previewUrl: "", spotifyUri: "", artworkUrl: "")), count: q.count)
         for song in q {
             group.enter()
             let actualIndex = index
@@ -442,7 +442,7 @@ final class APICaller {
     }
 
 
-    public func searchSong(q: SongInfo, completion: @escaping (Result<String, Error>) -> Void) {
+    public func searchSong(q: SongInfo, completion: @escaping (Result<CleanSongInfo, Error>) -> Void) {
         //let formattedQ = ("artist:\(q.artist) track:\(q.title)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let formattedQ = ("\(q.title) artist:\(q.artist)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let urlString = Constants.baseAPIURL + "/search?q=\(formattedQ)&type=track&limit=1"
@@ -458,8 +458,16 @@ final class APICaller {
                        let tracks = json["tracks"] as? [String: Any],
                        let items = tracks["items"] as? [[String: Any]],
                        let firstItem = items.first,
+                       let album = firstItem["album"] as? [String: Any],
                        let uri = firstItem["uri"] as? String {
-                        completion(.success(uri))
+                        let name = firstItem["name"] as? String ?? ""
+                        let artists = album["artists"] as? [[String: Any]]
+                        let artistName = artists?.first?["name"] as? String ?? "-"
+                        let images = album["images"] as? [[String : Any]]
+                        let artworkUrl = images?.first?["url"] as? String ?? ""
+                        let previewUrl = firstItem["preview_url"] as? String ?? ""
+                        let result = CleanSongInfo(title: name, artistName: artistName, previewUrl: previewUrl, spotifyUri: uri, artworkUrl: artworkUrl)
+                        completion(.success(result))
                     } else {
                         completion(.failure(APIError.failedToGetData))
                     }
@@ -604,7 +612,7 @@ final class APICaller {
                             let result = try JSONDecoder().decode(Playlist.self, from: data)
                             completion(.success(result))
                         } catch {
-                            print("Error location 2")
+                            print("Error location 2: \(String(data: data, encoding: .utf8)!)")
                             completion(.failure(error))
                         }
                     }

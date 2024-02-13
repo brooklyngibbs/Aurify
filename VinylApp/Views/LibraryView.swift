@@ -3,6 +3,7 @@ import Combine
 import Firebase
 import FirebaseStorage
 import FirebaseFirestore
+import FirebaseAuth
 
 struct LibraryView: View {
     @State private var playlists : [FirebasePlaylist] = []
@@ -10,7 +11,6 @@ struct LibraryView: View {
     @State private var isLoading = true // Track loading state
     
     @State private var displayName: String = ""
-    @State private var userID: String = ""
     
     @State private var showingSettings = false
     @State private var userProfileImage: UIImage?
@@ -77,7 +77,7 @@ struct LibraryView: View {
                                             
                                                 .sheet(isPresented: $showingSettings) {
                                                     NavigationView {
-                                                        SettingsViewController(userProfileImage: $userProfileImage, userName: self.displayName, userID: self.userID)
+                                                        SettingsViewController(userProfileImage: $userProfileImage, userName: self.displayName)
                                                             .navigationBarTitleDisplayMode(.inline)
                                                             .navigationBarItems(
                                                                 leading: EmptyView(),
@@ -115,7 +115,7 @@ struct LibraryView: View {
                             } else {
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                                     ForEach(playlists.indices, id: \.self) { index in
-                                        NavigationLink(destination: Playlist2VC(playlist: playlists[index], userID: userID, tabBarViewController: tabBarViewController)) {
+                                        NavigationLink(destination: Playlist2VC(playlist: playlists[index], tabBarViewController: tabBarViewController)) {
                                             PlaylistCellView(playlist: playlists[index])
                                                 .padding(.bottom, 20)
                                                 .id(UUID()) // Ensure each view has a unique ID
@@ -134,12 +134,18 @@ struct LibraryView: View {
         .navigationBarHidden(true) // Hide the navigation bar
         .accentColor(Color(AppColors.vampireBlack))
         .task {
-            fetchProfile() { userID in
-                listener?.remove()
-                listener = FirestoreManager().fetchPlaylistIDListener(forUserID: userID) {
-                    playlists = $0
-                    print("Count = \(playlists.count)")
-                    isLoading = false
+            let userID = Auth.auth().currentUser!.uid
+            print("userID = \(userID)")
+            listener?.remove()
+            listener = FirestoreManager().fetchPlaylistIDListener(forUserID: userID) {
+                playlists = $0
+                isLoading = false
+            }
+            checkProfileImageInStorage(userID: userID) { profileImageExists in
+                if profileImageExists {
+                    loadProfileImageFromStorage(userID: userID)
+                } else {
+                    loadDefaultImageFromStorage()
                 }
             }
             do {
@@ -158,12 +164,12 @@ struct LibraryView: View {
     }
 
     //MARK: PROFILE FUNCTIONS
+    /*
     private func fetchProfile(_ completion: @escaping (String) -> Void) {
         APICaller.shared.getCurrentUserProfile { [self] result in
             switch result {
                 case .success(let userProfile):
                     DispatchQueue.main.async {
-                        self.userID = userProfile.id
                         self.displayName = userProfile.display_name
                     }
                     
@@ -185,7 +191,7 @@ struct LibraryView: View {
                     print(error.localizedDescription)
             }
         }
-    }
+    }*/
     
     private func loadProfileImageFromStorage(userID: String) {
         let storage = Storage.storage()
@@ -239,7 +245,7 @@ struct LibraryView: View {
             }
         }
     }
-    
+    /*
     private func loadImage(from url: URL) {
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let data = data, let loadedImage = UIImage(data: data) {
@@ -251,7 +257,7 @@ struct LibraryView: View {
                 print("Failed to load image from URL:", error?.localizedDescription ?? "Unknown error")
             }
         }.resume()
-    }
+    }*/
     
     private func saveProfileImageToStorage(image: UIImage, userID: String) {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
@@ -297,7 +303,7 @@ struct PlaylistCellView: View {
                         .cornerRadius(20)
                         .shadow(color: Color.gray.opacity(0.3), radius: 4, x: 0, y: 5)
                 case .failure:
-                    if let val = playlist.images.first?.url,
+                    if let val = playlist.images.first,
                        let eurl = URL(string: val) {
                         AsyncImage(url: eurl) { phase in
                             switch phase {
@@ -333,7 +339,7 @@ struct PlaylistCellView: View {
                         .cornerRadius(20)
                 }
             }
-        } else if let estr = playlist.images.first?.url,
+        } else if let estr = playlist.images.first,
                   let eurl = URL(string: estr) {
             AsyncImage(url: eurl) { phase in
                 switch(phase) {
