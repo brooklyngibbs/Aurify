@@ -13,6 +13,7 @@ struct Playlist2VC: View {
     @AppStorage("user_id") private var spotifyId: String = ""
     @State private var showingAuthView = false
     @State private var showAlert = false
+    @State private var uploadingPlaylist = false
     
     var tabBarViewController: TabBarViewController
     
@@ -104,10 +105,6 @@ struct Playlist2VC: View {
                 }
             }
         }
-        /*
-        .task {
-            //fetchPlaylistDetails()
-        }*/
         .onAppear {
             tabBarViewController.hideUploadButton()
         }
@@ -147,7 +144,17 @@ struct Playlist2VC: View {
                     }
                 }
             })
-        }
+        }.overlay( content: {
+            if uploadingPlaylist {
+                ZStack {
+                    Color(white: 0.2, opacity: 0.4)
+                        .ignoresSafeArea()
+                    ProgressView()
+                        .scaleEffect(4)
+                        .tint(.white)
+                }.transition(.move(edge: .bottom))
+            }
+        })
     }
     
     private var playlistHeader: some View {
@@ -212,6 +219,10 @@ struct Playlist2VC: View {
         // ensure playlist exists in spotify
         var spotifyId = playlist.spotifyId
         if spotifyId == "" {
+            defer {
+                uploadingPlaylist = false
+            }
+            uploadingPlaylist = true
             // create playlist in spotify
             let imageManager = try await ImageManager(URL(string: playlist.coverImageUrl)!)
             let base64Data = try imageManager.convertImageToBase64(maxBytes: 256_000)

@@ -83,7 +83,10 @@ class APIRunner {
                 return try JSONDecoder().decode(ImageInfo.self, from: data)
             }
             print("Adding Tracks")
-            let results = await APICaller.shared.searchManySongs(q: json.songlist).compactMap { try? $0.get() }
+            var seenUris = Set<String>()
+            let results = await APICaller.shared.searchManySongs(q: json.songlist).compactMap { try? $0.get() }.filter {
+                seenUris.insert($0.spotifyUri).inserted
+            }
             let songURIs = results.map {$0.spotifyUri}
             let songImages = results.map {$0.artworkUrl}
             print("Converting image")
