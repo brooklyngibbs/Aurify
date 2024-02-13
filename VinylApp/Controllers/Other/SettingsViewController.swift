@@ -173,8 +173,8 @@ struct AccountSectionView: View {
                         }
                     }
 
-                    // Delete the playlist
-                    playlistRef.delete()
+                    // mark playlist as deleted 
+                    playlistRef.updateData(["deleted": true])
                 }
                 completion(.success(()))
             }
