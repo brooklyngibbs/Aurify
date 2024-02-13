@@ -156,6 +156,7 @@ struct LibraryView: View {
         }
         .onAppear {
             tabBarViewController.unhideUploadButton()
+            fetchDisplayName()
         }
         .onDisappear() {
             listener?.remove()
@@ -192,6 +193,26 @@ struct LibraryView: View {
             }
         }
     }*/
+    
+    private func fetchDisplayName() {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            return
+        }
+
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(userID)
+
+        userRef.getDocument { document, error in
+            if let document = document, document.exists {
+                if let displayName = document.data()?["name"] as? String {
+                    self.displayName = displayName
+                }
+            } else {
+                print("Document does not exist")
+            }
+        }
+    }
+
     
     private func loadProfileImageFromStorage(userID: String) {
         let storage = Storage.storage()
