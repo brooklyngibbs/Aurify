@@ -5,6 +5,7 @@ import FirebaseAuth
 struct SignUpView: View {
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var name: String = ""
     @State private var userCreated: Bool = false
     @State private var navigateToLogin: Bool = false
 
@@ -40,6 +41,13 @@ struct SignUpView: View {
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(AppColors.gainsboro), lineWidth: 1))
                             .font(.custom("Inter-Light", size: 20))
                             .padding(.bottom, 10)
+                        
+                        TextField("Name", text: $name)
+                            .padding(10)
+                            .background(Color.white)
+                            .cornerRadius(8)
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(AppColors.gainsboro), lineWidth: 1))
+                            .font(.custom("Inter-Light", size: 20))
                         
                         if showError {
                             Text(errorMessage)
@@ -102,20 +110,48 @@ struct SignUpView: View {
     func fetchFirestoreEmails() {
         let db = Firestore.firestore()
         
-        db.collection("users").getDocuments { querySnapshot, error in
+        db.collection("test").document("test").getDocument { document, error in
             if let error = error {
-                print("Error fetching documents: \(error)")
+                print("Error fetching document: \(error)")
             } else {
-                self.firestoreEmails = querySnapshot?.documents.compactMap { $0["email"] as? String } ?? []
+                if let data = document?.data() {
+                    self.firestoreEmails = data.values.compactMap { $0 as? String }
+                }
             }
         }
     }
+
     
-    func createUser(email: String, password: String, completion: @escaping (AuthDataResult?, Error?) -> Void) {
+    func createUser(email: String, password: String, name: String, completion: @escaping (AuthDataResult?, Error?) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-            completion(authResult, error)
+            if let error = error {
+                completion(nil, error)
+                return
+            }
+
+            guard let user = authResult?.user else {
+                let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+                completion(nil, error)
+                return
+            }
+
+            let db = Firestore.firestore()
+            let userData: [String: Any] = [
+                "email": email,
+                "name": name
+            ]
+
+            // Set the user data in Firestore under 'users/userId'
+            db.collection("users").document(user.uid).setData(userData) { error in
+                if let error = error {
+                    completion(nil, error)
+                } else {
+                    completion(authResult, nil)
+                }
+            }
         }
     }
+
     
     func signUp() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
@@ -127,8 +163,8 @@ struct SignUpView: View {
             return
         }
 
-        // Create the user
-        createUser(email: email, password: password) { authResult, error in
+        // Create the user with the name
+        createUser(email: email, password: password, name: name) { authResult, error in
             if let error = error as NSError? {
                 switch error.code {
                 case AuthErrorCode.emailAlreadyInUse.rawValue:
@@ -149,6 +185,7 @@ struct SignUpView: View {
             }
         }
     }
+
 
     
     func sendEmailVerification(for user: FirebaseAuth.User) {

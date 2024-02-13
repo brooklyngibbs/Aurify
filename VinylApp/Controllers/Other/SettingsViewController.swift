@@ -138,84 +138,85 @@ struct AccountSectionView: View {
     }
     
     func deletePlaylists(completion: @escaping (Result<Void, Error>) -> Void) {
-        APICaller.shared.getCurrentUserProfile { result in
-            switch result {
-            case .success(let userProfile):
-                let db = Firestore.firestore()
-                let userRef = db.collection("users").document(userProfile.id)
-                let playlistsRef = userRef.collection("playlists")
-                
-                playlistsRef.getDocuments { snapshot, error in
-                    if let error = error {
-                        completion(.failure(error))
-                    } else {
-                        for document in snapshot?.documents ?? [] {
-                            let playlistRef = playlistsRef.document(document.documentID)
-                            
-                            // Check if cover_image_url field exists in the document
-                            if let coverImageURL = document["cover_image_url"] as? String {
-                                // Construct path to the image in Firebase Storage
-                                let storageReference = Storage.storage().reference(forURL: coverImageURL)
-                                
-                                // Delete the image from Firebase Storage
-                                storageReference.delete { error in
-                                    if let error = error {
-                                        print("Error deleting image: \(error.localizedDescription)")
-                                        // Handle failure if needed
-                                    } else {
-                                        print("Image deleted successfully")
-                                    }
-                                }
-                            }
-                            
-                            // Delete the playlist
-                            playlistRef.delete()
-                        }
-                        completion(.success(()))
-                    }
-                }
-            case .failure(let error):
-                print("Failed to get user profile: \(error.localizedDescription)")
-                completion(.failure(error))
-            }
+        // Ensure that the user is currently authenticated
+        guard let user = Auth.auth().currentUser else {
+            print("No user is currently signed in.")
+            // Handle not authenticated case if needed
+            return
         }
-    }
-    
-    
-    func deleteUserDataFromFirestore(completion: @escaping (Result<Void, Error>) -> Void) {
-        APICaller.shared.getCurrentUserProfile { result in
-            switch result {
-            case .success(let userProfile):
-                let db = Firestore.firestore()
-                let userRef = db.collection("users").document(userProfile.id)
-                
-                userRef.delete { error in
-                    if let error = error {
-                        print("Error deleting user data from Firestore: \(error.localizedDescription)")
-                        completion(.failure(error))
-                    } else {
-                        print("User data deleted successfully from Firestore")
-                        let storage = Storage.storage()
-                        let storageRef = storage.reference()
-                        let profilePicsRef = storageRef.child("profilePics/\(userRef.documentID)/profileImage.jpg")
-                        
-                        profilePicsRef.delete { error in
+
+        let userID = user.uid
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(userID)
+        let playlistsRef = userRef.collection("playlists")
+
+        playlistsRef.getDocuments { snapshot, error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                for document in snapshot?.documents ?? [] {
+                    let playlistRef = playlistsRef.document(document.documentID)
+
+                    // Check if cover_image_url field exists in the document
+                    if let coverImageURL = document["cover_image_url"] as? String {
+                        // Construct path to the image in Firebase Storage
+                        let storageReference = Storage.storage().reference(forURL: coverImageURL)
+
+                        // Delete the image from Firebase Storage
+                        storageReference.delete { error in
                             if let error = error {
-                                print("Error deleting profile picture: \(error.localizedDescription)")
+                                print("Error deleting image: \(error.localizedDescription)")
                                 // Handle failure if needed
                             } else {
-                                print("Profile picture deleted successfully")
+                                print("Image deleted successfully")
                             }
                         }
-                        completion(.success(()))
                     }
+
+                    // Delete the playlist
+                    playlistRef.delete()
                 }
-            case .failure(let error):
-                print("Failed to get user profile: \(error.localizedDescription)")
-                completion(.failure(error))
+                completion(.success(()))
             }
         }
     }
+
+    
+    func deleteUserDataFromFirestore(completion: @escaping (Result<Void, Error>) -> Void) {
+        // Ensure that the user is currently authenticated
+        guard let user = Auth.auth().currentUser else {
+            print("No user is currently signed in.")
+            // Handle not authenticated case if needed
+            return
+        }
+
+        let userID = user.uid
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(userID)
+
+        userRef.delete { error in
+            if let error = error {
+                print("Error deleting user data from Firestore: \(error.localizedDescription)")
+                completion(.failure(error))
+            } else {
+                print("User data deleted successfully from Firestore")
+                let storage = Storage.storage()
+                let storageRef = storage.reference()
+                let profilePicsRef = storageRef.child("profilePics/\(userID)/profileImage.jpg")
+
+                profilePicsRef.delete { error in
+                    if let error = error {
+                        print("Error deleting profile picture: \(error.localizedDescription)")
+                        // Handle failure if needed
+                    } else {
+                        print("Profile picture deleted successfully")
+                    }
+                }
+                completion(.success(()))
+            }
+        }
+    }
+
     
     func deleteUserAccount() {
         print("deleteUserAccount function started")
@@ -234,31 +235,49 @@ struct AccountSectionView: View {
             return
         }
         
-        user.delete { error in
+        let userID = user.uid
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(userID)
+        
+        userRef.delete { error in
             if let error = error {
-                print("Error deleting user account: \(error.localizedDescription)")
+                print("Error deleting user data from Firestore: \(error.localizedDescription)")
                 // Handle failure if needed
             } else {
-                print("User account deletion initiated successfully")
+                print("User data deleted successfully from Firestore")
+                let storage = Storage.storage()
+                let storageRef = storage.reference()
+                let profilePicsRef = storageRef.child("profilePics/\(userID)/profileImage.jpg")
                 
-                // Print the user information to verify if the user is logged in
-                if let currentUser = Auth.auth().currentUser {
-                    print("Current user after deletion: \(currentUser)")
-                } else {
-                    print("User is not logged in after deletion")
+                profilePicsRef.delete { error in
+                    if let error = error {
+                        print("Error deleting profile picture: \(error.localizedDescription)")
+                        // Handle failure if needed
+                    } else {
+                        print("Profile picture deleted successfully")
+                    }
                 }
                 
-                // Perform the view transition here
-                DispatchQueue.main.async {
-                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                       let window = windowScene.windows.first {
-                        let logInView = LogInView()
-                        let hostingController = UIHostingController(rootView: logInView)
-                        let navVC = UINavigationController(rootViewController: hostingController)
-                        navVC.navigationBar.prefersLargeTitles = true
-                        window.rootViewController = navVC
-                        window.makeKeyAndVisible()
-                        print("View transition completed")
+                // Finally, delete the user's account
+                user.delete { error in
+                    if let error = error {
+                        print("Error deleting user account: \(error.localizedDescription)")
+                        // Handle failure if needed
+                    } else {
+                        print("User account deleted successfully")
+                        // Perform the view transition here
+                        DispatchQueue.main.async {
+                            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                               let window = windowScene.windows.first {
+                                let logInView = LogInView()
+                                let hostingController = UIHostingController(rootView: logInView)
+                                let navVC = UINavigationController(rootViewController: hostingController)
+                                navVC.navigationBar.prefersLargeTitles = true
+                                window.rootViewController = navVC
+                                window.makeKeyAndVisible()
+                                print("View transition completed")
+                            }
+                        }
                     }
                 }
             }
@@ -267,6 +286,7 @@ struct AccountSectionView: View {
         print("deleteUserAccount function completed")
     }
 }
+
 
 
 struct ProfileSectionView: View {
