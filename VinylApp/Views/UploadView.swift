@@ -87,10 +87,8 @@ class APIRunner {
             let results = await APICaller.shared.searchManySongs(q: json.songlist).compactMap { try? $0.get() }.filter {
                 seenUris.insert($0.spotifyUri).inserted
             }
-            let songURIs = results.map {$0.spotifyUri}
             let songImages = results.map {$0.artworkUrl}
             print("Converting image")
-            let base64Data = try imageManager.convertImageToBase64(maxBytes: 256_000)
             let userId = Auth.auth().currentUser!.uid
             let playlistId = try await FirestoreManager().savePlaylistToFirestore(userID: userId, name: json.playlistTitle, description: json.description, songInfo: results, imageUrl: url, imageInfo: json)
             return FirebasePlaylist(playlistId: playlistId, spotifyId: "", coverImageUrl: url, name: json.playlistTitle, images: songImages, externalUrls: [:], playlistDetails: results, deleted: nil)

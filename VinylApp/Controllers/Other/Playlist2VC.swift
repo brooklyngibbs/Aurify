@@ -7,6 +7,7 @@ struct Playlist2VC: View {
     let playlist: FirebasePlaylist
     @State private var viewModels = [RecommendedTrackCellViewModel]()
     private var cancellables = Set<AnyCancellable>()
+    @State private var spotifyPlaylistId = ""
     @State private var imageHeight: CGFloat = UIScreen.main.bounds.width
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var updateLibraryView: (() -> Void)?
@@ -22,6 +23,7 @@ struct Playlist2VC: View {
     internal init(playlist: FirebasePlaylist, tabBarViewController: TabBarViewController) {
         self.playlist = playlist
         self.tabBarViewController = tabBarViewController
+        self.spotifyPlaylistId = playlist.spotifyId
     }
     
     var body: some View {
@@ -202,6 +204,7 @@ struct Playlist2VC: View {
                 .offset(x: 10)
             }
             .padding(.trailing, 20)
+            .disabled(uploadingPlaylist)
         }
     }
     
@@ -217,8 +220,10 @@ struct Playlist2VC: View {
     
     private func createPlaylist() async throws {
         // ensure playlist exists in spotify
-        var spotifyId = playlist.spotifyId
-        if spotifyId == "" {
+        if spotifyPlaylistId == "" {
+            spotifyPlaylistId = try await FirestoreManager().fetchPlaylistIdForDocument(forUserID: Auth.auth().currentUser!.uid, firestorePlaylistId: playlist.playlistId) ?? ""
+        }
+        if spotifyPlaylistId == "" {
             defer {
                 uploadingPlaylist = false
             }
@@ -228,15 +233,15 @@ struct Playlist2VC: View {
             let base64Data = try imageManager.convertImageToBase64(maxBytes: 256_000)
             print("Creating playlist")
             let spotifyPlaylist = try await APICaller.shared.createPlaylist(with: playlist.name, description: "Created by Aurify")
-            spotifyId = spotifyPlaylist.id
+            spotifyPlaylistId = spotifyPlaylist.id
             print("Updating playlist image")
             try await APICaller.shared.updatePlaylistImage(imageBase64: base64Data, playlistId: spotifyPlaylist.id)
             let _ = try await APICaller.shared.addTrackArrayToPlaylist(trackURI: playlist.playlistDetails.map {$0.spotifyUri}, playlistId: spotifyPlaylist.id)
-            let updatedPlaylist = try await APICaller.shared.getPlaylist(with: spotifyId)
+            let updatedPlaylist = try await APICaller.shared.getPlaylist(with: spotifyPlaylistId)
             // update firestore
             try await FirestoreManager().updateFirestoreWithSpotify(userId: Auth.auth().currentUser!.uid, fsPlaylist: playlist, spPlaylist: updatedPlaylist)
         }
-        guard let spotifyURL = URL(string: "spotify:playlist:\(spotifyId)"),
+        guard let spotifyURL = URL(string: "spotify:playlist:\(spotifyPlaylistId)"),
               await UIApplication.shared.canOpenURL(spotifyURL) else {
             // If the Spotify app is not installed, open the App Store link
             guard let appStoreURL = URL(string: "https://apps.apple.com/us/app/spotify-music/id324684580") else {

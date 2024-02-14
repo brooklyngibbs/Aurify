@@ -3,6 +3,11 @@ import Firebase
 class FirestoreManager {
     let db = Firestore.firestore()
     
+    func fetchPlaylistIdForDocument(forUserID userID: String, firestorePlaylistId: String) async throws -> String? {
+        let playlistId = try await db.collection("users").document(userID).collection("playlists").document(firestorePlaylistId).getDocument()
+        return playlistId.data()?["spotify_id"] as? String
+    }
+    
     func fetchPlaylistIDListener(forUserID userID: String, completion: @escaping ([FirebasePlaylist]) -> Void) -> ListenerRegistration {
         let listener = db.collection("users").document(userID).collection("playlists").order(by: "timestamp", descending: true).addSnapshotListener { snapshot, error in
             if let error = error {
