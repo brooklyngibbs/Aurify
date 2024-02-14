@@ -1,4 +1,5 @@
 import SwiftUI
+import MarqueeText
 
 struct AuthViewControllerWrapper: UIViewControllerRepresentable {
     @Binding var isPresented: Bool
@@ -27,33 +28,40 @@ struct SpotifyLogInView: View {
     var body: some View {
         NavigationView {
             GeometryReader { geometry in
-                VStack {
-                    Spacer()
-                    
-                    Image("spotify_image")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: geometry.size.height * 0.4)
-                        .edgesIgnoringSafeArea(.top)
-                    
-                    Text("Welcome to Aurify!")
-                        .font(.custom("Outfit-Bold", size: 30))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.black)
-                        .padding(.top, 20)
-                    
+                VStack(spacing: 0) {
+                    ZStack {
+                        GeometryReader { imageGeometry in
+                            Image("gradient1")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: geometry.size.height * 0.9)
+                                .edgesIgnoringSafeArea(.top)
+                        }
+                        .frame(height: geometry.size.height * 0.8)
+                        .padding(.top, -30)
+                        VStack {
+                            Text("Welcome to")
+                                .font(.custom("Outfit-Bold", size: 30))
+                                .foregroundColor(Color.black)
+                                .padding(.top, 50)
+                                .padding(.leading, -180)
+                            Text("Aurify")
+                                .font(.custom("Outfit-Bold", size: 80))
+                                .foregroundColor(Color.black)
+                        }
+                        .padding(.leading, 50)
+                        .padding(.bottom, 60)
+                    }
                     Button(action: {
                         showingAuthView = true
                     }) {
-                        Text("Log in with Spotify")
+                        Text("Connect to Spotify")
                             .font(.custom("Inter-Light", size: 20))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding()
-                            .background(Color.white)
-                            .cornerRadius(8)
-                            .shadow(radius: 5)
+                            .background(Color(AppColors.moonstoneBlue))
+                            .cornerRadius(30)
                     }
-                    .padding(.top, 60)
                     .sheet(isPresented: $showingAuthView) {
                         AuthViewControllerWrapper(isPresented: $showingAuthView, loginCompletion: { success in
                             if success {
@@ -64,9 +72,13 @@ struct SpotifyLogInView: View {
                                         // Set the user_id here
                                         print("Setting user default \(userProfile.id)")
                                         UserDefaults.standard.set(userProfile.id, forKey: "user_id")
-                                        if let window = UIApplication.shared.windows.first {
-                                            window.rootViewController = TabBarViewController()
-                                            window.makeKeyAndVisible()
+                                        DispatchQueue.main.async {
+                                            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                                                if let window = windowScene.windows.first {
+                                                    window.rootViewController = TabBarViewController()
+                                                    window.makeKeyAndVisible()
+                                                }
+                                            }
                                         }
                                         // Handle further navigation or actions
                                     case .failure(let error):
@@ -83,26 +95,24 @@ struct SpotifyLogInView: View {
                     }
                     
                     Button(action: {
-                        if let window = UIApplication.shared.windows.first {
-                            window.rootViewController = TabBarViewController()
-                            window.makeKeyAndVisible()
+                        DispatchQueue.main.async {
+                            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                                if let window = windowScene.windows.first {
+                                    window.rootViewController = TabBarViewController()
+                                    window.makeKeyAndVisible()
+                                }
+                            }
                         }
                     }) {
                         Text("Use without Spotify")
                             .font(.custom("Inter-Light", size: 20))
-                            .foregroundColor(.black)
+                            .foregroundColor(Color(AppColors.moonstoneBlue))
                             .padding()
-                            .background(Color.white)
-                            .cornerRadius(8)
-                            .shadow(radius: 5)
                     }
-                    
-                    Spacer()
                 }
-                .navigationBarBackButtonHidden(true) // Hide the back button
+                .navigationBarBackButtonHidden(true)
                 .navigationBarHidden(true)
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                .background(Color(red: 239.0/255.0, green: 235.0/255.0, blue: 226.0/255.0))
                 .edgesIgnoringSafeArea(.all)
                 .navigationBarHidden(true)
             }

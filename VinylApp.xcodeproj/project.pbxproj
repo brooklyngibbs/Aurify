@@ -40,6 +40,10 @@
 		6673F4152B19034700A18E79 /* Inter-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6673F4142B19034700A18E79 /* Inter-Light.ttf */; };
 		6673F4192B19077000A18E79 /* 70s_man.png in Resources */ = {isa = PBXBuildFile; fileRef = 6673F4182B19077000A18E79 /* 70s_man.png */; };
 		66784C112B19959B00EDCB4B /* vinyl3.png in Resources */ = {isa = PBXBuildFile; fileRef = 66784C102B19959B00EDCB4B /* vinyl3.png */; };
+		6678D8292B7C1D26009E0AF6 /* camera_vinyl.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 6678D8282B7C1D26009E0AF6 /* camera_vinyl.jpeg */; };
+		6678D82C2B7C1F7F009E0AF6 /* MarqueeText in Frameworks */ = {isa = PBXBuildFile; productRef = 6678D82B2B7C1F7F009E0AF6 /* MarqueeText */; };
+		6678D8302B7C2821009E0AF6 /* gradient1.svg in Resources */ = {isa = PBXBuildFile; fileRef = 6678D82F2B7C2821009E0AF6 /* gradient1.svg */; };
+		6678D8322B7C3230009E0AF6 /* sparkle1.svg in Resources */ = {isa = PBXBuildFile; fileRef = 6678D8312B7C3230009E0AF6 /* sparkle1.svg */; };
 		6681E5AF2AE1FC4700A81DB5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6681E5AE2AE1FC4700A81DB5 /* AppDelegate.swift */; };
 		6681E5B12AE1FC4700A81DB5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6681E5B02AE1FC4700A81DB5 /* SceneDelegate.swift */; };
 		6681E5B82AE1FC4800A81DB5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6681E5B72AE1FC4800A81DB5 /* Assets.xcassets */; };
@@ -113,6 +117,9 @@
 		6673F4142B19034700A18E79 /* Inter-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Light.ttf"; path = "../../../vinyl_images/Inter/static/Inter-Light.ttf"; sourceTree = "<group>"; };
 		6673F4182B19077000A18E79 /* 70s_man.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 70s_man.png; path = ../../../vinyl_images/70s_man.png; sourceTree = "<group>"; };
 		66784C102B19959B00EDCB4B /* vinyl3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vinyl3.png; path = ../../../vinyl_images/vinyl3.png; sourceTree = "<group>"; };
+		6678D8282B7C1D26009E0AF6 /* camera_vinyl.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = camera_vinyl.jpeg; path = vinyl_images/camera_vinyl.jpeg; sourceTree = SOURCE_ROOT; };
+		6678D82F2B7C2821009E0AF6 /* gradient1.svg */ = {isa = PBXFileReference; lastKnownFileType = file; name = gradient1.svg; path = vinyl_images/gradient1.svg; sourceTree = SOURCE_ROOT; };
+		6678D8312B7C3230009E0AF6 /* sparkle1.svg */ = {isa = PBXFileReference; lastKnownFileType = file; name = sparkle1.svg; path = vinyl_images/sparkle1.svg; sourceTree = SOURCE_ROOT; };
 		6681E5AB2AE1FC4700A81DB5 /* VinylApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VinylApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6681E5AE2AE1FC4700A81DB5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6681E5B02AE1FC4700A81DB5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -160,6 +167,7 @@
 				FCF3DF2F2B64EE0000EBB392 /* RevenueCat in Frameworks */,
 				6655DB242AE4557400BC619F /* SpotifyiOS in Frameworks */,
 				584EA12881A51AE2F1BF1416 /* Pods_VinylApp.framework in Frameworks */,
+				6678D82C2B7C1F7F009E0AF6 /* MarqueeText in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,8 +321,11 @@
 				662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */,
 				6668831A2B0E6E86005864D0 /* clean-background.png */,
 				6673F40C2B18634000A18E79 /* transparentmusicman.png */,
+				6678D8282B7C1D26009E0AF6 /* camera_vinyl.jpeg */,
+				6678D8312B7C3230009E0AF6 /* sparkle1.svg */,
 				66784C102B19959B00EDCB4B /* vinyl3.png */,
 				66DF26132B5DBE29007C734B /* Spotify_Icon_White.png */,
+				6678D82F2B7C2821009E0AF6 /* gradient1.svg */,
 				6673F4182B19077000A18E79 /* 70s_man.png */,
 				6668831C2B0E6E8B005864D0 /* clean-logo.png */,
 				66B7A4942B0DEE5A004C81D5 /* spotify_image.png */,
@@ -377,6 +388,7 @@
 				66FCA19E2B1566D600741A1A /* SDWebImageSwiftUI */,
 				FCF3DF2E2B64EE0000EBB392 /* RevenueCat */,
 				FCF3DF302B64EE0000EBB392 /* RevenueCatUI */,
+				6678D82B2B7C1F7F009E0AF6 /* MarqueeText */,
 			);
 			productName = VinylApp;
 			productReference = 6681E5AB2AE1FC4700A81DB5 /* VinylApp.app */;
@@ -411,6 +423,7 @@
 				6655DB222AE4557400BC619F /* XCRemoteSwiftPackageReference "ios-sdk" */,
 				66FCA19B2B1566C700741A1A /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				FCF3DF2D2B64EE0000EBB392 /* XCRemoteSwiftPackageReference "purchases-ios" */,
+				6678D82A2B7C1F7F009E0AF6 /* XCRemoteSwiftPackageReference "MarqueeText" */,
 			);
 			productRefGroup = 6681E5AC2AE1FC4700A81DB5 /* Products */;
 			projectDirPath = "";
@@ -433,11 +446,14 @@
 				66F70F972B0C9A42005062AD /* Launch Screen.storyboard in Resources */,
 				66DF26142B5DBE29007C734B /* Spotify_Icon_White.png in Resources */,
 				6673F4092B17E55C00A18E79 /* Inter-SemiBold.ttf in Resources */,
+				6678D8292B7C1D26009E0AF6 /* camera_vinyl.jpeg in Resources */,
 				6602FA752B1BF5320043CC93 /* error.png in Resources */,
+				6678D8322B7C3230009E0AF6 /* sparkle1.svg in Resources */,
 				6673F4152B19034700A18E79 /* Inter-Light.ttf in Resources */,
 				66B7A4952B0DEE5A004C81D5 /* spotify_image.png in Resources */,
 				66F70FA62B0D1722005062AD /* Outfit-Bold.ttf in Resources */,
 				6673F4072B17E55600A18E79 /* Inter-Bold.ttf in Resources */,
+				6678D8302B7C2821009E0AF6 /* gradient1.svg in Resources */,
 				6673F40B2B18527200A18E79 /* writing_man_trans.png in Resources */,
 				6668831D2B0E6E8B005864D0 /* clean-logo.png in Resources */,
 				6673F40D2B18634000A18E79 /* transparentmusicman.png in Resources */,
@@ -765,6 +781,14 @@
 				kind = branch;
 			};
 		};
+		6678D82A2B7C1F7F009E0AF6 /* XCRemoteSwiftPackageReference "MarqueeText" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/joekndy/MarqueeText.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		66FCA19B2B1566C700741A1A /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
@@ -788,6 +812,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6655DB222AE4557400BC619F /* XCRemoteSwiftPackageReference "ios-sdk" */;
 			productName = SpotifyiOS;
+		};
+		6678D82B2B7C1F7F009E0AF6 /* MarqueeText */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6678D82A2B7C1F7F009E0AF6 /* XCRemoteSwiftPackageReference "MarqueeText" */;
+			productName = MarqueeText;
 		};
 		66FCA19C2B1566C700741A1A /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
