@@ -83,6 +83,23 @@ struct Playlist2VC: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(0)
+            GeometryReader { geometry in
+                            let screenHeight = geometry.size.height
+                            let blurHeight = screenHeight / 5
+
+                            // Create a gradient to fade out the blur effect
+                            let gradient = LinearGradient(gradient: Gradient(colors: [.clear, .white]), startPoint: .top, endPoint: .bottom)
+
+                            VStack {
+                                Spacer()
+                                Rectangle()
+                                    .fill(gradient)
+                                    .frame(height: blurHeight)
+                                    .blur(radius: 20)
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                            .edgesIgnoringSafeArea(.bottom)
+                        }
         }
         .padding(0)
         .navigationBarHidden(false)
