@@ -42,7 +42,7 @@ final class APICaller {
                 }
                 
                 if let jsonString = String(data: data, encoding: .utf8) {
-                    print("Raw JSON data: \(jsonString)")
+                    print("Raw JSON data")
                 } else {
                     print("Failed to convert data to UTF-8 string")
                 }

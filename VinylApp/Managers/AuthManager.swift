@@ -79,7 +79,6 @@ final class AuthManager {
         
         let (data, _) = try await URLSession.shared.data(for: request)
         let result = try JSONDecoder().decode(ClientCredentialAccessToken.self, from: data)
-        print("Client access token \(result.access_token)")
         UserDefaults.standard.setValue(result.access_token, forKey: "client_token")
     }
     
