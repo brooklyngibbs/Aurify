@@ -1,4 +1,6 @@
 import SwiftUI
+import Firebase
+import FirebaseAnalytics
 
 struct AuthViewControllerWrapper: UIViewControllerRepresentable {
     @Binding var isPresented: Bool
@@ -90,6 +92,7 @@ struct SpotifyLogInView: View {
                                     switch result {
                                     case .success(let userProfile):
                                         // Set the user_id here
+                                        Analytics.logEvent("spotify_log_in", parameters: nil)
                                         print("Setting user default \(userProfile.id)")
                                         UserDefaults.standard.set(userProfile.id, forKey: "user_id")
                                         DispatchQueue.main.async {
@@ -103,6 +106,7 @@ struct SpotifyLogInView: View {
                                         // Handle further navigation or actions
                                     case .failure(let error):
                                         // Handle the failure to get the user profile
+                                        Analytics.logEvent("spotify_account_fetch_error", parameters: nil)
                                         print("Error fetching user profile: \(error)")
                                         showAlert = true
                                     }
@@ -115,6 +119,7 @@ struct SpotifyLogInView: View {
                     }
                     
                     Button(action: {
+                        Analytics.logEvent("no_spotify_log_in", parameters: nil)
                         DispatchQueue.main.async {
                             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                                 if let window = windowScene.windows.first {

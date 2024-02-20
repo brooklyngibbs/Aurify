@@ -1,5 +1,7 @@
 import SwiftUI
 import RevenueCat
+import Firebase
+import FirebaseAnalytics
 
 struct PaywallView: View {
     @State private var offering: Offering?
@@ -130,6 +132,7 @@ struct PaywallView: View {
 
     func handlePurchaseResult(customerInfo: CustomerInfo?, error: Error?) {
         if let error = error {
+            Analytics.logEvent("subscription_failed", parameters: nil)
             print("Purchase error: \(error.localizedDescription)")
         } else {
             Task {
@@ -138,6 +141,7 @@ struct PaywallView: View {
                     print("Subscription Type: \(subscriptionType)") // Add this line to print the subscription type
 
                     if subscriptionType == .fullAccess {
+                        Analytics.logEvent("subscription_purchased", parameters: nil)
                         print("Pro content unlocked!")
                     } else {
                         print("Purchase completed, but content not unlocked.")

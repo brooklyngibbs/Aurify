@@ -66,7 +66,7 @@ struct SettingsViewController: View {
                 print("Error uploading profile image: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-            
+            Analytics.logEvent("profile_pic_changed", parameters: nil)
             print("Profile image uploaded successfully.")
         }
     }
@@ -94,6 +94,7 @@ struct AccountSectionView: View {
     func signOut() {
         AuthManager.shared.signOut { success in
             if success {
+                Analytics.logEvent("sign_out", parameters: nil)
                 DispatchQueue.main.async {
                     if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                        let window = windowScene.windows.first {
@@ -265,7 +266,7 @@ struct AccountSectionView: View {
                         // Handle failure if needed
                     } else {
                         print("User account deleted successfully")
-                        // Perform the view transition here
+                        Analytics.logEvent("delete_account", parameters: nil)
                         DispatchQueue.main.async {
                             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                                let window = windowScene.windows.first {

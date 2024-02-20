@@ -7,6 +7,8 @@
 
 import SwiftUI
 import FirebaseAuth
+import Firebase
+import FirebaseAnalytics
 
 struct UploadErrorView: View {
     @Environment(\.dismiss) var dismiss
@@ -187,6 +189,7 @@ struct SpinningVinylView: View {
             Button(action: {
                 task?.cancel()
                 task = nil
+                Analytics.logEvent("playlist_cancelled", parameters: nil)
                 dismiss()
             }) {
                 Text("Cancel")
@@ -273,9 +276,11 @@ struct UploadView: View {
             switch result {
             case .success(let playlist):
                 print("Finished running job, dismissing")
+                Analytics.logEvent("playlist_success", parameters: nil)
                 onComplete(playlist)
             case .failure(let error):
                 print("Error in running job: \(error.localizedDescription)")
+                Analytics.logEvent("playlist_failed", parameters: nil)
                 showError = true
             case .none:
                 showError = true

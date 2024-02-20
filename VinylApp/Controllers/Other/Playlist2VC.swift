@@ -2,6 +2,8 @@ import SwiftUI
 import Combine
 import FirebaseFirestore
 import FirebaseAuth
+import Firebase
+import FirebaseAnalytics
 
 struct Playlist2VC: View {
     let playlist: FirebasePlaylist
@@ -264,11 +266,13 @@ struct Playlist2VC: View {
             guard let appStoreURL = URL(string: "https://apps.apple.com/us/app/spotify-music/id324684580") else {
                 return
             }
+            Analytics.logEvent("directed_to_app_store", parameters: nil)
             await UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
             return
         }
 
         // If the Spotify app is installed, open the playlist in the app
+        Analytics.logEvent("build_playlist_spotify", parameters: nil)
         await UIApplication.shared.open(spotifyURL, options: [:], completionHandler: nil)
     }
     
@@ -293,6 +297,7 @@ struct Playlist2VC: View {
     }
     
     private func sharePlaylist() {
+        Analytics.logEvent("share_playlist", parameters: nil)
         guard let spotifyURL = spotifyURL else {
             return
         }
@@ -327,6 +332,7 @@ struct Playlist2VC: View {
             print("Playlist ID: \(playlist.playlistId)")
             // Delete the playlist cover image
             db.collection("users").document(userId).collection("playlists").document(playlist.playlistId).setData(["deleted": true], merge: true)
+            Analytics.logEvent("delete_playlist", parameters: nil)
             DispatchQueue.main.async {
                 self.presentationMode.wrappedValue.dismiss()
             }

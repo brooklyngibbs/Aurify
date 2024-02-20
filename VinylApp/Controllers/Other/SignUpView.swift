@@ -1,6 +1,8 @@
 import SwiftUI
 import FirebaseFirestoreInternal
 import FirebaseAuth
+import Firebase
+import FirebaseAnalytics
 
 struct SignUpView: View {
     @State private var email: String = ""
@@ -180,6 +182,7 @@ struct SignUpView: View {
                 }
             } else if let authResult = authResult {
                 print("User created successfully")
+                Analytics.logEvent("sign_up", parameters: nil)
                 sendEmailVerification(for: authResult.user) // Call to send email verification
                 self.userCreated = true
             }
