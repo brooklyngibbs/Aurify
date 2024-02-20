@@ -127,7 +127,7 @@
 		6681E5B72AE1FC4800A81DB5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6681E5BC2AE1FC4800A81DB5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6687CE932B2C1ECB009FAAEC /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
-		6693F7B72B7C457100ECAE95 /* gradient2.svg */ = {isa = PBXFileReference; lastKnownFileType = file; name = gradient2.svg; path = vinyl_images/gradient2.svg; sourceTree = SOURCE_ROOT; };
+		6693F7B72B7C457100ECAE95 /* gradient2.svg */ = {isa = PBXFileReference; lastKnownFileType = text; name = gradient2.svg; path = vinyl_images/gradient2.svg; sourceTree = SOURCE_ROOT; };
 		669CFFBE2B237B77007ECC81 /* Spotify_Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotify_Icon.png; path = ../../../vinyl_images/Spotify_Icon.png; sourceTree = "<group>"; };
 		66A0A0D92AE63223002EE3B6 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
 		66A0A0DB2AE64AA1002EE3B6 /* APICaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICaller.swift; sourceTree = "<group>"; };

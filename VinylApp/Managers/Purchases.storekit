@@ -1,0 +1,104 @@
+{
+  "identifier" : "F1E82FCA",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6475698055",
+    "_developerTeamID" : "5SZLNT5DHA",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 729976482.65140605,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21438077",
+      "localizations" : [
+
+      ],
+      "name" : "Aurify All Access",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "2.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6476573787",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Get Full Access to Aurify",
+              "displayName" : "Full Access",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "AurifyFullAccess",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Aurify Full Access",
+          "subscriptionGroupID" : "21438077",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

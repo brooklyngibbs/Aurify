@@ -1,5 +1,8 @@
 import SwiftUI
 import FirebaseAuth
+import Firebase
+import FirebaseCore
+import FirebaseAnalytics
 
 struct LogInView: View {
     @State private var email: String = ""
@@ -141,6 +144,9 @@ struct LogInView: View {
             } else if let authResult = authResult {
                 if authResult.user.isEmailVerified {
                     loginSuccess = true
+                    Analytics.logEvent("log_in", parameters: [
+                        AnalyticsParameterMethod: "email",
+                    ])
                 } else {
                     errorMessage = "Please verify your email before signing in"
                     showError = true
