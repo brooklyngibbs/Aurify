@@ -93,7 +93,7 @@ class APIRunner {
             print("Converting image")
             let userId = Auth.auth().currentUser!.uid
             let playlistId = try await FirestoreManager().savePlaylistToFirestore(userID: userId, name: json.playlistTitle, description: json.description, songInfo: results, imageUrl: url, imageInfo: json)
-            return FirebasePlaylist(playlistId: playlistId, spotifyId: "", coverImageUrl: url, name: json.playlistTitle, images: songImages, externalUrls: [:], playlistDetails: results, deleted: nil)
+            return FirebasePlaylist(playlistId: playlistId, spotifyId: "", coverImageUrl: url, name: json.playlistTitle, images: songImages, externalUrls: [:], playlistDetails: results, deleted: nil, liked: nil)
         }
         return task
     }

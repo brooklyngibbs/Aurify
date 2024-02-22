@@ -16,8 +16,9 @@ struct FirebasePlaylist : Codable {
     let externalUrls: [String : String]
     let deleted: Bool?
     let playlistDetails: [CleanSongInfo]
+    let liked: Bool?
     
-    init(playlistId: String, spotifyId: String, coverImageUrl: String, name: String, images: [String], externalUrls: [String : String], playlistDetails: [CleanSongInfo], deleted: Bool?) {
+    init(playlistId: String, spotifyId: String, coverImageUrl: String, name: String, images: [String], externalUrls: [String : String], playlistDetails: [CleanSongInfo], deleted: Bool?, liked: Bool?) {
         self.playlistId = playlistId
         self.spotifyId = spotifyId
         self.coverImageUrl = coverImageUrl
@@ -26,6 +27,7 @@ struct FirebasePlaylist : Codable {
         self.externalUrls = externalUrls
         self.deleted = deleted
         self.playlistDetails = playlistDetails
+        self.liked = liked
     }
     
     enum CodingKeys : String, CodingKey {
@@ -37,5 +39,6 @@ struct FirebasePlaylist : Codable {
         case images = "images"
         case externalUrls = "external_urls"
         case playlistDetails = "playlist_info"
+        case liked = "liked"
     }
 }

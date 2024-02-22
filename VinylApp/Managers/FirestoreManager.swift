@@ -55,6 +55,23 @@ class FirestoreManager {
         }
     }
     
+    func fetchLikedStatus(forUserID userID: String, playlistID: String, completion: @escaping (Bool?, Error?) -> Void) {
+        let userPlaylistRef = db.collection("users").document(userID).collection("playlists").document(playlistID)
+
+        userPlaylistRef.getDocument { snapshot, error in
+            if let error = error {
+                completion(nil, error)
+                return
+            }
+
+            if let data = snapshot?.data(), let liked = data["liked"] as? Bool {
+                completion(liked, nil)
+            } else {
+                completion(nil, nil)
+            }
+        }
+    }
+    
     func savePlaylistToFirestore(userID: String, name: String, description: String, songInfo: [CleanSongInfo], imageUrl: String, imageInfo: ImageInfo) async throws -> String {
         return try await withCheckedThrowingContinuation() { continuation in
             savePlaylistToFirestore(userID: userID, name: name, description: description, songInfo: songInfo, imageUrl: imageUrl, imageInfo: imageInfo) { result in

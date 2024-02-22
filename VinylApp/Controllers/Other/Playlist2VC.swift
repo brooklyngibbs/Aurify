@@ -180,14 +180,19 @@ struct Playlist2VC: View {
     
     private var playlistHeader: some View {
         VStack {
-            Text(formatPlaylistName(playlist.name))
-                .padding(.top, 20)
-                .frame(maxWidth: UIScreen.main.bounds.width, alignment: .leading)
-                .lineLimit(4)
-                .font(.custom("Outfit-Bold", size: 25))
-                .foregroundColor(.black)
-                .padding()
-                .background(Color.white)
+            HStack {
+                Text(formatPlaylistName(playlist.name))
+                    .padding(.top, 20)
+                    .frame(maxWidth: UIScreen.main.bounds.width, alignment: .leading)
+                    .lineLimit(4)
+                    .font(.custom("Outfit-Bold", size: 25))
+                    .foregroundColor(.black)
+                    .padding()
+                    .background(Color.white)
+                Spacer()
+                likeButton(playlist.liked ?? false)
+                Spacer()
+            }
                 openInSpotifyButton
             Spacer()
         }
@@ -196,6 +201,61 @@ struct Playlist2VC: View {
     private func formatPlaylistName(_ name: String) -> String {
         // Replace ":" with "\n"
         return name.replacingOccurrences(of: ": ", with: ":\n")
+    }
+    
+    private func likeButton(_ liked: Bool) -> some View {
+        Button(action: {
+            likePlaylist(playlist)
+        }) {
+            if liked {
+                Image(systemName: "heart.fill")
+                    .padding()
+                    .padding(.top, 20)
+                    .font(.system(size: 30))
+            } else {
+                Image(systemName: "heart")
+                    .padding()
+                    .padding(.top, 20)
+                    .font(.system(size: 30))
+            }
+        }
+    }
+    
+    private func likePlaylist(_ playlist: FirebasePlaylist) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Error: User not authenticated.")
+            return
+        }
+
+        let userPlaylistRef = db.collection("users").document(userId).collection("playlists").document(playlist.playlistId)
+
+        // Check if the liked field exists in the document
+        userPlaylistRef.getDocument { snapshot, error in
+            if let error = error {
+                print("Error getting document: \(error)")
+                return
+            }
+
+            if let data = snapshot?.data(), let liked = data["liked"] as? Bool {
+                // Update the liked status to the opposite of its current value
+                userPlaylistRef.updateData(["liked": !liked]) { error in
+                    if let error = error {
+                        print("Error updating liked status: \(error)")
+                    } else {
+                        print("Liked status updated successfully.")
+                    }
+                }
+            } else {
+                // If the liked field doesn't exist, add it and set it to true
+                userPlaylistRef.setData(["liked": true], merge: true) { error in
+                    if let error = error {
+                        print("Error adding liked field: \(error)")
+                    } else {
+                        print("Liked field added successfully.")
+                    }
+                }
+            }
+        }
     }
     
     private var openInSpotifyButton: some View {
