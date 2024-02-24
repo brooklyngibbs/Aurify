@@ -4,6 +4,7 @@ import FirebaseFirestore
 import FirebaseAuth
 import Firebase
 import FirebaseAnalytics
+import AVKit
 
 struct Playlist2VC: View {
     var playlist: FirebasePlaylist
@@ -18,6 +19,7 @@ struct Playlist2VC: View {
     @State private var showAlert = false
     @State private var uploadingPlaylist = false
     @State private var liked: Bool?
+    @State private var currentlyPlayingTrack: AVPlayer?
     
     var tabBarViewController: TabBarViewController
     
@@ -211,30 +213,24 @@ struct Playlist2VC: View {
                 // Empty closure as the completion parameter
             }
         }) {
-            if let liked = liked { // Use liked state
-                if liked {
-                    Image(systemName: "heart.fill")
-                        .padding()
-                        .padding(.top, 20)
-                        .font(.system(size: 35))
-                } else {
-                    Image(systemName: "heart")
-                        .padding()
-                        .padding(.top, 20)
-                        .font(.system(size: 35))
-                }
-            } else {
+            ZStack {
+                Image(systemName: "heart.fill")
+                    .opacity(liked ?? false ? 1 : 0)
+                    .scaleEffect(liked ?? false ? 1.0 : 0.1)
+                    .foregroundColor(liked ?? false ? Color(AppColors.liked_color) : .black)
+                    .animation(Animation.linear(duration: 0.3), value: liked)
                 Image(systemName: "heart")
-                    .padding()
-                    .padding(.top, 20)
-                    .font(.system(size: 35))
+                    .foregroundColor(liked ?? false ? Color(AppColors.liked_color) : .black)
             }
+            .font(.system(size: 35))
+            .padding()
+            .padding(.top, 20)
         }
-        .foregroundColor(liked ?? false ? .black : .black)
         .onAppear {
-            fetchLikedStatus() // Fetch liked status when the view appears
+            fetchLikedStatus()
         }
     }
+
     
     private func fetchLikedStatus() {
         FirestoreManager().fetchLikedStatus(forUserID: Auth.auth().currentUser?.uid ?? "", playlistID: playlist.playlistId) { liked, error in
@@ -391,7 +387,6 @@ struct Playlist2VC: View {
         
         // Return the Spotify playlist URL
         let spotifyURL = updatedPlaylist.externalUrls!["spotify"]
-        print("Spotify URL: \(spotifyURL)")
         return URL(string: spotifyURL ?? "")
     }
 
@@ -400,7 +395,7 @@ struct Playlist2VC: View {
     private var trackList: some View {
         ForEach(playlist.playlistDetails, id: \.spotifyUri) { details in
             let isLastCell = details.spotifyUri == playlist.playlistDetails.last?.spotifyUri
-            TrackCell(viewModel: RecommendedTrackCellViewModel(name: details.title, artistName: details.artistName, artworkURL: URL(string: details.artworkUrl)), isLastCell: isLastCell)
+            TrackCell(viewModel: RecommendedTrackCellViewModel(name: details.title, artistName: details.artistName, artworkURL: URL(string: details.artworkUrl), previewUrl: details.previewUrl), isLastCell: isLastCell, currentlyPlayingTrack: $currentlyPlayingTrack)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
                         .foregroundColor(Color.white)
@@ -484,7 +479,11 @@ struct Playlist2VC: View {
 struct TrackCell: View {
     let viewModel: RecommendedTrackCellViewModel
     let isLastCell: Bool
-    
+    @State private var isPlaying = false
+    @State private var player: AVPlayer?
+    @Binding var currentlyPlayingTrack: AVPlayer?
+    @State private var isClicked = false // Track whether the cell is clicked or not
+
     var body: some View {
         HStack(spacing: 10) {
             if let artworkURL = viewModel.artworkURL {
@@ -522,7 +521,30 @@ struct TrackCell: View {
         }
         .padding(.leading, 20)
         .cornerRadius(12)
+        .onDisappear {
+            player?.pause()
+        }
+        .background(isClicked ? Color.gray.opacity(0.2) : Color.clear)
+        .onTapGesture {
+            print(viewModel.previewUrl)
+            guard let url = URL(string: viewModel.previewUrl) else {
+                print("Preview URL is not valid")
+                return
+            }
         
+            currentlyPlayingTrack?.pause()
+            
+            let playerItem = AVPlayerItem(url: url)
+            let newPlayer = AVPlayer(playerItem: playerItem)
+            newPlayer.play()
+            
+            currentlyPlayingTrack = newPlayer
+            
+            isClicked.toggle()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                isClicked.toggle()
+            }
+        }
     }
 }
 
