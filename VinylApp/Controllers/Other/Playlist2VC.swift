@@ -6,7 +6,7 @@ import Firebase
 import FirebaseAnalytics
 
 struct Playlist2VC: View {
-    let playlist: FirebasePlaylist
+    var playlist: FirebasePlaylist
     @State private var viewModels = [RecommendedTrackCellViewModel]()
     private var cancellables = Set<AnyCancellable>()
     @State private var spotifyPlaylistId = ""
@@ -17,6 +17,7 @@ struct Playlist2VC: View {
     @State private var showingAuthView = false
     @State private var showAlert = false
     @State private var uploadingPlaylist = false
+    @State private var liked: Bool?
     
     var tabBarViewController: TabBarViewController
     
@@ -190,7 +191,7 @@ struct Playlist2VC: View {
                     .padding()
                     .background(Color.white)
                 Spacer()
-                likeButton(playlist.liked ?? false)
+                likeButton()
                 Spacer()
             }
                 openInSpotifyButton
@@ -203,25 +204,49 @@ struct Playlist2VC: View {
         return name.replacingOccurrences(of: ": ", with: ":\n")
     }
     
-    private func likeButton(_ liked: Bool) -> some View {
+    private func likeButton() -> some View {
         Button(action: {
-            likePlaylist(playlist)
+            likePlaylist {
+                // Empty closure as the completion parameter
+            }
         }) {
-            if liked {
-                Image(systemName: "heart.fill")
-                    .padding()
-                    .padding(.top, 20)
-                    .font(.system(size: 30))
+            if let liked = liked { // Use liked state
+                if liked {
+                    Image(systemName: "heart.fill")
+                        .padding()
+                        .padding(.top, 20)
+                        .font(.system(size: 35))
+                } else {
+                    Image(systemName: "heart")
+                        .padding()
+                        .padding(.top, 20)
+                        .font(.system(size: 35))
+                }
             } else {
                 Image(systemName: "heart")
                     .padding()
                     .padding(.top, 20)
-                    .font(.system(size: 30))
+                    .font(.system(size: 35))
             }
+        }
+        .foregroundColor(liked ?? false ? .black : .black)
+        .onAppear {
+            fetchLikedStatus() // Fetch liked status when the view appears
         }
     }
     
-    private func likePlaylist(_ playlist: FirebasePlaylist) {
+    private func fetchLikedStatus() {
+        FirestoreManager().fetchLikedStatus(forUserID: Auth.auth().currentUser?.uid ?? "", playlistID: playlist.playlistId) { liked, error in
+            if let error = error {
+                print("Error fetching liked status: \(error.localizedDescription)")
+            } else {
+                // Update the liked state
+                self.liked = liked ?? false
+            }
+        }
+    }
+
+    private func likePlaylist(completion: @escaping () -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             print("Error: User not authenticated.")
             return
@@ -229,35 +254,25 @@ struct Playlist2VC: View {
 
         let userPlaylistRef = db.collection("users").document(userId).collection("playlists").document(playlist.playlistId)
 
-        // Check if the liked field exists in the document
-        userPlaylistRef.getDocument { snapshot, error in
+        // If liked is nil, default to false
+        let newLikedValue = !(liked ?? false)
+        
+        userPlaylistRef.setData(["liked": newLikedValue], merge: true) { error in
             if let error = error {
-                print("Error getting document: \(error)")
-                return
-            }
-
-            if let data = snapshot?.data(), let liked = data["liked"] as? Bool {
-                // Update the liked status to the opposite of its current value
-                userPlaylistRef.updateData(["liked": !liked]) { error in
-                    if let error = error {
-                        print("Error updating liked status: \(error)")
-                    } else {
-                        print("Liked status updated successfully.")
-                    }
-                }
+                print("Error updating liked status: \(error)")
             } else {
-                // If the liked field doesn't exist, add it and set it to true
-                userPlaylistRef.setData(["liked": true], merge: true) { error in
-                    if let error = error {
-                        print("Error adding liked field: \(error)")
-                    } else {
-                        print("Liked field added successfully.")
-                    }
+                print("Liked status updated successfully.")
+                print("New liked value: \(newLikedValue)")
+                // Update liked state
+                self.liked = newLikedValue
+                // Update playlist property in the enclosing view
+                DispatchQueue.main.async {
+                    completion()
                 }
             }
         }
     }
-    
+
     private var openInSpotifyButton: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20)

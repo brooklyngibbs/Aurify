@@ -120,6 +120,7 @@ class FirestoreManager {
             "name": name,
             "isAppGenerated": true,
             "external_urls": [:],
+            "liked": false,
         ]
                 
         // Add a timestamp to the playlist data
@@ -144,10 +145,12 @@ class FirestoreManager {
         print("Playlist id: \(fsPlaylist.playlistId)")
         let externalUrls = spPlaylist.externalUrls ?? [:]
         let appGenerated = spPlaylist.isAppGenerated ?? true
+        let liked = spPlaylist.liked ?? false
         let timestamp = spPlaylist.timestamp ?? Timestamp.init()
         try await docRef.updateData(["spotify_id": spPlaylist.id,
                                      "external_urls": externalUrls,
                                      "isAppGenerated": appGenerated,
+                                     "liked": liked, 
                                      "timestamp": timestamp])
     }
 }

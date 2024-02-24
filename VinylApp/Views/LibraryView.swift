@@ -14,6 +14,7 @@ struct LibraryView: View {
     
     @State private var showingSettings = false
     @State private var userProfileImage: UIImage?
+    @State private var showAllPlaylists = true
     
     var tabBarViewController: TabBarViewController
     
@@ -104,6 +105,28 @@ struct LibraryView: View {
                             }
                             .frame(height: 220)
                             .padding()
+                            HStack {
+                                Text("All")
+                                    .font(.custom("Outfit-Bold", size: 18))
+                                    .padding(.leading)
+                                    .underline(showAllPlaylists == true, color: .black) // Underline if showAllPlaylists is false
+                                    .onTapGesture {
+                                        showAllPlaylists = true
+                                    }
+                                
+                                Text("Favorites")
+                                    .font(.custom("Outfit-Bold", size: 18))
+                                    .padding(.leading)
+                                    .underline(showAllPlaylists == false, color: .black) // Underline if showAllPlaylists is true
+                                    .onTapGesture {
+                                        showAllPlaylists = false
+                                    }
+                                
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                            
+                            
                             //MARK: PLAYLIST VIEW
                             if playlists.isEmpty {
                                 VStack {
@@ -115,6 +138,17 @@ struct LibraryView: View {
                                         .font(.custom("Inter-Light", size: 18))
                                     Spacer()
                                 }
+                            } else if !showAllPlaylists {
+                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                                    ForEach(filteredPlaylists.indices, id: \.self) { index in
+                                        NavigationLink(destination: Playlist2VC(playlist: filteredPlaylists[index], tabBarViewController: tabBarViewController)) {
+                                            PlaylistCellView(playlist: filteredPlaylists[index])
+                                                .padding(.bottom, 20)
+                                                .id(UUID()) // Ensure each view has a unique ID
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal)
                             } else {
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                                     ForEach(playlists.indices, id: \.self) { index in
@@ -185,6 +219,14 @@ struct LibraryView: View {
             } else {
                 print("Document does not exist")
             }
+        }
+    }
+    
+    private var filteredPlaylists: [FirebasePlaylist] {
+        if showAllPlaylists {
+            return playlists
+        } else {
+            return playlists.filter { $0.liked ?? false }
         }
     }
     

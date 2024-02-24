@@ -19,9 +19,10 @@ struct Playlist: Codable, Identifiable {
     let uri: String
     var isAppGenerated: Bool?
     var timestamp: Timestamp?
+    var liked: Bool?
     
     enum CodingKeys: String, CodingKey {
-        case description, isAppGenerated, id, images, name, owner, uri
+        case description, isAppGenerated, id, images, name, owner, uri, liked
         case externalUrls = "external_urls"
     }
 }
