@@ -146,6 +146,8 @@ struct LibraryView: View {
                                                 .padding(.bottom, 20)
                                                 .id(UUID()) // Ensure each view has a unique ID
                                         }
+                                        .id(filteredPlaylists[index].playlistId)
+                                        
                                     }
                                 }
                                 .padding(.horizontal)
@@ -157,6 +159,7 @@ struct LibraryView: View {
                                                 .padding(.bottom, 20)
                                                 .id(UUID()) // Ensure each view has a unique ID
                                         }
+                                        .id(playlists[index].playlistId)
                                     }
                                 }
                                 .padding(.horizontal)
