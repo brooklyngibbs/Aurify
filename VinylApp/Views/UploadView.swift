@@ -209,6 +209,8 @@ struct SpinningVinylView: View {
 
 struct PleaseSubscribeView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var isSubscribing = false
+    
     var body: some View {
         VStack {
             Spacer()
@@ -222,9 +224,9 @@ struct PleaseSubscribeView: View {
                 .scaledToFit()
                 .frame(width: 200, height: 200)
             Button(action: {
-                dismiss()
+                isSubscribing = true
             }) {
-                Text("Back to Library")
+                Text("Subscribe")
                     .foregroundColor(Color(AppColors.vampireBlack))
                     .font(.custom("Inter-SemiBold", size: 17))
                     .padding(10)
@@ -232,12 +234,25 @@ struct PleaseSubscribeView: View {
                         RoundedRectangle(cornerRadius: 20)
                             .stroke(Color(AppColors.vampireBlack), lineWidth: 1)
                     )
-                    .background(Color.white) // Add background color if needed
+                    .background(Color.white)
+            }
+            .sheet(isPresented: $isSubscribing, content: {
+                PaywallView()
+            })
+            
+            Button(action: {
+                dismiss()
+            }) {
+                Text("Back to Library")
+                    .foregroundColor(Color(AppColors.vampireBlack))
+                    .font(.custom("Inter-SemiBold", size: 17))
+                    .padding(10)
             }
             Spacer()
         }
     }
 }
+
 
 struct UploadView: View {
     @State var showError: Bool = false
