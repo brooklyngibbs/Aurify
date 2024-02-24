@@ -87,22 +87,22 @@ struct Playlist2VC: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(0)
             GeometryReader { geometry in
-                            let screenHeight = geometry.size.height
-                            let blurHeight = screenHeight / 5
-
-                            // Create a gradient to fade out the blur effect
-                            let gradient = LinearGradient(gradient: Gradient(colors: [.clear, .white]), startPoint: .top, endPoint: .bottom)
-
-                            VStack {
-                                Spacer()
-                                Rectangle()
-                                    .fill(gradient)
-                                    .frame(height: blurHeight)
-                                    .blur(radius: 20)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                            .edgesIgnoringSafeArea(.bottom)
-                        }
+                let screenHeight = geometry.size.height
+                let blurHeight = screenHeight / 5
+                
+                // Create a gradient to fade out the blur effect
+                let gradient = LinearGradient(gradient: Gradient(colors: [.clear, .white]), startPoint: .top, endPoint: .bottom)
+                
+                VStack {
+                    Spacer()
+                    Rectangle()
+                        .fill(gradient)
+                        .frame(height: blurHeight)
+                        .blur(radius: 20)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .edgesIgnoringSafeArea(.bottom)
+            }
         }
         .padding(0)
         .navigationBarHidden(false)
@@ -194,7 +194,7 @@ struct Playlist2VC: View {
                 likeButton()
                 Spacer()
             }
-                openInSpotifyButton
+            openInSpotifyButton
             Spacer()
         }
     }
@@ -204,6 +204,7 @@ struct Playlist2VC: View {
         return name.replacingOccurrences(of: ": ", with: ":\n")
     }
     
+    // MARK: Like Button
     private func likeButton() -> some View {
         Button(action: {
             likePlaylist {
@@ -245,15 +246,15 @@ struct Playlist2VC: View {
             }
         }
     }
-
+    
     private func likePlaylist(completion: @escaping () -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             print("Error: User not authenticated.")
             return
         }
-
+        
         let userPlaylistRef = db.collection("users").document(userId).collection("playlists").document(playlist.playlistId)
-
+        
         // If liked is nil, default to false
         let newLikedValue = !(liked ?? false)
         
@@ -272,13 +273,13 @@ struct Playlist2VC: View {
             }
         }
     }
-
+    
     private var openInSpotifyButton: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20)
                 .frame(width: 200, height: 40)
                 .foregroundColor(Color(AppColors.moonstoneBlue))
-
+            
             Button(action: {
                 Task {
                     try await openSpotify()
@@ -345,11 +346,56 @@ struct Playlist2VC: View {
             await UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
             return
         }
-
+        
         // If the Spotify app is installed, open the playlist in the app
         Analytics.logEvent("build_playlist_spotify", parameters: nil)
         await UIApplication.shared.open(spotifyURL, options: [:], completionHandler: nil)
     }
+    
+    private func createPlaylistAndReturnURL() async throws -> URL? {
+        // Ensure playlist exists in Spotify
+        if spotifyPlaylistId == "" {
+            spotifyPlaylistId = try await FirestoreManager().fetchPlaylistIdForDocument(forUserID: Auth.auth().currentUser!.uid, firestorePlaylistId: playlist.playlistId) ?? ""
+        }
+        
+        if spotifyPlaylistId == "" {
+            defer {
+                uploadingPlaylist = false
+            }
+            
+            uploadingPlaylist = true
+            
+            // Create playlist in Spotify
+            let imageManager = try await ImageManager(URL(string: playlist.coverImageUrl)!)
+            let base64Data = try imageManager.convertImageToBase64(maxBytes: 256_000)
+            
+            print("Creating playlist")
+            let spotifyPlaylist = try await APICaller.shared.createPlaylist(with: playlist.name, description: "Created by Aurify")
+            spotifyPlaylistId = spotifyPlaylist.id
+            
+            print("Updating playlist image")
+            try await APICaller.shared.updatePlaylistImage(imageBase64: base64Data, playlistId: spotifyPlaylist.id)
+            
+            let _ = try await APICaller.shared.addTrackArrayToPlaylist(trackURI: playlist.playlistDetails.map {$0.spotifyUri}, playlistId: spotifyPlaylist.id)
+            
+            let updatedPlaylist = try await APICaller.shared.getPlaylist(with: spotifyPlaylistId)
+            
+            // Update Firestore
+            try await FirestoreManager().updateFirestoreWithSpotify(userId: Auth.auth().currentUser!.uid, fsPlaylist: playlist, spPlaylist: updatedPlaylist)
+        }
+        
+        // Print Spotify playlist ID for debugging
+        print("Spotify playlist ID: \(spotifyPlaylistId)")
+        
+        let updatedPlaylist = try await APICaller.shared.getPlaylist(with: spotifyPlaylistId)
+        
+        // Return the Spotify playlist URL
+        let spotifyURL = updatedPlaylist.externalUrls!["spotify"]
+        print("Spotify URL: \(spotifyURL)")
+        return URL(string: spotifyURL ?? "")
+    }
+
+    
     
     private var trackList: some View {
         ForEach(playlist.playlistDetails, id: \.spotifyUri) { details in
@@ -373,34 +419,48 @@ struct Playlist2VC: View {
     
     private func sharePlaylist() {
         Analytics.logEvent("share_playlist", parameters: nil)
-        guard let spotifyURL = spotifyURL else {
-            return
-        }
-
-        let customShareMessage = "Check out my Aurify!"
-
-        let activityViewController = UIActivityViewController(
-            activityItems: [customShareMessage, spotifyURL],
-            applicationActivities: nil
-        )
-
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            // On iPad, set the popover properties to nil if not presenting from a specific view
-            activityViewController.popoverPresentationController?.sourceView = nil
-            activityViewController.popoverPresentationController?.sourceRect = CGRect(x: 0, y: 0, width: 0, height: 0)
-            activityViewController.popoverPresentationController?.permittedArrowDirections = []
-        }
-
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-            let window = windowScene.windows.first {
-            window.rootViewController?.present(
-                activityViewController,
-                animated: true,
-                completion: nil
-            )
+        
+        if let spotifyURL = spotifyURL {
+            share(items: ["Check out my Aurify!", spotifyURL])
+        } else {
+            Task {
+                do {
+                    if let playlistURL = try await createPlaylistAndReturnURL() {
+                        share(items: ["Check out my Aurify!", playlistURL])
+                    } else {
+                        print("Unable to share playlist. Spotify playlist URL is empty.")
+                    }
+                } catch {
+                    print("Error creating playlist: \(error.localizedDescription)")
+                }
+            }
         }
     }
-
+    
+    private func share(items: [Any]) {
+        DispatchQueue.main.async {
+            let activityViewController = UIActivityViewController(
+                activityItems: items,
+                applicationActivities: nil
+            )
+            
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                activityViewController.popoverPresentationController?.sourceView = nil
+                activityViewController.popoverPresentationController?.sourceRect = CGRect(x: 0, y: 0, width: 0, height: 0)
+                activityViewController.popoverPresentationController?.permittedArrowDirections = []
+            }
+            
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first {
+                window.rootViewController?.present(
+                    activityViewController,
+                    animated: true,
+                    completion: nil
+                )
+            }
+        }
+    }
+    
     private func deletePlaylist() {
         if let userId = Auth.auth().currentUser?.uid {
             print("User ID: \(userId)")
