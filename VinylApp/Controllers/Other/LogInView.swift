@@ -21,27 +21,28 @@ struct LogInView: View {
             NavigationView {
                 VStack(spacing: 0) {
                     Spacer()
-                    
                     VStack(spacing: 20) {
-                        Text("Log In")
-                            .font(.custom("Outfit-Bold", size: 35))
+                        Text("Aurify")
+                            .font(.custom("Outfit-Bold", size: 40))
                             .frame(width: geometry.size.width * 0.8) // Adjust the width if needed
+                            .padding(.bottom)
                         
                         TextField("Email", text: $email)
                             .frame(width: geometry.size.width * 0.75)
                             .padding(10)
                             .background(Color.white)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(AppColors.gainsboro), lineWidth: 1))
+                            .cornerRadius(20)
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(AppColors.gainsboro), lineWidth: 1))
                             .font(.custom("Inter-Light", size: 20))
                         
                         SecureField("Password", text: $password)
                             .frame(width: geometry.size.width * 0.75)
                             .padding(10)
                             .background(Color.white)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(AppColors.gainsboro), lineWidth: 1))
+                            .cornerRadius(20)
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(AppColors.gainsboro), lineWidth: 1))
                             .font(.custom("Inter-Light", size: 20))
+                            .padding(.bottom)
                         
                         if showError {
                             Text(errorMessage)
@@ -60,32 +61,47 @@ struct LogInView: View {
                                 .padding(.top, 10)
                             }
                         }
-                        
+                                            
                         Button(action: loginUser) {
-                            Text("Log In")
+                            Text("LOG IN")
                                 .padding(10)
                                 .foregroundColor(.white)
-                                .background(Color(AppColors.moonstoneBlue))
-                                .font(.custom("Inter-Regular", size: 18))
-                                .cornerRadius(8)
+                                .frame(width: geometry.size.width * 0.8)
+                                .background(
+                                    RadialGradient(
+                                        gradient: Gradient(colors: [Color(AppColors.moonstoneBlue), Color(AppColors.radial_color)]),
+                                        center: .center,
+                                        startRadius: 0,
+                                        endRadius: 100
+                                    )
+                                )
+                                .font(.custom("Outfit-Medium", size: 18))
+                                .cornerRadius(20)
+                                .kerning(1.8)
                         }
                         .frame(width: geometry.size.width * 0.8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 25)
+                                .fill(Color.white)
+                                .shadow(color: .gray, radius: 2, x: 0, y: 2)
+                        )
                         
                         Button(action: {
                             showEmailFieldForReset = true
                         }) {
                             Text("Forgot Password?")
                                 .foregroundColor(Color(AppColors.moonstoneBlue))
-                                .font(.custom("Inter-Light", size: 15))
+                                .font(.custom("Inter-Medium", size: 15))
                         }
                         
-                        HStack {
-                            Text("Don't have an account?")
-                                .font(.custom("Inter-Light", size: 15))
+                        VStack {
+                            Text("New here?")
+                                .font(.custom("Inter-Medium", size: 15))
+                                .foregroundColor(.secondary)
                             
                             NavigationLink(destination: SignUpView().navigationBarBackButtonHidden(true)) {
-                                Text("Sign Up")
-                                    .font(.custom("Inter-Light", size: 15))
+                                Text("JOIN THE VIBE")
+                                    .font(.custom("Outfit-Medium", size: 15))
                                     .underline()
                                     .foregroundColor(Color(AppColors.moonstoneBlue))
                             }
@@ -105,7 +121,8 @@ struct LogInView: View {
                     }
                 }
                 .fullScreenCover(isPresented: $navigateToSpotifyLogin) {
-                    SpotifyLogInView()
+                    //SpotifyLogInView()
+                    TaglineView()
                 }
                 .fullScreenCover(isPresented: $showEmailFieldForReset) {
                     NavigationView {
@@ -129,7 +146,6 @@ struct LogInView: View {
     
     func loginUser() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        
         Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
             if let error = error as NSError? {
                 print("Error logging in:", error.localizedDescription)
@@ -143,7 +159,9 @@ struct LogInView: View {
                 }
             } else if let authResult = authResult {
                 if authResult.user.isEmailVerified {
-                    loginSuccess = true
+                    DispatchQueue.main.async {
+                        loginSuccess = true
+                    }
                     Analytics.logEvent("log_in", parameters: [
                         AnalyticsParameterMethod: "email",
                     ])
@@ -178,26 +196,40 @@ struct LogInView: View {
                 Text("Forgot Password?")
                     .font(.custom("Outfit-Bold", size: 35))
                     .frame(width: geometry.size.width * 0.8)
-                    .padding(.bottom, 20) // Adjust the spacing between elements if needed
+                    .padding(.bottom, 20) 
                 
                 TextField("Email", text: $resetEmail)
                     .frame(width: geometry.size.width * 0.75)
                     .padding(10)
                     .background(Color.white)
-                    .cornerRadius(8)
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(AppColors.gainsboro), lineWidth: 1))
+                    .cornerRadius(20)
+                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(AppColors.gainsboro), lineWidth: 1))
                     .font(.custom("Inter-Light", size: 20))
                 
                 Button(action: {
                     resetPassword()
                 }) {
-                    Text("Send Reset Email")
-                        .padding()
+                    Text("SEND RESET EMAIL")
+                        .padding(10)
                         .foregroundColor(.white)
-                        .background(Color(AppColors.moonstoneBlue))
-                        .cornerRadius(8)
-                        .font(.custom("Inter-Light", size: 15))
+                        .frame(width: UIScreen.main.bounds.width * 0.8)
+                        .background(
+                            RadialGradient(
+                                gradient: Gradient(colors: [Color(AppColors.moonstoneBlue), Color(AppColors.radial_color)]),
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 100
+                            )
+                        )
+                        .font(.custom("Outfit-Medium", size: 18))
+                        .cornerRadius(20)
+                        .kerning(1.8)
                 }
+                .background(
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(Color.white)
+                        .shadow(color: .gray, radius: 2, x: 0, y: 2)
+                )
                 .padding()
                 Spacer()
             }

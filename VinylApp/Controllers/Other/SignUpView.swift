@@ -26,30 +26,31 @@ struct SignUpView: View {
                     Spacer()
                     
                     VStack(alignment: .center, spacing: 20) {
-                        Text("Sign Up")
-                            .font(.custom("Outfit-Bold", size: 35))
+                        Text("Aurify")
+                            .font(.custom("Outfit-Bold", size: 40))
+                            .padding(.bottom)
                         
                         TextField("Email", text: $email)
                             .padding(10)
                             .background(Color.white)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(AppColors.gainsboro), lineWidth: 1))
+                            .cornerRadius(20)
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(AppColors.gainsboro), lineWidth: 1))
                             .font(.custom("Inter-Light", size: 20))
                         
                         SecureField("Password", text: $password)
                             .padding(10)
                             .background(Color.white)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(AppColors.gainsboro), lineWidth: 1))
+                            .cornerRadius(20)
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(AppColors.gainsboro), lineWidth: 1))
                             .font(.custom("Inter-Light", size: 20))
-                            .padding(.bottom, 10)
                         
-                        TextField("Name", text: $name)
+                        TextField("Display Name", text: $name)
                             .padding(10)
                             .background(Color.white)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(AppColors.gainsboro), lineWidth: 1))
+                            .cornerRadius(20)
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(AppColors.gainsboro), lineWidth: 1))
                             .font(.custom("Inter-Light", size: 20))
+                            .padding(.bottom)
                         
                         if showError {
                             Text(errorMessage)
@@ -61,21 +62,36 @@ struct SignUpView: View {
                         }
                         
                         Button(action: signUp) {
-                            Text("Sign Up")
+                            Text("SIGN UP")
                                 .padding(10)
                                 .foregroundColor(.white)
-                                .background(Color(AppColors.moonstoneBlue))
-                                .font(.custom("Inter-Regular", size: 18))
-                                .cornerRadius(8)
+                                .frame(width: UIScreen.main.bounds.width * 0.8)
+                                .background(
+                                    RadialGradient(
+                                        gradient: Gradient(colors: [Color(AppColors.moonstoneBlue), Color(AppColors.radial_color)]),
+                                        center: .center,
+                                        startRadius: 0,
+                                        endRadius: 100
+                                    )
+                                )
+                                .font(.custom("Outfit-Medium", size: 18))
+                                .cornerRadius(20)
+                                .kerning(1.8)
                         }
+                        .background(
+                            RoundedRectangle(cornerRadius: 25)
+                                .fill(Color.white)
+                                .shadow(color: .gray, radius: 2, x: 0, y: 2)
+                        )
                         
-                        HStack {
+                        VStack {
                             Text("Already have an account?")
-                                .font(.custom("Inter-Light", size: 15))
+                                .font(.custom("Inter-Medium", size: 15))
+                                .foregroundColor(.secondary)
                             
                             NavigationLink(destination: LogInView().navigationBarBackButtonHidden(true)) {
-                                Text("Log In")
-                                    .font(.custom("Log in", size: 15))
+                                Text("LOG IN")
+                                    .font(.custom("Outfit-Medium", size: 15))
                                     .underline()
                                     .foregroundColor(Color(AppColors.moonstoneBlue))
                             }

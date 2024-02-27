@@ -31,6 +31,9 @@
 		<string>Inter-Medium.ttf</string>
 		<string>Inter-Bold.ttf</string>
 		<string>Inter-SemiBold.ttf</string>
+		<string>Outfit-Medium.ttf</string>
+		<string>PlayfairDisplay-Bold.ttf</string>
+		<string>PlayfairDisplay-Italic.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
