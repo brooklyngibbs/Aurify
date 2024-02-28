@@ -15,6 +15,7 @@ struct LogInView: View {
     @State private var resetPasswordSuccess: Bool = false
     @State private var showForgotPasswordAlert: Bool = false
     @State private var showEmailFieldForReset: Bool = false
+    @State private var isLoading: Bool = false
     
     var body: some View {
         GeometryReader { geometry in

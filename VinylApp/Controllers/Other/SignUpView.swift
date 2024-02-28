@@ -7,7 +7,6 @@ import FirebaseAnalytics
 struct SignUpView: View {
     @State private var email: String = ""
     @State private var password: String = ""
-    @State private var name: String = ""
     @State private var userCreated: Bool = false
     @State private var navigateToLogin: Bool = false
 
@@ -38,13 +37,6 @@ struct SignUpView: View {
                             .font(.custom("Inter-Light", size: 20))
                         
                         SecureField("Password", text: $password)
-                            .padding(10)
-                            .background(Color.white)
-                            .cornerRadius(20)
-                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(AppColors.gainsboro), lineWidth: 1))
-                            .font(.custom("Inter-Light", size: 20))
-                        
-                        TextField("Display Name", text: $name)
                             .padding(10)
                             .background(Color.white)
                             .cornerRadius(20)
@@ -117,7 +109,8 @@ struct SignUpView: View {
             .padding(.horizontal, 20)
             .edgesIgnoringSafeArea(.all)
             .fullScreenCover(isPresented: $userCreated) {
-                LogInView()
+                //LogInView()
+                DisplayNameView()
             }
         }
         .onAppear {
@@ -140,9 +133,10 @@ struct SignUpView: View {
     }
 
     
-    func createUser(email: String, password: String, name: String, completion: @escaping (AuthDataResult?, Error?) -> Void) {
+    func createUser(email: String, password: String, completion: @escaping (AuthDataResult?, Error?) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
             if let error = error {
+                print("Error creating user: \(error.localizedDescription)")
                 completion(nil, error)
                 return
             }
@@ -155,18 +149,22 @@ struct SignUpView: View {
 
             let db = Firestore.firestore()
             let userData: [String: Any] = [
-                "email": email,
-                "name": name
+                "email": email
             ]
+
+            print("Attempting to save email: \(email)")
 
             // Set the user data in Firestore under 'users/userId'
             db.collection("users").document(user.uid).setData(userData) { error in
                 if let error = error {
+                    print("Error setting user data: \(error.localizedDescription)")
                     completion(nil, error)
                 } else {
+                    print("User data set successfully")
                     completion(authResult, nil)
                 }
             }
+
         }
     }
 
@@ -181,8 +179,7 @@ struct SignUpView: View {
             return
         }
 
-        // Create the user with the name
-        createUser(email: email, password: password, name: name) { authResult, error in
+        createUser(email: email, password: password) { authResult, error in
             if let error = error as NSError? {
                 switch error.code {
                 case AuthErrorCode.emailAlreadyInUse.rawValue:
@@ -199,7 +196,7 @@ struct SignUpView: View {
             } else if let authResult = authResult {
                 print("User created successfully")
                 Analytics.logEvent("sign_up", parameters: nil)
-                sendEmailVerification(for: authResult.user) // Call to send email verification
+                sendEmailVerification(for: authResult.user)
                 self.userCreated = true
             }
         }
@@ -213,7 +210,7 @@ struct SignUpView: View {
                 print("Error sending verification email:", error.localizedDescription)
             } else {
                 print("Verification email sent successfully")
-                // You may want to inform the user to check their email for verification
+                //inform user somehow 
             }
         }
     }

@@ -133,6 +133,7 @@ struct LibraryView: View {
                                     Spacer()
                                     Text("Uh oh!")
                                         .padding(.bottom, 10)
+                                        .padding(.top, 10)
                                         .font(.custom("Outfit-Bold", size: 30))
                                     Text("No playlists yet.")
                                         .font(.custom("Inter-Light", size: 18))
@@ -257,18 +258,34 @@ struct LibraryView: View {
     private func loadDefaultImageFromStorage() {
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let profilePicsRef = storageRef.child("profilePics/defaultProfilePic.jpg")
+        let userID = Auth.auth().currentUser!.uid
+        let tempProfilePicsRef = storageRef.child("profilePics/tempProfilePics")
         
-        profilePicsRef.getData(maxSize: 10 * 1024 * 1024) { [self] data, error in
+        // List all images in the tempProfilePics folder
+        tempProfilePicsRef.listAll { [self] (result, error) in
             if let error = error {
-                print("Error downloading profile image: \(error.localizedDescription)")
-                
-            } else {
-                if let imageData = data, let loadedImage = UIImage(data: imageData) {
-                    DispatchQueue.main.async {
-                        self.userProfileImage = loadedImage
+                print("Error listing files in tempProfilePics folder: \(error.localizedDescription)")
+            } else if let randomImage = result!.items.randomElement() {
+                // Get a random image from the list
+                randomImage.getData(maxSize: 10 * 1024 * 1024) { data, error in
+                    if let error = error {
+                        print("Error downloading random profile image: \(error.localizedDescription)")
+                    } else if let imageData = data {
+                        // Upload the random image to the user's storage path
+                        let userProfilePicRef = storageRef.child("profilePics/\(userID)/profileImage.jpg")
+                        userProfilePicRef.putData(imageData, metadata: nil) { metadata, error in
+                            if let error = error {
+                                print("Error uploading random profile image: \(error.localizedDescription)")
+                            } else {
+                                print("Random profile image uploaded successfully")
+                                // After uploading, load the random image
+                                self.userProfileImage = UIImage(data: imageData)
+                            }
+                        }
                     }
                 }
+            } else {
+                print("No images found in tempProfilePics folder")
             }
         }
     }
