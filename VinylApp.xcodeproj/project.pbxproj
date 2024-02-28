@@ -13,6 +13,7 @@
 		662930EC2B617C75002B10F9 /* headphones.png in Resources */ = {isa = PBXBuildFile; fileRef = 662930EB2B617C75002B10F9 /* headphones.png */; };
 		662A9AC62B587DC200A39EA6 /* Spotify_Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */; };
 		664534722B8E969E008EABB2 /* TakeMeToAurifyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664534712B8E969E008EABB2 /* TakeMeToAurifyView.swift */; };
+		664534742B8EBA18008EABB2 /* camera_shutter.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 664534732B8EBA18008EABB2 /* camera_shutter.mp3 */; };
 		664F343B2B2BB90100613F01 /* SpotfiyLogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F343A2B2BB90100613F01 /* SpotfiyLogInView.swift */; };
 		664F343F2B2BC3D100613F01 /* LogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F343E2B2BC3D100613F01 /* LogInView.swift */; };
 		66547A102AE6DE3F009CD777 /* AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66547A0F2AE6DE3F009CD777 /* AudioTrack.swift */; };
@@ -97,6 +98,7 @@
 		662A9AC52B587DC200A39EA6 /* Spotify_Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotify_Logo.png; path = vinyl_images/Spotify_Logo.png; sourceTree = SOURCE_ROOT; };
 		662F79DE2AE48BA500CEF5CD /* VinylApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VinylApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		664534712B8E969E008EABB2 /* TakeMeToAurifyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TakeMeToAurifyView.swift; sourceTree = "<group>"; };
+		664534732B8EBA18008EABB2 /* camera_shutter.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = camera_shutter.mp3; path = VinylApp/Resources/Audio/camera_shutter.mp3; sourceTree = SOURCE_ROOT; };
 		664F343A2B2BB90100613F01 /* SpotfiyLogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotfiyLogInView.swift; sourceTree = "<group>"; };
 		664F343E2B2BC3D100613F01 /* LogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInView.swift; sourceTree = "<group>"; };
 		66547A0F2AE6DE3F009CD777 /* AudioTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTrack.swift; sourceTree = "<group>"; };
@@ -186,6 +188,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		664534752B8EBA1D008EABB2 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				664534732B8EBA18008EABB2 /* camera_shutter.mp3 */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
 		66547A0E2AE67887009CD777 /* Other */ = {
 			isa = PBXGroup;
 			children = (
@@ -296,6 +306,7 @@
 		66DF3CDC2AE62BD9003CB1E2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				664534752B8EBA1D008EABB2 /* Audio */,
 				66F70FA02B0D152D005062AD /* Fonts */,
 				66F70F982B0D103C005062AD /* Images */,
 				6655DB202AE1FD8F00BC619F /* GoogleService-Info.plist */,
@@ -467,6 +478,7 @@
 			files = (
 				66F70FA82B0D1765005062AD /* ZillaSlab-Light.ttf in Resources */,
 				669CFFBF2B237B77007ECC81 /* Spotify_Icon.png in Resources */,
+				664534742B8EBA18008EABB2 /* camera_shutter.mp3 in Resources */,
 				66784C112B19959B00EDCB4B /* vinyl3.png in Resources */,
 				6673F40F2B1901D900A18E79 /* headphones_man.jpeg in Resources */,
 				66F70F972B0C9A42005062AD /* Launch Screen.storyboard in Resources */,
