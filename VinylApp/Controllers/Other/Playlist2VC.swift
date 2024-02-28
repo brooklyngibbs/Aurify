@@ -6,6 +6,11 @@ import Firebase
 import FirebaseAnalytics
 import AVKit
 
+class PlayerViewModel: ObservableObject {
+    @Published var currentlyPlayingTrack: AVPlayer?
+    @Published var currentlyPlayingTrackId: String?
+}
+
 struct Playlist2VC: View {
     var playlist: FirebasePlaylist
     @State private var viewModels = [RecommendedTrackCellViewModel]()
@@ -20,6 +25,7 @@ struct Playlist2VC: View {
     @State private var uploadingPlaylist = false
     @State private var liked: Bool?
     @State private var currentlyPlayingTrack: AVPlayer?
+    @StateObject var playerViewModel = PlayerViewModel()
     
     var tabBarViewController: TabBarViewController
     
@@ -230,7 +236,7 @@ struct Playlist2VC: View {
             fetchLikedStatus()
         }
     }
-
+    
     
     private func fetchLikedStatus() {
         FirestoreManager().fetchLikedStatus(forUserID: Auth.auth().currentUser?.uid ?? "", playlistID: playlist.playlistId) { liked, error in
@@ -389,13 +395,13 @@ struct Playlist2VC: View {
         let spotifyURL = updatedPlaylist.externalUrls!["spotify"]
         return URL(string: spotifyURL ?? "")
     }
-
+    
     
     
     private var trackList: some View {
         ForEach(playlist.playlistDetails, id: \.spotifyUri) { details in
             let isLastCell = details.spotifyUri == playlist.playlistDetails.last?.spotifyUri
-            TrackCell(viewModel: RecommendedTrackCellViewModel(name: details.title, artistName: details.artistName, artworkURL: URL(string: details.artworkUrl), previewUrl: details.previewUrl), isLastCell: isLastCell, currentlyPlayingTrack: $currentlyPlayingTrack)
+            TrackCell(viewModel: RecommendedTrackCellViewModel(name: details.title, artistName: details.artistName, artworkURL: URL(string: details.artworkUrl), previewUrl: details.previewUrl), isLastCell: isLastCell, playerViewModel: playerViewModel, trackId: details.spotifyUri)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
                         .foregroundColor(Color.white)
@@ -480,12 +486,13 @@ struct TrackCell: View {
     let viewModel: RecommendedTrackCellViewModel
     let isLastCell: Bool
     @State private var isPlaying = false
-    @State private var player: AVPlayer?
-    @Binding var currentlyPlayingTrack: AVPlayer?
-    @State private var isClicked = false // Track whether the cell is clicked or not
+    @State private var isClicked = false
+    @ObservedObject var playerViewModel: PlayerViewModel
+    let trackId: String
 
     var body: some View {
         HStack(spacing: 10) {
+            // Track artwork and details
             if let artworkURL = viewModel.artworkURL {
                 AsyncImage(url: artworkURL) { phase in
                     switch phase {
@@ -507,7 +514,7 @@ struct TrackCell: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 45, height: 45)
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(viewModel.name)
                     .font(.custom("Inter-Medium", size: 15))
@@ -518,34 +525,69 @@ struct TrackCell: View {
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+
+            if isPlaying {
+                Button(action: {
+                    playerViewModel.currentlyPlayingTrack?.pause()
+                    playerViewModel.currentlyPlayingTrack = nil
+                    playerViewModel.currentlyPlayingTrackId = nil
+                    isPlaying = false
+                }) {
+                    Image(systemName: "pause.circle")
+                        .font(.system(size: 25))
+                        .foregroundColor(.secondary)
+                        .padding(.trailing, 20) // Apply padding to the Image instead of the Button
+                }
+                .buttonStyle(PlainButtonStyle()) // Add this line to remove any default button styling
+            }
         }
         .padding(.leading, 20)
         .cornerRadius(12)
         .onDisappear {
-            player?.pause()
+            playerViewModel.currentlyPlayingTrack?.pause()
         }
         .background(isClicked ? Color.gray.opacity(0.2) : Color.clear)
         .onTapGesture {
-            print(viewModel.previewUrl)
             guard let url = URL(string: viewModel.previewUrl) else {
                 print("Preview URL is not valid")
                 return
             }
-        
-            currentlyPlayingTrack?.pause()
-            
-            let playerItem = AVPlayerItem(url: url)
-            let newPlayer = AVPlayer(playerItem: playerItem)
-            newPlayer.play()
-            
-            currentlyPlayingTrack = newPlayer
-            
+
+            if isPlaying {
+                playerViewModel.currentlyPlayingTrack?.pause()
+                playerViewModel.currentlyPlayingTrack = nil
+                playerViewModel.currentlyPlayingTrackId = nil
+                isPlaying = false
+            } else {
+                if playerViewModel.currentlyPlayingTrackId != trackId {
+                    playerViewModel.currentlyPlayingTrack?.pause()
+                    playerViewModel.currentlyPlayingTrackId = nil
+                }
+
+                let playerItem = AVPlayerItem(url: url)
+                let newPlayer = AVPlayer(playerItem: playerItem)
+                newPlayer.play()
+
+                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { _ in
+                    self.isPlaying = false
+                    self.playerViewModel.currentlyPlayingTrack = nil
+                    self.playerViewModel.currentlyPlayingTrackId = nil
+                }
+
+                playerViewModel.currentlyPlayingTrack = newPlayer
+                playerViewModel.currentlyPlayingTrackId = trackId
+                isPlaying = true
+            }
+
             isClicked.toggle()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 isClicked.toggle()
             }
         }
+        .onChange(of: playerViewModel.currentlyPlayingTrackId) { newTrackId in
+            if newTrackId != trackId {
+                isPlaying = false
+            }
+        }
     }
 }
-
-

@@ -66,6 +66,7 @@ struct ProfilePicView: View {
                             } else {
                                 print("No image selected")
                             }
+                            isProfilePicSaved = true
                         }) {
                             Text("LOOKS GOOD")
                                 .padding(10)
@@ -91,6 +92,7 @@ struct ProfilePicView: View {
                         
                         Button(action: {
                             defaultProfilePic()
+                            isProfilePicSaved = true
                         }) {
                             Text("SKIP FOR NOW")
                                 .padding(10)
@@ -140,7 +142,6 @@ struct ProfilePicView: View {
                 print("Error uploading image: \(error.localizedDescription)")
             } else {
                 print("Image uploaded successfully")
-                isProfilePicSaved = true
             }
         }
     }
@@ -184,7 +185,6 @@ struct ProfilePicView: View {
                         return
                     }
                     print("Random profile picture uploaded successfully")
-                    isProfilePicSaved = true
                 }
             }
         }
