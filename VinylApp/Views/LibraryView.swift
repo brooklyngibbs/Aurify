@@ -175,7 +175,6 @@ struct LibraryView: View {
         .accentColor(Color(AppColors.vampireBlack))
         .task {
             let userID = Auth.auth().currentUser!.uid
-            print("userID = \(userID)")
             listener?.remove()
             listener = FirestoreManager().fetchPlaylistIDListener(forUserID: userID) {
                 playlists = $0

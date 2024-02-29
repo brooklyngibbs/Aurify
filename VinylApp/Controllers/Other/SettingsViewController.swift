@@ -529,40 +529,56 @@ struct ReauthView: View {
     var body: some View {
         NavigationView {
             VStack {
+                
+                Spacer()
+                
                 Text("Delete Account")
                     .font(.custom("Outfit-Bold", size: 35))
                 
                 TextField("Email", text: $email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(10)
+                    .background(Color.white)
+                    .cornerRadius(20)
+                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(AppColors.gainsboro), lineWidth: 1))
                     .font(.custom("Inter-Light", size: 20))
-                    .padding()
                 
                 SecureField("Password", text: $password)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(10)
+                    .background(Color.white)
+                    .cornerRadius(20)
+                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(AppColors.gainsboro), lineWidth: 1))
                     .font(.custom("Inter-Light", size: 20))
-                    .padding()
+                
+                Spacer()
                 
                 Button(action: {
                     reauthenticate()
                 }) {
-                    Text("Confirm")
-                        .foregroundColor(Color.white)
-                        .padding()
-                        .font(.custom("Inter-Regular", size: 18))
-                        .background(Color(AppColors.moonstoneBlue))
-                        .cornerRadius(8)
+                    Text("CONFIRM")
+                        .padding(10)
+                        .foregroundColor(.white)
+                        .frame(width: UIScreen.main.bounds.width * 0.8)
+                        .background(
+                            RadialGradient(
+                                gradient: Gradient(colors: [Color(AppColors.moonstoneBlue), Color(AppColors.radial_color)]),
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 100
+                            )
+                        )
+                        .font(.custom("Outfit-Medium", size: 18))
+                        .cornerRadius(20)
+                        .kerning(1.8)
                 }
-                
-                // Display an error message if reauthentication fails
-                if let error = reauthError {
-                    Text(error)
-                        .foregroundColor(.red)
-                        .padding()
-                }
+                .background(
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(Color.white)
+                        .shadow(color: .gray, radius: 2, x: 0, y: 2)
+                )
+                .padding(.bottom, 20)
             }
             .padding()
             .navigationBarItems(leading: Button("Cancel") {
-                // Handle back action, for example, by dismissing the sheet or navigating back
                 isReauthSuccessful = false
             })
             .foregroundColor(Color(AppColors.vampireBlack))
@@ -576,7 +592,6 @@ struct ReauthView: View {
             return
         }
         
-        // Create credentials using the provided email and password
         let credentials = EmailAuthProvider.credential(withEmail: email, password: password)
         
         // Reauthenticate the user
