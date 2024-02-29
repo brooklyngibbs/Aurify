@@ -10,6 +10,10 @@ struct ProfilePicView: View {
     @State private var selectedImage: UIImage?
     @State private var isImagePickerPresented = false
     @State private var isProfilePicSaved = false
+    @State private var textOffset1: CGFloat = -UIScreen.main.bounds.width
+    @State private var textOffset2: CGFloat = -UIScreen.main.bounds.width
+    @State private var textOffset3: CGFloat = -UIScreen.main.bounds.width
+    @State private var buttonOpacity: Double = 0
 
     var body: some View {
         NavigationStack {
@@ -24,11 +28,23 @@ struct ProfilePicView: View {
                                 .foregroundColor(.white)
                                 .font(.custom("PlayfairDisplay-Bold", size: 50))
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .offset(x: textOffset1)
+                                .onAppear {
+                                    withAnimation(Animation.easeOut(duration: 0.8).delay(0.5)) {
+                                        textOffset1 = 10
+                                    }
+                                }
                                 .padding(.leading, 10)
                             Text("set a profile picture.")
                                 .foregroundColor(.white)
                                 .font(.custom("PlayfairDisplay-Bold", size: 30))
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .offset(x: textOffset2)
+                                .onAppear {
+                                    withAnimation(Animation.easeOut(duration: 0.8).delay(1.0)) {
+                                        textOffset2 = 10
+                                    }
+                                }
                                 .padding(.leading, 10)
                         }
                         .frame(height: geometry.size.height / 3)
@@ -51,6 +67,15 @@ struct ProfilePicView: View {
                                     .scaledToFit()
                                     .frame(width: 190, height: 190)
                                     .clipShape(Circle())
+                            }
+                        }
+                        .offset(x: textOffset3)
+                        .onAppear {
+                            withAnimation(Animation.easeOut(duration: 0.8).delay(1.5)) {
+                                textOffset3 = 10
+                            }
+                            withAnimation(Animation.easeInOut(duration: 0.5).delay(1.7)) {
+                                buttonOpacity = 1
                             }
                         }
                         .padding(.top, 40)
@@ -103,6 +128,7 @@ struct ProfilePicView: View {
                                 .kerning(1.8)
                         }
                     }
+                    .opacity(buttonOpacity)
                     .padding(.bottom, 20)
                 }
             }
@@ -114,7 +140,7 @@ struct ProfilePicView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        NavigationLink(destination: WelcomeSignInView(), isActive: $isProfilePicSaved) {
+        NavigationLink(destination: NotificationView(), isActive: $isProfilePicSaved) {
             EmptyView()
         }
         .hidden()

@@ -16,8 +16,6 @@ struct SignUpView: View {
     @State private var showSuccess: Bool = false
     @State private var successMessage: String = ""
     
-    @State private var firestoreEmails: [String] = []
-    
     var body: some View {
         NavigationView {
             ZStack {
@@ -113,25 +111,7 @@ struct SignUpView: View {
                 DisplayNameView()
             }
         }
-        .onAppear {
-            fetchFirestoreEmails()
-        }
     }
-    
-    func fetchFirestoreEmails() {
-        let db = Firestore.firestore()
-        
-        db.collection("test").document("test").getDocument { document, error in
-            if let error = error {
-                print("Error fetching document: \(error)")
-            } else {
-                if let data = document?.data() {
-                    self.firestoreEmails = data.values.compactMap { $0 as? String }
-                }
-            }
-        }
-    }
-
     
     func createUser(email: String, password: String, completion: @escaping (AuthDataResult?, Error?) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
@@ -172,13 +152,6 @@ struct SignUpView: View {
     func signUp() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
 
-        // Check if the email is in the Firestore array
-        guard firestoreEmails.contains(email) else {
-            errorMessage = "Development mode user limit reached. Unable to create more users."
-            showError = true
-            return
-        }
-
         createUser(email: email, password: password) { authResult, error in
             if let error = error as NSError? {
                 switch error.code {
@@ -188,7 +161,6 @@ struct SignUpView: View {
                 case AuthErrorCode.weakPassword.rawValue:
                     errorMessage = "Password should be at least 6 characters"
                     showError = true
-                // Add more cases for other error codes if needed
                 default:
                     errorMessage = "An error occurred"
                     showError = true

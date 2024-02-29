@@ -3,6 +3,7 @@ import SwiftUI
 import Firebase
 import UserNotifications
 import FirebaseMessaging
+import RevenueCat
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -12,18 +13,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
 
+        Purchases.logLevel = .debug
+        Purchases.configure(withAPIKey: APICaller.Constants.revenueKey)
+        Purchases.shared.delegate = self
+        
         // Register for remote notifications
         UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
-            if let error = error {
-                print("Failed to request authorization for notifications: \(error.localizedDescription)")
-                return
-            }
-            DispatchQueue.main.async {
-                application.registerForRemoteNotifications()
-            }
-        }
-
         // Set up messaging delegate
         Messaging.messaging().delegate = self
 
@@ -86,7 +81,26 @@ extension AppDelegate: MessagingDelegate {
 
     // Handle FCM token refresh
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("Firebase registration token: \(String(describing: fcmToken))")
+        //print("Firebase registration token: \(String(describing: fcmToken))")
     }
 
+}
+
+extension AppDelegate: PurchasesDelegate {
+    func purchases(_ purchases: Purchases, receivedUpdated customerInfo: CustomerInfo) {
+        Task {
+            do {
+                if let entitlement = customerInfo.entitlements.all["fullAccess"], entitlement.isActive {
+                    try await SubscriptionManager.getSubscriptionType()
+                    print("User is premium!")
+                } else {
+                    // User is not "premium" or entitlement is not active
+                    try await SubscriptionManager.getSubscriptionType()
+                    print("User is not premium.")
+                }
+            } catch {
+                print("Error fetching subscription type: \(error.localizedDescription)")
+            }
+        }
+    }
 }

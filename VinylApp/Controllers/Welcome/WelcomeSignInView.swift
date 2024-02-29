@@ -7,6 +7,10 @@ import UIKit
 
 struct WelcomeSignInView: View {
     
+    @State private var textOffset1: CGFloat = -UIScreen.main.bounds.width
+    @State private var textOffset2: CGFloat = -UIScreen.main.bounds.width
+    @State private var buttonOpacity: Double = 0
+    
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
@@ -20,11 +24,26 @@ struct WelcomeSignInView: View {
                                 .foregroundColor(.white)
                                 .font(.custom("PlayfairDisplay-Bold", size: 50))
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .offset(x: textOffset1)
+                                .onAppear {
+                                    withAnimation(Animation.easeOut(duration: 0.8).delay(0.5)) {
+                                        textOffset1 = 10
+                                    }
+                                }
                                 .padding(.leading, 10)
                             Text("Now, let's sign you in.")
                                 .foregroundColor(.white)
                                 .font(.custom("PlayfairDisplay-Bold", size: 30))
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .offset(x: textOffset2)
+                                .onAppear {
+                                    withAnimation(Animation.easeOut(duration: 0.8).delay(0.7)) {
+                                        textOffset2 = 10
+                                    }
+                                    withAnimation(Animation.easeInOut(duration: 0.5).delay(0.9)) {
+                                        buttonOpacity = 1
+                                    }
+                                }
                                 .padding(.leading, 10)
                         }
                         .frame(height: geometry.size.height / 3)
@@ -53,6 +72,7 @@ struct WelcomeSignInView: View {
                                 .fill(Color.white)
                                 .shadow(color: .gray, radius: 2, x: 0, y: 2)
                         )
+                        .opacity(buttonOpacity)
                         .navigationBarBackButtonHidden(true)
                     }
                     .padding(.bottom, 20)

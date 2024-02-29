@@ -66,6 +66,7 @@
 		66A0A0E42AE65D4C002EE3B6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A0A0E32AE65D4C002EE3B6 /* SettingsViewController.swift */; };
 		66B3B9682AE77F0D00129B1F /* PlayerControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B3B9672AE77F0D00129B1F /* PlayerControlsView.swift */; };
 		66B7A4952B0DEE5A004C81D5 /* spotify_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B7A4942B0DEE5A004C81D5 /* spotify_image.png */; };
+		66D1F12F2B912C09008824CD /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D1F12E2B912C09008824CD /* NotificationView.swift */; };
 		66DC737A2B0FE93A007ECCB5 /* LabelTexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */; };
 		66DC737C2B0FEC0A007ECCB5 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */; };
 		66DF26142B5DBE29007C734B /* Spotify_Icon_White.png in Resources */ = {isa = PBXBuildFile; fileRef = 66DF26132B5DBE29007C734B /* Spotify_Icon_White.png */; };
@@ -156,6 +157,7 @@
 		66A0A0E32AE65D4C002EE3B6 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		66B3B9672AE77F0D00129B1F /* PlayerControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControlsView.swift; sourceTree = "<group>"; };
 		66B7A4942B0DEE5A004C81D5 /* spotify_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = spotify_image.png; path = ../../../vinyl_images/spotify_image.png; sourceTree = "<group>"; };
+		66D1F12E2B912C09008824CD /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
 		66DC73792B0FE93A007ECCB5 /* LabelTexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelTexts.swift; sourceTree = "<group>"; };
 		66DC737B2B0FEC0A007ECCB5 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
 		66DF26132B5DBE29007C734B /* Spotify_Icon_White.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotify_Icon_White.png; path = vinyl_images/Spotify_Icon_White.png; sourceTree = SOURCE_ROOT; };
@@ -236,6 +238,7 @@
 				6658FD3E2B8ED2180079A914 /* DisplayNameView.swift */,
 				6658FD402B8FCE930079A914 /* ProfilePicView.swift */,
 				6658FD442B8FDA050079A914 /* WelcomeSignInView.swift */,
+				66D1F12E2B912C09008824CD /* NotificationView.swift */,
 			);
 			path = Welcome;
 			sourceTree = "<group>";
@@ -600,6 +603,7 @@
 				66547A102AE6DE3F009CD777 /* AudioTrack.swift in Sources */,
 				66A0A0E42AE65D4C002EE3B6 /* SettingsViewController.swift in Sources */,
 				6681E5B12AE1FC4700A81DB5 /* SceneDelegate.swift in Sources */,
+				66D1F12F2B912C09008824CD /* NotificationView.swift in Sources */,
 				FC9F95302B618D45004E071E /* SongInfo.swift in Sources */,
 				66547A1C2AE6EFD6009CD777 /* AlbumDetailsResponse.swift in Sources */,
 				66DF3CD82AE61B08003CB1E2 /* AuthViewController.swift in Sources */,
