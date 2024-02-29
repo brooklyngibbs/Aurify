@@ -1,78 +1,92 @@
-//
-//  AppDelegate.swift
-//  VinylApp
-//
-//  Created by Brooklyn Gibbs on 10/19/23.
-//
-
 import UIKit
-import Firebase
-import FirebaseFirestore
-import FirebaseAuth
 import SwiftUI
-import RevenueCat
+import Firebase
+import UserNotifications
+import FirebaseMessaging
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
+
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
-        Purchases.logLevel = .debug
-        Purchases.configure(withAPIKey: APICaller.Constants.revenueKey)
-        Purchases.shared.delegate = self
+
+        // Register for remote notifications
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            if let error = error {
+                print("Failed to request authorization for notifications: \(error.localizedDescription)")
+                return
+            }
+            DispatchQueue.main.async {
+                application.registerForRemoteNotifications()
+            }
+        }
+
+        // Set up messaging delegate
+        Messaging.messaging().delegate = self
+
+        // Set up the initial window
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        self.setRootViewController()
+        self.window?.makeKeyAndVisible()
+
+        return true
+    }
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
         
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        if AuthManager.shared.isSignedIn {
-            AuthManager.shared.refreshIfNeeded(completion: nil)
-            window.rootViewController = TabBarViewController()
-        } else if Auth.auth().currentUser != nil {
-            window.rootViewController = TabBarViewController()
+        // Subscribe to the "dailyTheme" topic
+        Messaging.messaging().subscribe(toTopic: "dailyTheme") { error in
+            if let error = error {
+                print("Error subscribing to topic: \(error.localizedDescription)")
+            } else {
+                print("Subscribed to dailyTheme topic")
+            }
+        }
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Failed to register for remote notifications: \(error.localizedDescription)")
+    }
+
+    func setRootViewController() {
+        if let currentUser = Auth.auth().currentUser {
+            print("User is signed in with UID: \(currentUser.uid)")
+            self.window?.rootViewController = TabBarViewController()
         } else {
+            print("No user is signed in.")
             let accountView = LogInView()
             let hostingController = UIHostingController(rootView: accountView)
             let navVC = UINavigationController(rootViewController: hostingController)
             navVC.navigationBar.prefersLargeTitles = true
             navVC.viewControllers.first?.navigationItem.largeTitleDisplayMode = .always
-            window.rootViewController = navVC
-        }
-        window.makeKeyAndVisible()
-        self.window = window
-        
-        return true
-    }
-    
-
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        // Called when a new scene session is being created.
-        // Use this method to select a configuration to create the new scene with.
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-    }
-
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-    }
-}
-
-extension AppDelegate: PurchasesDelegate {
-    func purchases(_ purchases: Purchases, receivedUpdated customerInfo: CustomerInfo) {
-        Task {
-            do {
-                if let entitlement = customerInfo.entitlements.all["fullAccess"], entitlement.isActive {
-                    try await SubscriptionManager.getSubscriptionType()
-                    print("User is premium!")
-                } else {
-                    // User is not "premium" or entitlement is not active
-                    try await SubscriptionManager.getSubscriptionType()
-                    print("User is not premium.")
-                }
-            } catch {
-                print("Error fetching subscription type: \(error.localizedDescription)")
-            }
+            self.window?.rootViewController = navVC
         }
     }
 }
 
+extension AppDelegate: UNUserNotificationCenterDelegate {
+
+    // Handle foreground notifications
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .badge, .sound])
+    }
+
+    // Handle notification tap
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        completionHandler()
+    }
+
+}
+
+extension AppDelegate: MessagingDelegate {
+
+    // Handle FCM token refresh
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("Firebase registration token: \(String(describing: fcmToken))")
+    }
+
+}

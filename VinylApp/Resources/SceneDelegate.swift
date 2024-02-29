@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import FirebaseAuth
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -14,24 +15,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-            guard let windowScene = (scene as? UIWindowScene) else { return }
-            
-            let window = UIWindow(windowScene: windowScene)
-            
-            if AuthManager.shared.isSignedIn {
-                let accountView = TabBarViewController()
-                window.rootViewController = accountView
-            } else {
-                let accountView = LogInView()
-                let hostingController = UIHostingController(rootView: accountView)
-                let navVC = UINavigationController(rootViewController: hostingController)
-                navVC.navigationBar.prefersLargeTitles = true
-                window.rootViewController = navVC
-            }
+        guard let windowScene = (scene as? UIWindowScene) else { return }
 
-            window.makeKeyAndVisible()
-            self.window = window
+        let window = UIWindow(windowScene: windowScene)
+
+        if Auth.auth().currentUser != nil {
+            let accountView = TabBarViewController()
+            window.rootViewController = accountView
+        } else {
+            let accountView = LogInView()
+            let hostingController = UIHostingController(rootView: accountView)
+            let navVC = UINavigationController(rootViewController: hostingController)
+            navVC.navigationBar.prefersLargeTitles = true
+            window.rootViewController = navVC
         }
+
+        window.makeKeyAndVisible()
+        self.window = window
+    }
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.

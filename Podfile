@@ -14,6 +14,7 @@ pod 'Firebase/Auth'
 pod 'TOCropViewController'
 pod 'FirebaseAppCheck'
 pod 'RevenueCat'
+pod 'Firebase/Messaging'
 
 post_install do |installer|
      installer.generated_projects.each do |project|

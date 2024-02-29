@@ -7,6 +7,19 @@ from firebase_functions import https_fn
 import requests
 from google.auth.transport import requests as grequests
 from google.oauth2.id_token import verify_oauth2_token
+from firebase_admin import messaging
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+import random
+import uuid
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+# Initialize Firebase Admin SDK
+cred = credentials.ApplicationDefault()
+firebase_admin.initialize_app(cred)
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
@@ -173,3 +186,138 @@ def make_scene_api_request(req: https_fn.Request) -> https_fn.Response:
 
     except Exception as e:
         return https_fn.Response(f"An error occurred: {str(e)}")
+
+def send_daily_theme_notification():
+    db = firebase_admin.firestore.client()
+
+    # Get the themes document reference
+    themes_ref = db.collection('themes').document('themes')
+
+    # Get the themes data
+    themes_data = themes_ref.get().to_dict()
+    
+    themes_count = len(themes_data.keys())
+    if themes_count <= 10:
+        send_email(
+            "Low Theme Count Alert",
+            "There are 10 or fewer themes left in the themes/themes collection."
+        )
+        print("Low theme count email alert sent.")
+    else:
+        print(f"Theme count is sufficient: {themes_count}")
+
+    if not themes_data:
+        print('No themes found in "themes/themes". Checking "themes/old"...')
+        old_themes_ref = db.collection('themes').document('old')
+        old_themes_data = old_themes_ref.get().to_dict()
+        if old_themes_data:
+            themes_data = old_themes_data
+            print('Themes found in "themes/old".')
+        else:
+            print('No themes found in "themes/old".')
+            return
+
+    # Get the list of themes
+    themes = list(themes_data.keys())
+    random.shuffle(themes)
+
+    if not themes:
+        print('No themes found.')
+        return
+
+    # Get a random theme
+    theme_id = themes[0]
+    theme_text = themes_data[theme_id]
+
+    # Define the notification message with the theme's title and body
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title="Check out today's daily theme!",
+            body=f"Upload a picture {theme_text}"
+        ),
+        topic="dailyTheme"
+    )
+
+    # Send the message
+    response = messaging.send(message)
+    print("Successfully sent message:", response)
+
+    # Move the theme to themes/old only if it's from themes/themes
+    if 'themes/themes' in themes_ref.path:
+        move_theme_to_old(theme_id)
+    return
+
+
+def move_theme_to_old(theme_id):
+    # Get a Firestore client
+    db = firebase_admin.firestore.client()
+
+    # Get references to the themes document and the old themes document
+    themes_ref = db.collection('themes').document('themes')
+    old_themes_ref = db.collection('themes').document('old')
+
+    # Start a batch to perform multiple operations atomically
+    batch = db.batch()
+
+    try:
+        # Get the current themes document
+        themes_doc = themes_ref.get()
+        if themes_doc.exists:
+            themes_data = themes_doc.to_dict()
+
+            # Check if the theme exists in the current themes
+            if theme_id in themes_data:
+                theme_text = themes_data[theme_id]
+
+                # Create a unique key for the old theme using a UUID
+                old_theme_key = f"{theme_id}_{uuid.uuid4().hex}"
+
+                # Add the theme to the old themes document under the unique key
+                batch.update(old_themes_ref, {old_theme_key: theme_text})
+
+                # Remove the theme from the current themes document
+                batch.update(themes_ref, {theme_id: firestore.DELETE_FIELD})
+
+                # Commit the batch
+                batch.commit()
+                print(f"Moved theme {theme_id} to old themes.")
+            else:
+                print(f"Theme {theme_id} not found.")
+        else:
+            print("Themes document does not exist.")
+    except Exception as e:
+        print(f"An error occurred while moving theme {theme_id}: {e}")
+
+    return
+
+def send_email(subject, body):
+    db = firebase_admin.firestore.client()
+    config_ref = db.collection('config').document('emailConfig')
+    config = config_ref.get().to_dict()
+
+    if config:
+        sender_email = config.get('emailAddress')
+        password = config.get('emailPassword')
+        receiver_email = "aurifyapp@gmail.com"
+
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = receiver_email
+        message["Subject"] = subject
+
+        message.attach(MIMEText(body, "plain"))
+
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, message.as_string())
+            print("Email sent to aurifyapp@gmail.com")
+    else:
+        print("Email configuration not found in Firestore.")
+
+
+
+@https_fn.on_request(timeout_sec=120)
+def scheduled_push_notification(req: https_fn.Request) -> https_fn.Response:
+    send_daily_theme_notification()
+    return https_fn.Response("Push notification sent")

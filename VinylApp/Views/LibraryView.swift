@@ -137,7 +137,6 @@ struct LibraryView: View {
                                         .font(.custom("Outfit-Bold", size: 30))
                                     Text("No playlists yet.")
                                         .font(.custom("Inter-Light", size: 18))
-                                    Spacer()
                                 }
                             } else if !showAllPlaylists {
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
@@ -288,6 +287,25 @@ struct LibraryView: View {
                 print("No images found in tempProfilePics folder")
             }
         }
+    }
+    
+    func triggerDailyThemeNotification() {
+        guard let url = URL(string: "https://scheduled-push-notification-36d3pxwmrq-uc.a.run.app") else {
+            print("Invalid URL")
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("Error triggering notification: \(error.localizedDescription)")
+            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print("Notification triggered successfully")
+            } else {
+                print("Unexpected response")
+            }
+        }
+        
+        task.resume()
     }
     
     private func checkProfileImageInStorage(userID: String, completion: @escaping (Bool) -> Void) {

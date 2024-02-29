@@ -46,6 +46,7 @@ struct SettingsViewController: View {
             }
         }
     }
+    
 
     func saveProfileImage(_ image: UIImage) {
         guard let imageData = image.jpegData(compressionQuality: 0.5) else {

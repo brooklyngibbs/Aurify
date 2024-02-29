@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "417B25AC44CA1D040034CC1F375CEE36"
-               BuildableName = "GTMSessionFetcher_Core_Privacy.bundle"
-               BlueprintName = "GTMSessionFetcher-GTMSessionFetcher_Core_Privacy"
+               BlueprintIdentifier = "5C0371EE948D0357B8EE0E34ABB44BF0"
+               BuildableName = "GoogleDataTransport.framework"
+               BlueprintName = "GoogleDataTransport"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
