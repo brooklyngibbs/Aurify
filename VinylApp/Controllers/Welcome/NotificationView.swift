@@ -76,7 +76,7 @@ struct NotificationView: View {
                             Analytics.logEvent("no_notifications", parameters: nil)
                             navigateToTakeMeToAurify = true
                         }) {
-                            Text("USE WITHOUT SPOTIFY")
+                            Text("SKIP FOR NOW")
                                 .padding(10)
                                 .foregroundColor(Color(AppColors.moonstoneBlue))
                                 .frame(width: UIScreen.main.bounds.width * 0.8)

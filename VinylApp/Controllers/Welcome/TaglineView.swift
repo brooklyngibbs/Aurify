@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Firebase
 
 struct TaglineView: View {
     
@@ -9,6 +10,7 @@ struct TaglineView: View {
     @State private var textOffset3: CGFloat = -UIScreen.main.bounds.width
     @State private var textOffset4: CGFloat = -UIScreen.main.bounds.width
     @State private var buttonOpacity: Double = 0
+    @State private var email: String? = nil
     
     var body: some View {
         NavigationStack {
@@ -102,7 +104,15 @@ struct TaglineView: View {
                 }
             }
             .navigationDestination(isPresented: $presentNext) {
-                SpotifyLogInView()
+                if email == "aurifyapp@gmail.com" {
+                    SpotifyLogInView()
+                } else {
+                    TakeMeToAurifyView()
+                }
+            }
+            .onAppear {
+                email = Auth.auth().currentUser?.email
+                print("Signed in with email: \(email ?? "Unknown")")
             }
         }
     }

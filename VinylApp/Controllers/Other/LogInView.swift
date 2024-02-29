@@ -8,7 +8,7 @@ struct LogInView: View {
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var loginSuccess: Bool = false
-    @State private var navigateToSpotifyLogin: Bool = false
+    @State private var navigateToTagline: Bool = false
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
     @State private var resetEmail: String = ""
@@ -118,11 +118,10 @@ struct LogInView: View {
                 .edgesIgnoringSafeArea(.vertical)
                 .onChange(of: loginSuccess) { newValue in
                     if newValue {
-                        navigateToSpotifyLogin = true
+                        navigateToTagline = true
                     }
                 }
-                .fullScreenCover(isPresented: $navigateToSpotifyLogin) {
-                    //SpotifyLogInView()
+                .fullScreenCover(isPresented: $navigateToTagline) {
                     TaglineView()
                 }
                 .fullScreenCover(isPresented: $showEmailFieldForReset) {

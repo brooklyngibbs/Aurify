@@ -14,6 +14,7 @@ struct ProfilePicView: View {
     @State private var textOffset2: CGFloat = -UIScreen.main.bounds.width
     @State private var textOffset3: CGFloat = -UIScreen.main.bounds.width
     @State private var buttonOpacity: Double = 0
+    @State private var userName: String = "User"
 
     var body: some View {
         NavigationStack {
@@ -24,7 +25,7 @@ struct ProfilePicView: View {
 
                     VStack {
                         VStack(alignment: .leading, spacing: 5) {
-                            Text("Hey Brooklyn,")
+                            Text("Hey \(userName),")
                                 .foregroundColor(.white)
                                 .font(.custom("PlayfairDisplay-Bold", size: 50))
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -33,6 +34,7 @@ struct ProfilePicView: View {
                                     withAnimation(Animation.easeOut(duration: 0.8).delay(0.5)) {
                                         textOffset1 = 10
                                     }
+                                    fetchUserName()
                                 }
                                 .padding(.leading, 10)
                             Text("set a profile picture.")
@@ -145,6 +147,26 @@ struct ProfilePicView: View {
         }
         .hidden()
         .navigationBarBackButtonHidden(true)
+    }
+    
+    func fetchUserName() {
+        guard let user = Auth.auth().currentUser else {
+            print("User is not authenticated")
+            return
+        }
+
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(user.uid)
+
+        userRef.getDocument { document, error in
+            if let error = error {
+                print("Error fetching user data: \(error.localizedDescription)")
+            } else if let document = document, document.exists {
+                if let name = document.data()?["name"] as? String {
+                    self.userName = name
+                }
+            }
+        }
     }
     
     func saveProfileImage(_ image: UIImage) {
