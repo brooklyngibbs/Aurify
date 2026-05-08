@@ -14,8 +14,8 @@ final class AuthManager {
     private var refreshingToken = false
     
     struct Constants {
-        static let clientID = "eaafa98aa701426389ae69ea33c4deed"
-        static let clientSecret = "f2f02a76abbf4e5ebd96d199a08ffa32"
+        static let clientID = "YOUR_SPOTIFY_CLIENT_ID"
+        static let clientSecret = "YOUR_SPOTIFY_CLIENT_SECRET"
         static let tokenAPIURL = "https://accounts.spotify.com/api/token"
         static let redirectURI = "https://www.aurifyapp.com/"
         static let sessionKey = "spotifySessionKey"
