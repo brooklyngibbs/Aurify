@@ -10,26 +10,36 @@ Aurify is an iOS app that turns any image — a sunset, an outfit flat-lay, a cl
 
 ---
 
-## Screenshots
+## See it in action
 
-> **Note:** these are placeholder frames pulled from the in-app onboarding animation. A proper screenshot tour and demo clip are next on the list.
+### From image to playlist
+
+Three real generations. Each screen shows the photo I uploaded *and* the playlist Aurify created from it — with a GPT-4o-generated title and 30 tracks pulled live from Spotify.
 
 <p align="center">
-  <img src="vinyl_images/animation1.png" width="22%" alt="Upload screen" />
-  <img src="vinyl_images/animation2.png" width="22%" alt="Image analysis" />
-  <img src="vinyl_images/animation3.png" width="22%" alt="Playlist generation" />
-  <img src="vinyl_images/animation4.png" width="22%" alt="Library view" />
+  <img src="screenshots/playlist-pink-power-pop.png" width="28%" alt="Pink graffiti photo turned into 'Pink Power Pop: Shades of Love and Boldness'" />
+  <img src="screenshots/playlist-bubblegum.png" width="28%" alt="Friendship bracelets and tutu turned into 'Candy Hearts & Bubblegum Dreams'" />
+  <img src="screenshots/playlist-vinyl-nostalgia.png" width="28%" alt="Record shop wall turned into 'Vinyl Nostalgia: Echoes of the Classics'" />
 </p>
 
-<!--
-  TODO: replace with real screenshots in this order:
-    1. Home / library view
-    2. Upload + crop screen
-    3. Loading / generating state
-    4. Generated playlist with cover art
-  And a demo clip (silent ~10s GIF or .mp4) at the top of this section
-  showing: tap photo → playlist appears in Spotify.
--->
+<p align="center">
+<sub>P!nk graffiti → power pop&nbsp;&nbsp;·&nbsp;&nbsp;Concert-outfit flatlay → bubblegum pop&nbsp;&nbsp;·&nbsp;&nbsp;Record shop → classic rock</sub>
+</p>
+
+### Library and loading state
+
+<p align="center">
+  <img src="screenshots/home.png" width="34%" alt="Home screen showing profile card and grid of generated playlist covers" />
+  <img src="screenshots/loading.png" width="34%" alt="Loading screen with vinyl record animation and a contextual subtitle" />
+</p>
+
+The loading screen on the right reads *"Channeling Taylor Swift's All Too Well"* — that subtitle is contextual to whatever's being generated, so it teases the playlist's vibe while the user waits the ~15-25 seconds it takes to round-trip through GPT-4o and Spotify.
+
+### Shipped to the App Store
+
+<p align="center">
+  <img src="screenshots/app-store.png" width="42%" alt="Aurify listing on the iOS App Store" />
+</p>
 
 ---
 
@@ -157,4 +167,4 @@ You'd need: a Spotify developer app (client ID + redirect URI), a Firebase proje
 
 ## Status
 
-Built solo as a portfolio project. The code reflects how I write iOS apps under realistic constraints — shipping over polishing — rather than as a textbook reference.
+Built solo and **shipped to the App Store**. The code reflects how I write iOS apps under realistic constraints — shipping over polishing — rather than as a textbook reference. This repo is a frozen snapshot for portfolio purposes; active development has paused.
